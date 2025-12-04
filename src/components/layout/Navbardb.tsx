@@ -22,6 +22,7 @@ const Navbardb = () => {
             <div className="container mx-auto px-4">
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
+                    <Link to="/dashboard" className="flex items-center gap-2 group">
                     <div className="flex items-center gap-2 group">
                         <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center shadow-md group-hover:shadow-glow transition-shadow duration-300">
                             <Sparkles className="w-5 h-5 text-primary-foreground" />
@@ -30,6 +31,7 @@ const Navbardb = () => {
                             Laundry<span className="text-gradient">Hub</span>
                         </span>
                     </div>
+                    </Link>
 
                     {/* Desktop Navigation */}
                     <div className="hidden md:flex items-center gap-1">

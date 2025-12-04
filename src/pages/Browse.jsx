@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Navbar from "@/components/layout/Navbardb";
-import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -243,7 +242,6 @@ const Browse = () => {
         </div>
       </main>
 
-      <Footer />
     </div>
   );
 };

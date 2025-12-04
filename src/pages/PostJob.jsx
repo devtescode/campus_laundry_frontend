@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Navbar from "@/components/layout/Navbardb";
-import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -360,7 +359,6 @@ const PostJob = () => {
         </div>
       </main>
 
-      <Footer />
     </div>
   );
 };
