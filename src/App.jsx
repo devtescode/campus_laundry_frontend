@@ -29,7 +29,7 @@ const App = () => (
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/verify-email" element={<Emailverify />} />
+          <Route path="/verify-email/:token" element={<Emailverify />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

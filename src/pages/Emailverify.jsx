@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { CheckCircle } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const Emailverify = () => {
   const [status, setStatus] = useState("verifying"); // verifying | success | error
   const navigate = useNavigate();
+  const { token } = useParams(); // get token from path param
 
   useEffect(() => {
     const verifyEmail = async () => {
-      const token = new URLSearchParams(window.location.search).get("token");
-
       if (!token) {
         setStatus("error");
         return;
@@ -17,7 +16,8 @@ const Emailverify = () => {
 
       try {
         const res = await fetch(
-          `http://localhost:5000/userlaundry/verify-email?token=${token}`
+          `http://localhost:5000/userlaundry/verify-email/${token}`,
+          { method: "GET" }
         );
 
         const data = await res.json();
@@ -38,7 +38,7 @@ const Emailverify = () => {
     };
 
     verifyEmail();
-  }, [navigate]);
+  }, [token, navigate]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-4">
@@ -64,7 +64,7 @@ const Emailverify = () => {
       {status === "error" && (
         <div className="text-center">
           <h1 className="text-xl font-bold text-red-600">
-            Invalid or expired link try again
+            Invalid or expired link. Try again.
           </h1>
           <button
             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md"

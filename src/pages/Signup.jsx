@@ -31,7 +31,10 @@ const Signup = () => {
   //   navigate("/dashboard");
   // };
 
+  const [loading, setLoading] = useState(false);
+
   const handleSignup = async () => {
+    setLoading(true); // show loader
     try {
       const res = await fetch("http://localhost:5000/userlaundry/signup", {
         method: "POST",
@@ -65,7 +68,49 @@ const Signup = () => {
         variant: "destructive"
       });
     }
+    finally {
+      setLoading(false); // hide loader
+    }
   };
+
+  const resendVerificationEmail = async (email) => {
+    setLoading(true); // show loader
+    try {
+      const res = await fetch("http://localhost:5000/userlaundry/resend-verification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+      console.log(data, "resend");
+
+      if (!res.ok) {
+        toast({
+          title: "Error ❌",
+          description: data.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Email Sent ✅",
+        description: "Check your inbox to verify your email.",
+      });
+
+    } catch (err) {
+      toast({
+        title: "Network Error ❌",
+        description: "Cannot connect to server",
+        variant: "destructive",
+      });
+    }
+     finally {
+      setLoading(false); // hide loader
+    }
+  };
+
 
 
   return (
@@ -174,14 +219,44 @@ const Signup = () => {
 
                   <Button
                     onClick={handleSignup}
-
                     type="button"
-                    className="w-full"
-                    // onClick={() => setStep(2)}
-                    disabled={!formData.fullname || !formData.email || !formData.phonenumber || !formData.password}
+                    className="w-full flex items-center justify-center"
+                    disabled={
+                      !formData.fullname ||
+                      !formData.email ||
+                      !formData.phonenumber ||
+                      !formData.password ||
+                      loading
+                    }
                   >
-                    Continue <ArrowRight className="w-4 h-4 ml-2" />
+                    {loading ? (
+                      <svg
+                        className="animate-spin h-5 w-5 mr-2 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 10-8 8z"
+                        ></path>
+                      </svg>
+                    ) : (
+                      <>
+                        Continue <ArrowRight className="w-4 h-4 ml-2" />
+                      </>
+                    )}
                   </Button>
+
                 </div>
               )}
 
@@ -204,13 +279,49 @@ const Signup = () => {
                     <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
                   </div>
 
-                  <Button
+                  {/* <Button
                     variant="outline"
                     className="w-full"
                     onClick={() => resendVerificationEmail(formData.email)}
                   >
                     Resend Verification Email
+                  </Button> */}
+
+                  <Button
+                    type="button"        // <-- important
+                    // variant="outline"
+                    className="w-full"
+                    onClick={() => resendVerificationEmail(formData.email)}
+                  >
+                    {loading ? (
+                      <svg
+                        className="animate-spin h-5 w-5 mr-2 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 10-8 8z"
+                        ></path>
+                      </svg>
+                    ) : (
+                      <>
+                      Resend Verification Email<ArrowRight className="w-4 h-4" />
+                       
+                      </>
+                    )}
                   </Button>
+
                 </div>
               )}
 
