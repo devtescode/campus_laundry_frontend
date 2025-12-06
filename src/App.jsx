@@ -12,6 +12,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import NotFound from "./pages/NotFound";
 import Emailverify from "./pages/Emailverify";
+import Userprotected from "./pages/Userprotected/Userprotected";
 
 const queryClient = new QueryClient();
 
@@ -23,9 +24,19 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/browse" element={<Browse />} />
-          <Route path="/post-job" element={<PostJob />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          {/* <Route path="/dashboard" element={<Dashboard />} /> */}
+          <Route
+            element={
+              <Userprotected>
+                <></>
+              </Userprotected>
+            }
+          >
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/browse" element={<Browse />} />
+            <Route path="/post-job" element={<PostJob />} />
+          </Route>
+
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />

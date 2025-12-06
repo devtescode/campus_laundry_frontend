@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Sparkles, MessageCircleX, MessageSquareLock, CircleAlert, MessageCircleReply, LogOut, LogOutIcon, LogInIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -15,6 +15,13 @@ const Navbardb = () => {
         { href: "/post-job", label: "Post a Job" },
     ];
 
+    const navigave = useNavigate()
+    const LogoutBtn = () => {
+        localStorage.removeItem("laundryToken");
+        localStorage.removeItem("laundryUser");
+        navigave("/login")
+    }
+
     const isActive = (path: string) => location.pathname === path;
 
     return (
@@ -23,14 +30,14 @@ const Navbardb = () => {
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
                     <Link to="/dashboard" className="flex items-center gap-2 group">
-                    <div className="flex items-center gap-2 group">
-                        <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center shadow-md group-hover:shadow-glow transition-shadow duration-300">
-                            <Sparkles className="w-5 h-5 text-primary-foreground" />
+                        <div className="flex items-center gap-2 group">
+                            <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center shadow-md group-hover:shadow-glow transition-shadow duration-300">
+                                <Sparkles className="w-5 h-5 text-primary-foreground" />
+                            </div>
+                            <span className="text-xl font-bold text-foreground">
+                                Laundry<span className="text-gradient">Hub</span>
+                            </span>
                         </div>
-                        <span className="text-xl font-bold text-foreground">
-                            Laundry<span className="text-gradient">Hub</span>
-                        </span>
-                    </div>
                     </Link>
 
                     {/* Desktop Navigation */}
@@ -51,15 +58,15 @@ const Navbardb = () => {
                         ))}
                     </div>
 
-                    <Link to="/login">
-                        <div className="hidden md:flex items-center gap-1">
+                    {/* <Link to="/login"> */}
+                        <div className="hidden md:flex items-center gap-1" onClick={LogoutBtn}>
                             <p >
                                 logout
                             </p>
                             <LogInIcon />
 
                         </div>
-                    </Link>
+                    {/* </Link> */}
 
                     {/* Mobile Menu Button */}
                     <button
@@ -93,12 +100,12 @@ const Navbardb = () => {
                                     {link.label}
                                 </Link>
                             ))}
-                            <div className="flex gap-2 mt-4 pt-4 border-t border-border">
-                                <Link to="/login">
+                            <div className="flex gap-2 mt-4 pt-4 border-t border-border" onClick={LogoutBtn}>
+                                {/* <Link to="/login"> */}
                                     <Button variant="ghost" size="sm">
                                         logout
                                     </Button>
-                                </Link>
+                                {/* </Link> */}
                                 <MessageCircleReply />
                             </div>
                         </div>

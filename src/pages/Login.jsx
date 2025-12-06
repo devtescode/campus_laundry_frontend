@@ -38,7 +38,7 @@ const Login = () => {
       });
 
       const data = await res.json();
-      console.log(data,"data");
+      console.log(data, "data");
       if (!res.ok) {
         toast({
           title: "Login failed ❌",
@@ -50,6 +50,8 @@ const Login = () => {
 
       // Save user to localStorage
       localStorage.setItem("laundryUser", JSON.stringify(data.user));
+      localStorage.setItem("laundryToken", data.user.token);
+
 
       toast({
         title: "Welcome back! 👋",
