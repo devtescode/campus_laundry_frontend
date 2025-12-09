@@ -6,12 +6,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { 
-  Shirt, 
-  Clock, 
-  MapPin, 
-  DollarSign, 
-  Upload, 
+import {
+  Shirt,
+  Clock,
+  MapPin,
+  DollarSign,
+  Upload,
   CheckCircle,
   ArrowRight,
   ArrowLeft
@@ -45,13 +45,52 @@ const PostJob = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleSubmit = () => {
-    toast({
-      title: "Job Posted Successfully! 🎉",
-      description: "Your laundry request is now visible to washers nearby.",
-    });
-    navigate("/dashboard");
+  const handleSubmit = async () => {
+    try {
+      const user = JSON.parse(localStorage.getItem("laundryUser"));
+      
+
+      const payload = {
+        userId: user?.id,
+        ...formData,
+      };
+      // console.log(payload.userId, "sdd");
+      
+
+      const res = await fetch("http://localhost:5000/userlaundry/createpost", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      console.log(res, "responsive");
+      
+
+      const data = await res.json();
+      console.log(data, "data");
+      
+      if (res.ok) {
+        toast({
+          title: "Job Posted Successfully! 🎉",
+          description: "Your laundry request is now visible to washers nearby.",
+        });
+
+        navigate("/dashboard");
+      } else {
+        toast({
+          title: "Submission Failed",
+          description: data.error,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Network Error",
+        description: "Could not connect to the server.",
+        variant: "destructive",
+      });
+    }
   };
+
 
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(step - 1);
@@ -59,24 +98,22 @@ const PostJob = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-4 max-w-2xl">
           {/* Progress Steps */}
           <div className="flex items-center justify-center mb-12">
             {[1, 2, 3, 4].map((s) => (
               <div key={s} className="flex items-center">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-medium transition-all ${
-                  step >= s 
-                    ? "bg-primary text-primary-foreground" 
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-medium transition-all ${step >= s
+                    ? "bg-primary text-primary-foreground"
                     : "bg-muted text-muted-foreground"
-                }`}>
+                  }`}>
                   {step > s ? <CheckCircle className="w-5 h-5" /> : s}
                 </div>
                 {s < 4 && (
-                  <div className={`w-16 h-1 mx-2 rounded transition-all ${
-                    step > s ? "bg-primary" : "bg-muted"
-                  }`} />
+                  <div className={`w-16 h-1 mx-2 rounded transition-all ${step > s ? "bg-primary" : "bg-muted"
+                    }`} />
                 )}
               </div>
             ))}
@@ -91,20 +128,19 @@ const PostJob = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <RadioGroup 
-                  value={formData.type} 
-                  onValueChange={(value) => setFormData({...formData, type: value})}
+                <RadioGroup
+                  value={formData.type}
+                  onValueChange={(value) => setFormData({ ...formData, type: value })}
                   className="grid grid-cols-2 gap-4"
                 >
                   {laundryTypes.map((type) => (
                     <Label
                       key={type.id}
                       htmlFor={type.id}
-                      className={`flex flex-col items-center p-6 rounded-xl border-2 cursor-pointer transition-all ${
-                        formData.type === type.id
+                      className={`flex flex-col items-center p-6 rounded-xl border-2 cursor-pointer transition-all ${formData.type === type.id
                           ? "border-primary bg-primary/10"
                           : "border-border hover:border-primary/50"
-                      }`}
+                        }`}
                     >
                       <RadioGroupItem value={type.id} id={type.id} className="sr-only" />
                       <span className="text-4xl mb-2">{type.icon}</span>
@@ -124,7 +160,7 @@ const PostJob = () => {
                       type="number"
                       placeholder="e.g., 10"
                       value={formData.quantity}
-                      onChange={(e) => setFormData({...formData, quantity: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
                       className="mt-2"
                     />
                   </div>
@@ -135,14 +171,14 @@ const PostJob = () => {
                       type="number"
                       placeholder="e.g., 3000"
                       value={formData.price}
-                      onChange={(e) => setFormData({...formData, price: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                       className="mt-2"
                     />
                   </div>
                 </div>
 
-                <Button 
-                  className="w-full mt-6" 
+                <Button
+                  className="w-full mt-6"
                   onClick={nextStep}
                   disabled={!formData.type || !formData.quantity || !formData.price}
                 >
@@ -168,7 +204,7 @@ const PostJob = () => {
                     id="hostel"
                     placeholder="e.g., Jaja Hall"
                     value={formData.hostel}
-                    onChange={(e) => setFormData({...formData, hostel: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, hostel: e.target.value })}
                     className="mt-2"
                   />
                 </div>
@@ -179,7 +215,7 @@ const PostJob = () => {
                       id="block"
                       placeholder="e.g., Block A"
                       value={formData.block}
-                      onChange={(e) => setFormData({...formData, block: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, block: e.target.value })}
                       className="mt-2"
                     />
                   </div>
@@ -189,7 +225,7 @@ const PostJob = () => {
                       id="room"
                       placeholder="e.g., 24"
                       value={formData.room}
-                      onChange={(e) => setFormData({...formData, room: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, room: e.target.value })}
                       className="mt-2"
                     />
                   </div>
@@ -199,8 +235,8 @@ const PostJob = () => {
                   <Button variant="outline" className="flex-1" onClick={prevStep}>
                     <ArrowLeft className="w-4 h-4 mr-2" /> Back
                   </Button>
-                  <Button 
-                    className="flex-1" 
+                  <Button
+                    className="flex-1"
                     onClick={nextStep}
                     disabled={!formData.hostel || !formData.block || !formData.room}
                   >
@@ -230,7 +266,7 @@ const PostJob = () => {
                         id="pickupDate"
                         type="date"
                         value={formData.pickupDate}
-                        onChange={(e) => setFormData({...formData, pickupDate: e.target.value})}
+                        onChange={(e) => setFormData({ ...formData, pickupDate: e.target.value })}
                         className="mt-2"
                       />
                     </div>
@@ -240,7 +276,7 @@ const PostJob = () => {
                         id="pickupTime"
                         type="time"
                         value={formData.pickupTime}
-                        onChange={(e) => setFormData({...formData, pickupTime: e.target.value})}
+                        onChange={(e) => setFormData({ ...formData, pickupTime: e.target.value })}
                         className="mt-2"
                       />
                     </div>
@@ -256,7 +292,7 @@ const PostJob = () => {
                         id="deliveryDate"
                         type="date"
                         value={formData.deliveryDate}
-                        onChange={(e) => setFormData({...formData, deliveryDate: e.target.value})}
+                        onChange={(e) => setFormData({ ...formData, deliveryDate: e.target.value })}
                         className="mt-2"
                       />
                     </div>
@@ -266,7 +302,7 @@ const PostJob = () => {
                         id="deliveryTime"
                         type="time"
                         value={formData.deliveryTime}
-                        onChange={(e) => setFormData({...formData, deliveryTime: e.target.value})}
+                        onChange={(e) => setFormData({ ...formData, deliveryTime: e.target.value })}
                         className="mt-2"
                       />
                     </div>
@@ -277,8 +313,8 @@ const PostJob = () => {
                   <Button variant="outline" className="flex-1" onClick={prevStep}>
                     <ArrowLeft className="w-4 h-4 mr-2" /> Back
                   </Button>
-                  <Button 
-                    className="flex-1" 
+                  <Button
+                    className="flex-1"
                     onClick={nextStep}
                     disabled={!formData.pickupDate || !formData.deliveryDate}
                   >
@@ -304,7 +340,7 @@ const PostJob = () => {
                     id="description"
                     placeholder="Any special instructions? Delicate items? Specific detergent preferences?"
                     value={formData.description}
-                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     className="mt-2 min-h-[120px]"
                   />
                 </div>
