@@ -30,7 +30,9 @@ import {
   Shirt,
   Users,
   HouseIcon,
-  Trash
+  Trash,
+  HousePlugIcon,
+  LucideHouse
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Loader from "./Loaderpage/Loader";
@@ -143,7 +145,7 @@ const Dashboard = () => {
         const res = await fetch(`http://localhost:5000/userlaundry/getuserpost/${userId}`);
         const data = await res.json();
         setPosterJobs(data.jobs);
-        console.log(data.jobs);
+        console.log(data.jobs, "Fetched Jobs");
 
       } catch (error) {
         console.log("Error fetching jobs:", error);
@@ -377,10 +379,14 @@ const Dashboard = () => {
                                 </div>
 
                                 {/* META INFO */}
-                                <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-3">
-                                  <span className="flex items-center gap-1 min-w-[120px]">
+                                <div className="flex flex-wrap gap-0 text-sm text-muted-foreground mb-3">
+                                  <span className="flex items-center gap-1 min-w-[50px]">
                                     <MapPin className="w-3 h-3" />
                                     {job.hostel || "No location"}
+                                  </span>
+                                  <span className="flex items-center gap-1 min-w-[50px]">
+                                    <LucideHouse className="w-3 h-3" />
+                                    {job.room || "No room"}
                                   </span>
                                   <span className="flex items-center gap-1 min-w-[120px]">
                                     <Calendar className="w-3 h-3" />
@@ -397,25 +403,27 @@ const Dashboard = () => {
                                 {/* WASHER INFO & PRICE */}
                                 <div className="flex flex-wrap items-center justify-between gap-2 w-full">
                                   <div className="flex items-center gap-2 flex-wrap min-w-[120px]">
-                                    {job.washer ? (
+                                    {job.status === "Applied" && job.applicantName ? (
                                       <>
                                         <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
                                           <span className="text-xs font-medium text-primary">
-                                            {job.washer.charAt(0)}
+                                            {job.applicantName.charAt(0)}
                                           </span>
                                         </div>
-                                        <span className="text-sm text-foreground truncate">{job.washer}</span>
-                                        <span className="flex items-center text-xs text-yellow-500">
+                                        <span className="text-sm text-foreground truncate">{job.applicantName}</span>
+                                        {/* <span className="flex items-center text-xs text-yellow-500">
                                           <Star className="w-3 h-3 fill-current" />
                                           {job.washerRating || "0.0"}
-                                        </span>
+                                        </span> */}
                                       </>
                                     ) : (
                                       <span className="text-sm text-muted-foreground truncate">
                                         Waiting for washer...
                                       </span>
                                     )}
+
                                   </div>
+
                                   <span className="font-bold text-primary min-w-[80px]">
                                     ₦{Number(job.price || 0).toLocaleString()}
                                   </span>
