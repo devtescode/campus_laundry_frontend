@@ -340,7 +340,7 @@ const Dashboard = () => {
               <div className="grid lg:grid-cols-3 gap-1">
                 {/* Jobs List */}
                 <div className="lg:col-span-2">
-                  <Card className="bg-card border-border">
+                  <Card className="bg-card border-border border-none">
                     <CardHeader className="flex flex-row items-center justify-between">
                       <CardTitle className="text-lg">Your Posted Jobs</CardTitle>
                       <Button size="sm" onClick={() => navigate('/post-job')} className="flex items-center gap-2">
@@ -349,7 +349,7 @@ const Dashboard = () => {
                       </Button>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <div className=" px-1 py-2">
+                      <div className="px-1 py-2">
 
                         {loading ? (
                           <Loader />
@@ -359,7 +359,7 @@ const Dashboard = () => {
                           posterJobs.map((job) => (
                             <div
                               key={job._id}
-                              className="p-3 bg-card border border-border hover:border-primary/30 transition-all mb-2"
+                              className="p-3 shadow rounded-sm border border-border hover:border-primary/30 transition-all mb-2"
                             >
                               {/* JOB HEADER */}
                               <div className="flex items-start justify-between mb-3">
@@ -543,7 +543,7 @@ const Dashboard = () => {
 
                 {/* Notifications */}
                 <div>
-                  <Card className="bg-card border-border">
+                  <Card className="bg-card border-border border-none">
                     <CardHeader>
                       <CardTitle className="text-lg flex items-center gap-2">
                         <Bell className="w-5 h-5" />
