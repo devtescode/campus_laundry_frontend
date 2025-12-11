@@ -139,17 +139,17 @@ const Browse = () => {
                   </div>
 
                   <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
-                    {job.description}
+                   Description: {job.description}
                   </p>
 
                   <div className="space-y-2 mb-4">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <MapPin className="w-4 h-4" />
-                      <span>{job.hostel} {job.block} {job.room}</span>
+                      <span>Location: {job.hostel} {job.block} {job.room}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Clock className="w-4 h-4" />
-                      <span>Due: {job.deliveryDate} {job.deliveryTime}</span>
+                      <span>Due Time: {job.deliveryDate} {job.deliveryTime}</span>
                     </div>
                   </div>
 
@@ -177,7 +177,7 @@ const Browse = () => {
                     </div>
 
                     <span className="text-xs text-muted-foreground">
-                      {new Date(job.createdAt).toDateString()}
+                     Time Posted: {new Date(job.createdAt).toDateString()}
                     </span>
                   </div>
 

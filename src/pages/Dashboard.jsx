@@ -1,15 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "@/components/layout/Navbardb";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Briefcase, 
-  DollarSign, 
-  Clock, 
-  Star, 
-  Bell, 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { DialogFooter } from "@/components/ui/dialog";
+
+import {
+  Briefcase,
+  DollarSign,
+  Clock,
+  Star,
+  Bell,
   CheckCircle,
   Package,
   TrendingUp,
@@ -19,7 +28,8 @@ import {
   Eye,
   Plus,
   Shirt,
-  Users
+  Users,
+  HouseIcon
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -39,41 +49,6 @@ const washerStats = {
   averageRating: 4.9,
   thisWeekEarnings: 15000
 };
-
-const posterJobs = [
-  {
-    id: 1,
-    type: "Washing & Ironing",
-    quantity: "8 items",
-    price: 3500,
-    status: "In Progress",
-    washer: "Adaeze N.",
-    washerRating: 4.9,
-    postedDate: "2 days ago",
-    location: "Block A, Room 24"
-  },
-  {
-    id: 2,
-    type: "Washing Only",
-    quantity: "5 items",
-    price: 2000,
-    status: "Completed",
-    washer: "Tunde O.",
-    washerRating: 4.7,
-    postedDate: "1 week ago",
-    location: "Block A, Room 24"
-  },
-  {
-    id: 3,
-    type: "Ironing Only",
-    quantity: "12 items",
-    price: 2500,
-    status: "Pending",
-    washer: null,
-    postedDate: "1 hour ago",
-    location: "Block A, Room 24"
-  }
-];
 
 const washerJobs = [
   {
@@ -149,14 +124,44 @@ const getStatusColor = (status) => {
 
 
 const Dashboard = () => {
-  
+
   const [role, setRole] = useState("poster");
   const navigate = useNavigate();
+
+  const [posterJobs, setPosterJobs] = useState([]);
+  const [loadingJobs, setLoadingJobs] = useState(true);
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("laundryUser"));
+    const userId = user?.id;
+
+    const fetchUserJobs = async () => {
+      try {
+        const res = await fetch(`http://localhost:5000/userlaundry/getuserpost/${userId}`);
+        const data = await res.json();
+        setPosterJobs(data.jobs);
+        console.log(data.jobs);
+
+      } catch (error) {
+        console.log("Error fetching jobs:", error);
+      } finally {
+        setLoadingJobs(false);
+      }
+    };
+
+    fetchUserJobs();
+  }, []);
+
+
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
+
+
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-4">
           {/* Header */}
@@ -169,7 +174,7 @@ const Dashboard = () => {
                 Here's what's happening with your laundry today
               </p>
             </div>
-            
+
             {/* Role Switch */}
             <div className="flex items-center gap-3 bg-card border border-border rounded-xl p-1">
               <Button
@@ -284,53 +289,93 @@ const Dashboard = () => {
                     <CardContent className="space-y-4">
                       {posterJobs.map((job) => (
                         <div
-                          key={job.id}
+                          key={job._id}
                           className="p-4 rounded-xl bg-background border border-border hover:border-primary/30 transition-all"
                         >
+                          {/* JOB HEADER */}
                           <div className="flex items-start justify-between mb-3">
                             <div>
                               <h3 className="font-semibold text-foreground">{job.type}</h3>
-                              <p className="text-sm text-muted-foreground">{job.quantity}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {job.quantity || "No quantity specified"}
+                              </p>
                             </div>
-                            <Badge className={getStatusColor(job.status)}>{job.status}</Badge>
+                            <Badge className={getStatusColor(job.status)}>
+                              {job.status || "Pending"}
+                            </Badge>
                           </div>
-                          
+
+                          {/* META INFO */}
                           <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
                             <span className="flex items-center gap-1">
                               <MapPin className="w-3 h-3" />
-                              {job.location}
+                              {job.hostel || "No location"}
                             </span>
                             <span className="flex items-center gap-1">
+                              <HouseIcon className="w-3 h-3" />
+                              {job.room || "No room info"}
+                            </span>
+
+                            <span className="flex items-center gap-1">
                               <Calendar className="w-3 h-3" />
-                              {job.postedDate}
+
+                              {/* Format date correctly */}
+                              {job.createdAt
+                                ? new Date(job.createdAt).toLocaleDateString("en-US", {
+                                  month: "short",
+                                  day: "numeric",
+                                  year: "numeric",
+                                })
+                                : "No date"}
                             </span>
                           </div>
 
+                          {/* WASHER INFO & PRICE */}
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               {job.washer ? (
                                 <>
                                   <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
-                                    <span className="text-xs font-medium text-primary">{job.washer.charAt(0)}</span>
+                                    <span className="text-xs font-medium text-primary">
+                                      {job.washer.charAt(0)}
+                                    </span>
                                   </div>
+
                                   <span className="text-sm text-foreground">{job.washer}</span>
+
                                   <span className="flex items-center text-xs text-yellow-500">
                                     <Star className="w-3 h-3 fill-current" />
-                                    {job.washerRating}
+                                    {job.washerRating || "0.0"}
                                   </span>
                                 </>
                               ) : (
-                                <span className="text-sm text-muted-foreground">Waiting for washer...</span>
+                                <span className="text-sm text-muted-foreground">
+                                  Waiting for washer...
+                                </span>
                               )}
                             </div>
-                            <span className="font-bold text-primary">₦{job.price.toLocaleString()}</span>
+
+                            {/* Safely show price */}
+                            <span className="font-bold text-primary">
+                              ₦{Number(job.price || 0).toLocaleString()}
+                            </span>
                           </div>
 
+                          {/* BUTTONS */}
                           <div className="flex gap-2 mt-3">
-                            <Button variant="outline" size="sm" className="flex-1">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="flex-1"
+                              onClick={() => {
+                                setSelectedJob(job);
+                                setOpenModal(true);
+                              }}
+                            >
                               <Eye className="w-3 h-3 mr-1" />
                               View Details
                             </Button>
+
                             {job.washer && (
                               <Button variant="outline" size="sm" className="flex-1">
                                 <MessageSquare className="w-3 h-3 mr-1" />
@@ -340,9 +385,91 @@ const Dashboard = () => {
                           </div>
                         </div>
                       ))}
+
                     </CardContent>
                   </Card>
                 </div>
+
+
+                {selectedJob && (
+                  <Dialog open={openModal} onOpenChange={setOpenModal}>
+                    <DialogContent className="max-w-lg rounded-xl">
+                      <DialogHeader>
+                        <DialogTitle className="text-xl font-bold">
+                          Job Details
+                        </DialogTitle>
+                      </DialogHeader>
+
+                      <div className="space-y-4">
+
+                        {/* Job Type */}
+                        <div>
+                          <h3 className="font-semibold text-foreground">{selectedJob.type}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {selectedJob.quantity} items
+                          </p>
+                        </div>
+
+                        {/* Location */}
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <MapPin className="w-4 h-4" />
+                          {selectedJob.hostel}, Block {selectedJob.block}, Room {selectedJob.room}
+                        </div>
+
+                        {/* Pickup & Delivery */}
+                        <div className="space-y-1 text-sm">
+                          <p>
+                            <strong>Posted:</strong> {selectedJob.createdAt
+                              ? new Date(selectedJob.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+                              : "No date"}
+                            at {selectedJob.createdAt ? selectedJob.createdAt.split("T")[1].substring(0, 5) : "No time"}
+                          </p>
+
+                          <p>
+                            <strong>Pickup:</strong> {selectedJob.pickupDate
+                              ? new Date(selectedJob.pickupDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+                              : "No date"}
+                            at {selectedJob.pickupTime}
+                          </p>
+
+                          <p>
+                            <strong>Delivery:</strong> {selectedJob.deliveryDate
+                              ? new Date(selectedJob.deliveryDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+                              : "No date"}
+                            at {selectedJob.deliveryTime}
+                          </p>
+
+                        </div>
+
+                        {/* Description */}
+                        {selectedJob.description && (
+                          <div className="text-sm">
+                            <strong>Description:</strong>
+                            <p className="text-muted-foreground">{selectedJob.description}</p>
+                          </div>
+                        )}
+
+                        {/* Price */}
+                        <p className="font-bold text-primary text-lg">
+                          ₦{selectedJob.price.toLocaleString()}
+                        </p>
+
+                        {/* Status */}
+                        <Badge className={getStatusColor(selectedJob.status)}>
+                          {selectedJob.status}
+                        </Badge>
+
+                      </div>
+
+                      <DialogFooter>
+                        <Button variant="secondary" onClick={() => setOpenModal(false)}>
+                          Close
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                )}
+
 
                 {/* Notifications */}
                 <div>
@@ -360,11 +487,10 @@ const Dashboard = () => {
                       {notifications.map((notification) => (
                         <div
                           key={notification.id}
-                          className={`p-3 rounded-lg ${
-                            notification.unread 
-                              ? "bg-primary/10 border border-primary/20" 
-                              : "bg-background border border-border"
-                          }`}
+                          className={`p-3 rounded-lg ${notification.unread
+                            ? "bg-primary/10 border border-primary/20"
+                            : "bg-background border border-border"
+                            }`}
                         >
                           <p className="text-sm text-foreground">{notification.message}</p>
                           <p className="text-xs text-muted-foreground mt-1">{notification.time}</p>
@@ -492,7 +618,7 @@ const Dashboard = () => {
                             </div>
                             <Badge className={getStatusColor(job.status)}>{job.status}</Badge>
                           </div>
-                          
+
                           <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-3">
                             <span className="flex items-center gap-1">
                               <MapPin className="w-3 h-3" />
@@ -547,9 +673,9 @@ const Dashboard = () => {
                       <div className="flex items-end justify-between h-32 gap-2">
                         {earningsData.map((day, index) => (
                           <div key={index} className="flex flex-col items-center gap-2 flex-1">
-                            <div 
+                            <div
                               className="w-full bg-primary/20 rounded-t-lg transition-all hover:bg-primary/30"
-                              style={{ 
+                              style={{
                                 height: `${(day.amount / 5000) * 100}%`,
                                 minHeight: day.amount > 0 ? "8px" : "4px"
                               }}
@@ -582,11 +708,10 @@ const Dashboard = () => {
                       {notifications.slice(0, 3).map((notification) => (
                         <div
                           key={notification.id}
-                          className={`p-3 rounded-lg ${
-                            notification.unread 
-                              ? "bg-primary/10 border border-primary/20" 
-                              : "bg-background border border-border"
-                          }`}
+                          className={`p-3 rounded-lg ${notification.unread
+                            ? "bg-primary/10 border border-primary/20"
+                            : "bg-background border border-border"
+                            }`}
                         >
                           <p className="text-sm text-foreground">{notification.message}</p>
                           <p className="text-xs text-muted-foreground mt-1">{notification.time}</p>
