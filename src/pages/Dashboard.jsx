@@ -444,14 +444,18 @@ const Dashboard = () => {
                                       <MessageSquare className="w-3 h-3" /> Message
                                     </Button>
                                   )}
+
+                                  {job.status === "Applied" && (
                                   <Button
+                                    disabled={job.status !== "Pending"}
                                     variant=""
                                     size="sm"
                                     className="flex-1 min-w-[100px]"
                                     onClick={() => handleDeleteJob(job._id)}
                                   >
-                                    <Trash className="w-3 h-3" /> Delete
+                                    <Trash className="w-3 h-3" /> Cancel
                                   </Button>
+                                  )}
                                 </div>
                               </div>
                             ))}
