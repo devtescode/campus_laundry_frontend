@@ -316,7 +316,7 @@ const Dashboard = () => {
               </div>
 
               {/* Main Content */}
-              <div className="grid lg:grid-cols-3 gap-6">
+              <div className="grid lg:grid-cols-3 gap-1">
                 {/* Jobs List */}
                 <div className="lg:col-span-2">
                   <Card className="bg-card border-border">
@@ -328,7 +328,7 @@ const Dashboard = () => {
                       </Button>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <div className="min-h-screen bg-background px-4 py-6">
+                      <div className=" px-1 py-2">
 
                         {loading ? (
                           <Loader/>
@@ -338,7 +338,7 @@ const Dashboard = () => {
                           posterJobs.map((job) => (
                             <div
                               key={job._id}
-                              className="p-4 rounded-xl bg-card border border-border hover:border-primary/30 transition-all mb-4"
+                              className="p-3 bg-card border border-border hover:border-primary/30 transition-all mb-2"
                             >
                               {/* JOB HEADER */}
                               <div className="flex items-start justify-between mb-3">
