@@ -34,6 +34,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Loader from "./Loaderpage/Loader";
+import axios from "axios";
 
 const posterStats = {
   jobsPosted: 12,
@@ -91,12 +92,12 @@ const washerJobs = [
   }
 ];
 
-const notifications = [
-  { id: 1, message: "Your laundry job has been accepted by Adaeze N.", time: "2 hours ago", unread: true },
-  { id: 2, message: "New message from Tunde O. about your order", time: "5 hours ago", unread: true },
-  { id: 3, message: "Job completed! Rate your experience with Amara K.", time: "1 day ago", unread: false },
-  { id: 4, message: "Payment received for job #1234", time: "2 days ago", unread: false }
-];
+// const notifications = [
+//   { id: 1, message: "Your laundry job has been accepted by Adaeze N.", time: "2 hours ago", unread: true },
+//   { id: 2, message: "New message from Tunde O. about your order", time: "5 hours ago", unread: true },
+//   { id: 3, message: "Job completed! Rate your experience with Amara K.", time: "1 day ago", unread: false },
+//   { id: 4, message: "Payment received for job #1234", time: "2 days ago", unread: false }
+// ];
 
 const earningsData = [
   { day: "Mon", amount: 2500 },
@@ -194,6 +195,26 @@ const Dashboard = () => {
       }
     }
   };
+
+  // const [notifications, setNotifications] = useState([]);
+
+  // `http://localhost:5000/userlaundry/notifications/${user.id}`
+  const [notifications, setNotifications] = useState([]);
+
+  const userId = JSON.parse(localStorage.getItem("laundryUser")).id;
+
+  useEffect(() => {
+    axios.get(`http://localhost:5000/userlaundry/notifications/${userId}`)
+      .then((res) => {
+        console.log(res.data);
+        setNotifications(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
+
 
 
 
@@ -331,7 +352,7 @@ const Dashboard = () => {
                       <div className=" px-1 py-2">
 
                         {loading ? (
-                          <Loader/>
+                          <Loader />
                         ) : posterJobs.length === 0 ? (
                           <p className="text-center text-muted-foreground py-10">No jobs posted yet.</p>
                         ) : (
@@ -395,12 +416,12 @@ const Dashboard = () => {
                                 <Button variant="outline" size="sm" className="flex-1" onClick={() => handleViewDetails(job)}>
                                   <Eye className="w-3 h-3 mr-1" /> View Details
                                 </Button>
-                                {job.washer && (
+                                {job.status === "Applied" && (
                                   <Button variant="outline" size="sm" className="flex-1">
                                     <MessageSquare className="w-3 h-3 mr-1" /> Message
                                   </Button>
                                 )}
-                                <Button variant="destructive" size="sm" className="flex-1" onClick={() => handleDeleteJob(job._id)}>
+                                <Button variant="" size="sm" className="flex-1" onClick={() => handleDeleteJob(job._id)}>
                                   <Trash className="w-3 h-3 mr-1" /> Delete
                                 </Button>
                               </div>
@@ -408,7 +429,7 @@ const Dashboard = () => {
                           ))
                         )}
 
-                      
+
                       </div>
 
                     </CardContent>
@@ -418,76 +439,100 @@ const Dashboard = () => {
 
                 {selectedJob && (
                   <Dialog open={openModal} onOpenChange={setOpenModal}>
-                    <DialogContent className="max-w-lg rounded-xl">
+                    <DialogContent className="w-[95%] sm:max-w-lg rounded-xl p-4 max-h-[90vh] overflow-y-auto">
                       <DialogHeader>
-                        <DialogTitle className="text-xl font-bold">
+                        <DialogTitle className="text-xl font-bold text-center">
                           Job Details
                         </DialogTitle>
                       </DialogHeader>
 
                       <div className="space-y-4">
 
-                        {/* Job Type */}
-                        <div>
-                          <h3 className="font-semibold text-foreground">{selectedJob.type}</h3>
+                        {/* Job Type + Quantity */}
+                        <div className="bg-muted/40 p-3 rounded-lg">
+                          <h3 className="text-lg font-semibold text-foreground">
+                            {selectedJob.type}
+                          </h3>
                           <p className="text-sm text-muted-foreground">
                             {selectedJob.quantity} items
                           </p>
                         </div>
 
                         {/* Location */}
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <MapPin className="w-4 h-4" />
-                          {selectedJob.hostel}, Block {selectedJob.block}, Room {selectedJob.room}
+                        <div className="bg-muted/40 p-3 rounded-lg flex items-center gap-2 text-sm">
+                          <MapPin className="w-5 h-5 text-primary" />
+                          <p className="text-muted-foreground">
+                            {selectedJob.hostel}, Block {selectedJob.block}, Room {selectedJob.room}
+                          </p>
                         </div>
 
-                        {/* Pickup & Delivery */}
-                        <div className="space-y-1 text-sm">
+                        {/* Dates */}
+                        <div className="bg-muted/40 p-3 rounded-lg space-y-1 text-sm">
                           <p>
-                            <strong>Posted:</strong> {selectedJob.createdAt
-                              ? new Date(selectedJob.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
-                              : "No date"}
+                            <strong>Posted:</strong>{" "}
+                            {selectedJob.createdAt
+                              ? new Date(selectedJob.createdAt).toLocaleDateString("en-US", {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                              })
+                              : "No date"}{" "}
                             at {selectedJob.createdAt ? selectedJob.createdAt.split("T")[1].substring(0, 5) : "No time"}
                           </p>
 
                           <p>
-                            <strong>Pickup:</strong> {selectedJob.pickupDate
-                              ? new Date(selectedJob.pickupDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
-                              : "No date"}
+                            <strong>Pickup:</strong>{" "}
+                            {selectedJob.pickupDate
+                              ? new Date(selectedJob.pickupDate).toLocaleDateString("en-US", {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                              })
+                              : "No date"}{" "}
                             at {selectedJob.pickupTime}
                           </p>
 
                           <p>
-                            <strong>Delivery:</strong> {selectedJob.deliveryDate
-                              ? new Date(selectedJob.deliveryDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
-                              : "No date"}
+                            <strong>Delivery:</strong>{" "}
+                            {selectedJob.deliveryDate
+                              ? new Date(selectedJob.deliveryDate).toLocaleDateString("en-US", {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                              })
+                              : "No date"}{" "}
                             at {selectedJob.deliveryTime}
                           </p>
-
                         </div>
 
                         {/* Description */}
                         {selectedJob.description && (
-                          <div className="text-sm">
+                          <div className="bg-muted/40 p-3 rounded-lg text-sm">
                             <strong>Description:</strong>
-                            <p className="text-muted-foreground">{selectedJob.description}</p>
+                            <p className="text-muted-foreground leading-5">
+                              {selectedJob.description}
+                            </p>
                           </div>
                         )}
 
-                        {/* Price */}
-                        <p className="font-bold text-primary text-lg">
-                          ₦{selectedJob.price.toLocaleString()}
-                        </p>
+                        {/* Price + Status */}
+                        <div className="flex items-center justify-between">
+                          <p className="font-bold text-primary text-lg">
+                            ₦{selectedJob.price.toLocaleString()}
+                          </p>
 
-                        {/* Status */}
-                        <Badge className={getStatusColor(selectedJob.status)}>
-                          {selectedJob.status}
-                        </Badge>
-
+                          <Badge className={getStatusColor(selectedJob.status)}>
+                            {selectedJob.status}
+                          </Badge>
+                        </div>
                       </div>
 
-                      <DialogFooter>
-                        <Button variant="secondary" onClick={() => setOpenModal(false)}>
+                      <DialogFooter className="pt-3">
+                        <Button
+                          variant="secondary"
+                          className="w-full"
+                          onClick={() => setOpenModal(false)}
+                        >
                           Close
                         </Button>
                       </DialogFooter>
@@ -509,7 +554,7 @@ const Dashboard = () => {
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
-                      {notifications.map((notification) => (
+                      {/* {notifications.map((notification) => (
                         <div
                           key={notification.id}
                           className={`p-3 rounded-lg ${notification.unread
@@ -520,7 +565,23 @@ const Dashboard = () => {
                           <p className="text-sm text-foreground">{notification.message}</p>
                           <p className="text-xs text-muted-foreground mt-1">{notification.time}</p>
                         </div>
+                      ))} */}
+
+                      {notifications.map((notification) => (
+                        <div
+                          key={notification._id}
+                          className={`p-3 rounded-lg ${notification.unread
+                            ? "bg-primary/10 border border-primary/20"
+                            : "bg-background border border-border"
+                            }`}
+                        >
+                          <p className="text-sm text-foreground">{notification.message}</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {new Date(notification.createdAt).toLocaleString()}
+                          </p>
+                        </div>
                       ))}
+
                     </CardContent>
                   </Card>
                 </div>
