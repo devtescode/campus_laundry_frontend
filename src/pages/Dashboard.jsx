@@ -329,6 +329,7 @@ const Dashboard = () => {
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="min-h-screen bg-background px-4 py-6">
+
                         {loading ? (
                           <Loader/>
                         ) : posterJobs.length === 0 ? (
