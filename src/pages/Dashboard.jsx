@@ -349,87 +349,106 @@ const Dashboard = () => {
                       </Button>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <div className="px-1 py-2">
-
+                      <div className="px-0 py-2">
                         {loading ? (
                           <Loader />
                         ) : posterJobs.length === 0 ? (
-                          <p className="text-center text-muted-foreground py-10">No jobs posted yet.</p>
+                          <p className="text-center text-muted-foreground py-10">
+                            No jobs posted yet.
+                          </p>
                         ) : (
-                          posterJobs.map((job) => (
-                            <div
-                              key={job._id}
-                              className="p-3 shadow rounded-sm border border-border hover:border-primary/30 transition-all mb-2"
-                            >
-                              {/* JOB HEADER */}
-                              <div className="flex items-start justify-between mb-3">
-                                <div>
-                                  <h3 className="font-semibold text-foreground">{job.type}</h3>
-                                  <p className="text-sm text-muted-foreground">
-                                    {job.quantity || "No quantity specified"} Items
-                                  </p>
+                          <div className="flex flex-col gap-3">
+                            {posterJobs.map((job) => (
+                              <div
+                                key={job._id}
+                                className="p-5 rounded-md border border-border hover:border-primary/30 transition-all w-full"
+                              >
+                                {/* JOB HEADER */}
+                                <div className="flex flex-wrap items-start justify-between mb-3 w-full gap-2">
+                                  <div className="flex-1 min-w-[120px]">
+                                    <h3 className="font-semibold text-foreground truncate">{job.type}</h3>
+                                    <p className="text-sm text-muted-foreground truncate">
+                                      {job.quantity || "No quantity specified"} Items
+                                    </p>
+                                  </div>
+                                  <Badge className={getStatusColor(job.status)}>
+                                    {job.status || "Pending"}
+                                  </Badge>
                                 </div>
-                                <Badge className={getStatusColor(job.status)}>{job.status || "Pending"}</Badge>
-                              </div>
 
-                              {/* META INFO */}
-                              <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
-                                <span className="flex items-center gap-1">
-                                  <MapPin className="w-3 h-3" />
-                                  {job.hostel || "No location"}
-                                </span>
-                                <span className="flex items-center gap-1">
-                                  <Calendar className="w-3 h-3" />
-                                  {job.createdAt
-                                    ? new Date(job.createdAt).toLocaleDateString("en-US", {
-                                      month: "short",
-                                      day: "numeric",
-                                      year: "numeric",
-                                    })
-                                    : "No date"}
-                                </span>
-                              </div>
+                                {/* META INFO */}
+                                <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-3">
+                                  <span className="flex items-center gap-1 min-w-[120px]">
+                                    <MapPin className="w-3 h-3" />
+                                    {job.hostel || "No location"}
+                                  </span>
+                                  <span className="flex items-center gap-1 min-w-[120px]">
+                                    <Calendar className="w-3 h-3" />
+                                    {job.createdAt
+                                      ? new Date(job.createdAt).toLocaleDateString("en-US", {
+                                        month: "short",
+                                        day: "numeric",
+                                        year: "numeric",
+                                      })
+                                      : "No date"}
+                                  </span>
+                                </div>
 
-                              {/* WASHER INFO & PRICE */}
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                  {job.washer ? (
-                                    <>
-                                      <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
-                                        <span className="text-xs font-medium text-primary">{job.washer.charAt(0)}</span>
-                                      </div>
-                                      <span className="text-sm text-foreground">{job.washer}</span>
-                                      <span className="flex items-center text-xs text-yellow-500">
-                                        <Star className="w-3 h-3 fill-current" />
-                                        {job.washerRating || "0.0"}
+                                {/* WASHER INFO & PRICE */}
+                                <div className="flex flex-wrap items-center justify-between gap-2 w-full">
+                                  <div className="flex items-center gap-2 flex-wrap min-w-[120px]">
+                                    {job.washer ? (
+                                      <>
+                                        <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
+                                          <span className="text-xs font-medium text-primary">
+                                            {job.washer.charAt(0)}
+                                          </span>
+                                        </div>
+                                        <span className="text-sm text-foreground truncate">{job.washer}</span>
+                                        <span className="flex items-center text-xs text-yellow-500">
+                                          <Star className="w-3 h-3 fill-current" />
+                                          {job.washerRating || "0.0"}
+                                        </span>
+                                      </>
+                                    ) : (
+                                      <span className="text-sm text-muted-foreground truncate">
+                                        Waiting for washer...
                                       </span>
-                                    </>
-                                  ) : (
-                                    <span className="text-sm text-muted-foreground">Waiting for washer...</span>
-                                  )}
+                                    )}
+                                  </div>
+                                  <span className="font-bold text-primary min-w-[80px]">
+                                    ₦{Number(job.price || 0).toLocaleString()}
+                                  </span>
                                 </div>
-                                <span className="font-bold text-primary">₦{Number(job.price || 0).toLocaleString()}</span>
-                              </div>
 
-                              {/* BUTTONS */}
-                              <div className="flex gap-2 mt-3">
-                                <Button variant="outline" size="sm" className="flex-1" onClick={() => handleViewDetails(job)}>
-                                  <Eye className="w-3 h-3 mr-1" /> View Details
-                                </Button>
-                                {job.status === "Applied" && (
-                                  <Button variant="outline" size="sm" className="flex-1">
-                                    <MessageSquare className="w-3 h-3 mr-1" /> Message
+                                {/* BUTTONS */}
+                                <div className="flex flex-wrap gap-2 mt-3 w-full">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="flex-1 min-w-[100px]"
+                                    onClick={() => handleViewDetails(job)}
+                                  >
+                                    <Eye className="w-3 h-3" /> View Details
                                   </Button>
-                                )}
-                                <Button variant="" size="sm" className="flex-1" onClick={() => handleDeleteJob(job._id)}>
-                                  <Trash className="w-3 h-3 mr-1" /> Delete
-                                </Button>
+                                  {job.status === "Applied" && (
+                                    <Button variant="outline" size="sm" className="flex-1 min-w-[100px]">
+                                      <MessageSquare className="w-3 h-3" /> Message
+                                    </Button>
+                                  )}
+                                  <Button
+                                    variant=""
+                                    size="sm"
+                                    className="flex-1 min-w-[100px]"
+                                    onClick={() => handleDeleteJob(job._id)}
+                                  >
+                                    <Trash className="w-3 h-3" /> Delete
+                                  </Button>
+                                </div>
                               </div>
-                            </div>
-                          ))
+                            ))}
+                          </div>
                         )}
-
-
                       </div>
 
                     </CardContent>
@@ -785,13 +804,13 @@ const Dashboard = () => {
                       <CardTitle className="text-lg flex items-center gap-2">
                         <Bell className="w-5 h-5" />
                         Notifications
-                        <Badge className="bg-accent text-accent-foreground ml-auto">
+                        {/* <Badge className="bg-accent text-accent-foreground ml-auto">
                           {notifications.filter(n => n.unread).length}
-                        </Badge>
+                        </Badge> */}
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
-                      {notifications.slice(0, 3).map((notification) => (
+                      {/* {notifications.slice(0, 3).map((notification) => (
                         <div
                           key={notification.id}
                           className={`p-3 rounded-lg ${notification.unread
@@ -802,7 +821,7 @@ const Dashboard = () => {
                           <p className="text-sm text-foreground">{notification.message}</p>
                           <p className="text-xs text-muted-foreground mt-1">{notification.time}</p>
                         </div>
-                      ))}
+                      ))} */}
                     </CardContent>
                   </Card>
                 </div>
