@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Eye, EyeOff, Mail, Lock, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, ArrowLeft, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const Login = () => {
@@ -26,8 +26,10 @@ const Login = () => {
   //   navigate("/dashboard");
   // };
 
-
+  const [loading, setLoading] = useState(false);
   const handleSubmit = async (e) => {
+
+    setLoading(true); // show loader
     e.preventDefault();
 
     try {
@@ -67,6 +69,9 @@ const Login = () => {
         variant: "destructive"
       });
     }
+    finally {
+      setLoading(false); // hide loader
+    }
   };
 
 
@@ -93,7 +98,7 @@ const Login = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form  className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email or Phone</Label>
                 <div className="relative">
@@ -138,8 +143,49 @@ const Login = () => {
                 </div>
               </div>
 
-              <Button type="submit" className="w-full">
+              {/* <Button type="submit" className="w-full">
                 Sign In
+              </Button> */}
+
+
+              <Button
+                onClick={handleSubmit}
+                type="button"
+                className="w-full flex items-center justify-center"
+                disabled={
+                  // !formData.fullname ||
+                  !formData.email ||
+                  // !formData.phonenumber ||
+                  !formData.password ||
+                  loading
+                }
+              >
+                {loading ? (
+                  <svg
+                    className="animate-spin h-5 w-5 mr-2 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 10-8 8z"
+                    ></path>
+                  </svg>
+                ) : (
+                  <>
+                    Sign In <ArrowRight className="w-4 h-4 ml-2" />
+                  </>
+                )}
               </Button>
             </form>
 

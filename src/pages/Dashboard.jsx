@@ -29,9 +29,11 @@ import {
   Plus,
   Shirt,
   Users,
-  HouseIcon
+  HouseIcon,
+  Trash
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import Loader from "./Loaderpage/Loader";
 
 const posterStats = {
   jobsPosted: 12,
@@ -129,7 +131,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   const [posterJobs, setPosterJobs] = useState([]);
-  const [loadingJobs, setLoadingJobs] = useState(true);
+  const [loading, setLoadingJobs] = useState(true);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("laundryUser"));
@@ -155,6 +157,45 @@ const Dashboard = () => {
 
   const [selectedJob, setSelectedJob] = useState(null);
   const [openModal, setOpenModal] = useState(false);
+
+
+  // Function to handle opening the modal
+  const handleViewDetails = (job) => {
+    setSelectedJob(job);
+    setOpenModal(true);
+  };
+
+  // Function to handle deleting a job
+  // import Swal from "sweetalert2";
+
+  const handleDeleteJob = async (jobId) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Do you really want to delete this job?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await fetch(`http://localhost:5000/userlaundry/delectuserpost/${jobId}`, {
+          method: "DELETE",
+        });
+
+        Swal.fire("Deleted!", "Job deleted successfully.", "success");
+        setPosterJobs((prev) => prev.filter((job) => job._id !== jobId));
+      } catch (error) {
+        console.error(error);
+        Swal.fire("Error!", "Failed to delete job.", "error");
+      }
+    }
+  };
+
+
 
 
 
@@ -287,104 +328,87 @@ const Dashboard = () => {
                       </Button>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      {posterJobs.map((job) => (
-                        <div
-                          key={job._id}
-                          className="p-4 rounded-xl bg-background border border-border hover:border-primary/30 transition-all"
-                        >
-                          {/* JOB HEADER */}
-                          <div className="flex items-start justify-between mb-3">
-                            <div>
-                              <h3 className="font-semibold text-foreground">{job.type}</h3>
-                              <p className="text-sm text-muted-foreground">
-                                {job.quantity || "No quantity specified"}
-                              </p>
-                            </div>
-                            <Badge className={getStatusColor(job.status)}>
-                              {job.status || "Pending"}
-                            </Badge>
-                          </div>
-
-                          {/* META INFO */}
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
-                            <span className="flex items-center gap-1">
-                              <MapPin className="w-3 h-3" />
-                              {job.hostel || "No location"}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <HouseIcon className="w-3 h-3" />
-                              {job.room || "No room info"}
-                            </span>
-
-                            <span className="flex items-center gap-1">
-                              <Calendar className="w-3 h-3" />
-
-                              {/* Format date correctly */}
-                              {job.createdAt
-                                ? new Date(job.createdAt).toLocaleDateString("en-US", {
-                                  month: "short",
-                                  day: "numeric",
-                                  year: "numeric",
-                                })
-                                : "No date"}
-                            </span>
-                          </div>
-
-                          {/* WASHER INFO & PRICE */}
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              {job.washer ? (
-                                <>
-                                  <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
-                                    <span className="text-xs font-medium text-primary">
-                                      {job.washer.charAt(0)}
-                                    </span>
-                                  </div>
-
-                                  <span className="text-sm text-foreground">{job.washer}</span>
-
-                                  <span className="flex items-center text-xs text-yellow-500">
-                                    <Star className="w-3 h-3 fill-current" />
-                                    {job.washerRating || "0.0"}
-                                  </span>
-                                </>
-                              ) : (
-                                <span className="text-sm text-muted-foreground">
-                                  Waiting for washer...
-                                </span>
-                              )}
-                            </div>
-
-                            {/* Safely show price */}
-                            <span className="font-bold text-primary">
-                              ₦{Number(job.price || 0).toLocaleString()}
-                            </span>
-                          </div>
-
-                          {/* BUTTONS */}
-                          <div className="flex gap-2 mt-3">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="flex-1"
-                              onClick={() => {
-                                setSelectedJob(job);
-                                setOpenModal(true);
-                              }}
+                      <div className="min-h-screen bg-background px-4 py-6">
+                        {loading ? (
+                          <Loader/>
+                        ) : posterJobs.length === 0 ? (
+                          <p className="text-center text-muted-foreground py-10">No jobs posted yet.</p>
+                        ) : (
+                          posterJobs.map((job) => (
+                            <div
+                              key={job._id}
+                              className="p-4 rounded-xl bg-card border border-border hover:border-primary/30 transition-all mb-4"
                             >
-                              <Eye className="w-3 h-3 mr-1" />
-                              View Details
-                            </Button>
+                              {/* JOB HEADER */}
+                              <div className="flex items-start justify-between mb-3">
+                                <div>
+                                  <h3 className="font-semibold text-foreground">{job.type}</h3>
+                                  <p className="text-sm text-muted-foreground">
+                                    {job.quantity || "No quantity specified"} Items
+                                  </p>
+                                </div>
+                                <Badge className={getStatusColor(job.status)}>{job.status || "Pending"}</Badge>
+                              </div>
 
-                            {job.washer && (
-                              <Button variant="outline" size="sm" className="flex-1">
-                                <MessageSquare className="w-3 h-3 mr-1" />
-                                Message
-                              </Button>
-                            )}
-                          </div>
-                        </div>
-                      ))}
+                              {/* META INFO */}
+                              <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
+                                <span className="flex items-center gap-1">
+                                  <MapPin className="w-3 h-3" />
+                                  {job.hostel || "No location"}
+                                </span>
+                                <span className="flex items-center gap-1">
+                                  <Calendar className="w-3 h-3" />
+                                  {job.createdAt
+                                    ? new Date(job.createdAt).toLocaleDateString("en-US", {
+                                      month: "short",
+                                      day: "numeric",
+                                      year: "numeric",
+                                    })
+                                    : "No date"}
+                                </span>
+                              </div>
+
+                              {/* WASHER INFO & PRICE */}
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  {job.washer ? (
+                                    <>
+                                      <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
+                                        <span className="text-xs font-medium text-primary">{job.washer.charAt(0)}</span>
+                                      </div>
+                                      <span className="text-sm text-foreground">{job.washer}</span>
+                                      <span className="flex items-center text-xs text-yellow-500">
+                                        <Star className="w-3 h-3 fill-current" />
+                                        {job.washerRating || "0.0"}
+                                      </span>
+                                    </>
+                                  ) : (
+                                    <span className="text-sm text-muted-foreground">Waiting for washer...</span>
+                                  )}
+                                </div>
+                                <span className="font-bold text-primary">₦{Number(job.price || 0).toLocaleString()}</span>
+                              </div>
+
+                              {/* BUTTONS */}
+                              <div className="flex gap-2 mt-3">
+                                <Button variant="outline" size="sm" className="flex-1" onClick={() => handleViewDetails(job)}>
+                                  <Eye className="w-3 h-3 mr-1" /> View Details
+                                </Button>
+                                {job.washer && (
+                                  <Button variant="outline" size="sm" className="flex-1">
+                                    <MessageSquare className="w-3 h-3 mr-1" /> Message
+                                  </Button>
+                                )}
+                                <Button variant="destructive" size="sm" className="flex-1" onClick={() => handleDeleteJob(job._id)}>
+                                  <Trash className="w-3 h-3 mr-1" /> Delete
+                                </Button>
+                              </div>
+                            </div>
+                          ))
+                        )}
+
+                      
+                      </div>
 
                     </CardContent>
                   </Card>
