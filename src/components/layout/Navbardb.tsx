@@ -13,6 +13,7 @@ const Navbardb = () => {
         { href: "/dashboard", label: "Dashboard" },
         { href: "/browse", label: "Browse Jobs" },
         { href: "/post-job", label: "Post a Job" },
+        { href: "/get-history", label: "History" },
     ];
 
     const navigave = useNavigate()

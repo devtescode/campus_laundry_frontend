@@ -13,6 +13,7 @@ import Signup from "./pages/Signup";
 import NotFound from "./pages/NotFound";
 import Emailverify from "./pages/Emailverify";
 import Userprotected from "./pages/Userprotected/Userprotected";
+import Washerhistory from "./pages/Washerhistory";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/browse" element={<Browse />} />
             <Route path="/post-job" element={<PostJob />} />
+            <Route path="/get-history" element={<Washerhistory/>}/>
           </Route>
 
           <Route path="/admin" element={<AdminDashboard />} />
