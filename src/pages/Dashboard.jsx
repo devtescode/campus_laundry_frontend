@@ -55,44 +55,44 @@ const washerStats = {
   thisWeekEarnings: 15000
 };
 
-const washerJobs = [
-  {
-    id: 1,
-    type: "Washing & Ironing",
-    quantity: "8 items",
-    price: 3500,
-    status: "In Progress",
-    poster: "Chidi M.",
-    posterRating: 4.8,
-    acceptedDate: "2 days ago",
-    location: "Block C, Room 15",
-    deadline: "Tomorrow, 5PM"
-  },
-  {
-    id: 2,
-    type: "Washing Only",
-    quantity: "15 items",
-    price: 5000,
-    status: "Completed",
-    poster: "Amara K.",
-    posterRating: 4.9,
-    acceptedDate: "3 days ago",
-    location: "Block B, Room 8",
-    deadline: "Completed"
-  },
-  {
-    id: 3,
-    type: "Washing & Folding",
-    quantity: "10 items",
-    price: 4000,
-    status: "Pending Pickup",
-    poster: "Emeka O.",
-    posterRating: 4.6,
-    acceptedDate: "Today",
-    location: "Block D, Room 22",
-    deadline: "Friday, 2PM"
-  }
-];
+// const washerJobs = [
+//   {
+//     id: 1,
+//     type: "Washing & Ironing",
+//     quantity: "8 items",
+//     price: 3500,
+//     status: "In Progress",
+//     poster: "Chidi M.",
+//     posterRating: 4.8,
+//     acceptedDate: "2 days ago",
+//     location: "Block C, Room 15",
+//     deadline: "Tomorrow, 5PM"
+//   },
+//   {
+//     id: 2,
+//     type: "Washing Only",
+//     quantity: "15 items",
+//     price: 5000,
+//     status: "Completed",
+//     poster: "Amara K.",
+//     posterRating: 4.9,
+//     acceptedDate: "3 days ago",
+//     location: "Block B, Room 8",
+//     deadline: "Completed"
+//   },
+//   {
+//     id: 3,
+//     type: "Washing & Folding",
+//     quantity: "10 items",
+//     price: 4000,
+//     status: "Pending Pickup",
+//     poster: "Emeka O.",
+//     posterRating: 4.6,
+//     acceptedDate: "Today",
+//     location: "Block D, Room 22",
+//     deadline: "Friday, 2PM"
+//   }
+// ];
 
 // const notifications = [
 //   { id: 1, message: "Your laundry job has been accepted by Adaeze N.", time: "2 hours ago", unread: true },
@@ -158,63 +158,88 @@ const Dashboard = () => {
   }, []);
 
 
-  const [selectedJob, setSelectedJob] = useState(null);
-  const [openModal, setOpenModal] = useState(false);
 
+  const [washerJobs, setWasherJobs] = useState([]);
+  const [loadin, setLoadingJob] = useState(true);
 
-  // Function to handle opening the modal
-  const handleViewDetails = (job) => {
-    setSelectedJob(job);
-    setOpenModal(true);
-  };
-
-  // Function to handle deleting a job
-  // import Swal from "sweetalert2";
-
-  const handleDeleteJob = async (jobId) => {
-    const result = await Swal.fire({
-      title: "Are you sure?",
-      text: "Do you really want to delete this job?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "No, cancel",
-    });
-
-    if (result.isConfirmed) {
+  useEffect(() => {
+    const fetchWasherJobs = async () => {
+      // const washerId = currentUser._id; // logged-in washer
       try {
-        await fetch(`http://localhost:5000/userlaundry/delectuserpost/${jobId}`, {
-          method: "DELETE",
-        });
-
-        Swal.fire("Deleted!", "Job deleted successfully.", "success");
-        setPosterJobs((prev) => prev.filter((job) => job._id !== jobId));
+        const washerId = JSON.parse(localStorage.getItem("laundryUser")).id;
+        const res = await fetch(
+          `http://localhost:5000/userlaundry/getWasherJobs/${washerId}`
+        );
+        const data = await res.json();
+        setWasherJobs(data);
       } catch (error) {
-        console.error(error);
-        Swal.fire("Error!", "Failed to delete job.", "error");
-      }
+      console.log("Error fetching jobs:", error);
+    } finally {
+      setLoadingJob(false);
     }
   };
 
-  // const [notifications, setNotifications] = useState([]);
+  fetchWasherJobs();
+}, []);
 
-  // `http://localhost:5000/userlaundry/notifications/${user.id}`
-  const [notifications, setNotifications] = useState([]);
 
-  const userId = JSON.parse(localStorage.getItem("laundryUser")).id;
+const [selectedJob, setSelectedJob] = useState(null);
+const [openModal, setOpenModal] = useState(false);
 
-  useEffect(() => {
-    axios.get(`http://localhost:5000/userlaundry/notifications/${userId}`)
-      .then((res) => {
-        console.log(res.data);
-        setNotifications(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
+
+// Function to handle opening the modal
+const handleViewDetails = (job) => {
+  setSelectedJob(job);
+  setOpenModal(true);
+};
+
+// Function to handle deleting a job
+// import Swal from "sweetalert2";
+
+const handleDeleteJob = async (jobId) => {
+  const result = await Swal.fire({
+    title: "Are you sure?",
+    text: "Do you really want to delete this job?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+    confirmButtonText: "Yes, delete it!",
+    cancelButtonText: "No, cancel",
+  });
+
+  if (result.isConfirmed) {
+    try {
+      await fetch(`http://localhost:5000/userlaundry/delectuserpost/${jobId}`, {
+        method: "DELETE",
       });
-  }, []);
+
+      Swal.fire("Deleted!", "Job deleted successfully.", "success");
+      setPosterJobs((prev) => prev.filter((job) => job._id !== jobId));
+    } catch (error) {
+      console.error(error);
+      Swal.fire("Error!", "Failed to delete job.", "error");
+    }
+  }
+};
+
+// const [notifications, setNotifications] = useState([]);
+
+// `http://localhost:5000/userlaundry/notifications/${user.id}`
+const [notifications, setNotifications] = useState([]);
+
+const userId = JSON.parse(localStorage.getItem("laundryUser")).id;
+
+useEffect(() => {
+  axios.get(`http://localhost:5000/userlaundry/notifications/${userId}`)
+    .then((res) => {
+      console.log(res.data);
+      setNotifications(res.data);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+}, []);
 
 
 
@@ -222,230 +247,284 @@ const Dashboard = () => {
 
 
 
-  return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
 
-      <main className="pt-24 pb-16">
-        <div className="container mx-auto px-4">
-          {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-foreground mb-2">
-                Welcome back, Chidi! 👋
-              </h1>
-              <p className="text-muted-foreground">
-                Here's what's happening with your laundry today
-              </p>
-            </div>
+const handleCompleteJob = async (jobId) => {
+  const washerId = JSON.parse(localStorage.getItem("laundryUser")).id;
 
-            {/* Role Switch */}
-            <div className="flex items-center gap-3 bg-card border border-border rounded-xl p-1">
-              <Button
-                variant={role === "poster" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setRole("poster")}
-                className="flex items-center gap-2"
-              >
-                <Package className="w-4 h-4" />
-                As Poster
-              </Button>
-              <Button
-                variant={role === "washer" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setRole("washer")}
-                className="flex items-center gap-2"
-              >
-                <Shirt className="w-4 h-4" />
-                As Washer
-              </Button>
-            </div>
+  const result = await Swal.fire({
+    title: "Mark job as completed?",
+    text: "This action cannot be undone.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#16a34a",
+    cancelButtonColor: "#dc2626",
+    confirmButtonText: "Yes, complete job",
+  });
+
+  if (!result.isConfirmed) return;
+
+  const res = await fetch(
+    `http://localhost:5000/userlaundry/completejob/${jobId}`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ washerId }),
+    }
+  );
+
+  const data = await res.json();
+
+  if (res.ok) {
+    Swal.fire("Completed!", data.message, "success");
+
+    // Update UI instantly
+    setWasherJobs((prev) =>
+      prev.map((job) =>
+        job._id === jobId ? { ...job, status: "Completed" } : job
+      )
+    );
+  } else {
+    Swal.fire("Error", data.message, "error");
+  }
+};
+
+
+
+
+
+
+
+return (
+  <div className="min-h-screen bg-background">
+    <Navbar />
+
+    <main className="pt-24 pb-16">
+      <div className="container mx-auto px-4">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground mb-2">
+              Welcome back, Chidi! 👋
+            </h1>
+            <p className="text-muted-foreground">
+              Here's what's happening with your laundry today
+            </p>
           </div>
 
-          {/* Poster Dashboard */}
-          {role === "poster" && (
-            <div className="space-y-8 animate-fade-in">
-              {/* Stats Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                <Card className="bg-card border-border">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
-                        <Briefcase className="w-5 h-5 text-primary" />
-                      </div>
-                      <div>
-                        <p className="text-2xl font-bold text-foreground">{posterStats.jobsPosted}</p>
-                        <p className="text-xs text-muted-foreground">Jobs Posted</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+          {/* Role Switch */}
+          <div className="flex items-center gap-3 bg-card border border-border rounded-xl p-1">
+            <Button
+              variant={role === "poster" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setRole("poster")}
+              className="flex items-center gap-2"
+            >
+              <Package className="w-4 h-4" />
+              As Poster
+            </Button>
+            <Button
+              variant={role === "washer" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setRole("washer")}
+              className="flex items-center gap-2"
+            >
+              <Shirt className="w-4 h-4" />
+              As Washer
+            </Button>
+          </div>
+        </div>
 
-                <Card className="bg-card border-border">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-yellow-500/20 flex items-center justify-center">
-                        <Clock className="w-5 h-5 text-yellow-500" />
-                      </div>
-                      <div>
-                        <p className="text-2xl font-bold text-foreground">{posterStats.pendingJobs}</p>
-                        <p className="text-xs text-muted-foreground">Pending</p>
-                      </div>
+        {/* Poster Dashboard */}
+        {role === "poster" && (
+          <div className="space-y-8 animate-fade-in">
+            {/* Stats Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              <Card className="bg-card border-border">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
+                      <Briefcase className="w-5 h-5 text-primary" />
                     </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-card border-border">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center">
-                        <CheckCircle className="w-5 h-5 text-green-500" />
-                      </div>
-                      <div>
-                        <p className="text-2xl font-bold text-foreground">{posterStats.completedJobs}</p>
-                        <p className="text-xs text-muted-foreground">Completed</p>
-                      </div>
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">{posterStats.jobsPosted}</p>
+                      <p className="text-xs text-muted-foreground">Jobs Posted</p>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </CardContent>
+              </Card>
 
-                <Card className="bg-card border-border">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
-                        <DollarSign className="w-5 h-5 text-accent" />
-                      </div>
-                      <div>
-                        <p className="text-2xl font-bold text-foreground">₦{posterStats.totalSpent.toLocaleString()}</p>
-                        <p className="text-xs text-muted-foreground">Total Spent</p>
-                      </div>
+              <Card className="bg-card border-border">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-yellow-500/20 flex items-center justify-center">
+                      <Clock className="w-5 h-5 text-yellow-500" />
                     </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-card border-border">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
-                        <Star className="w-5 h-5 text-primary" />
-                      </div>
-                      <div>
-                        <p className="text-2xl font-bold text-foreground">{posterStats.averageRating}</p>
-                        <p className="text-xs text-muted-foreground">Rating</p>
-                      </div>
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">{posterStats.pendingJobs}</p>
+                      <p className="text-xs text-muted-foreground">Pending</p>
                     </div>
-                  </CardContent>
-                </Card>
-              </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-              {/* Main Content */}
-              <div className="grid lg:grid-cols-3 gap-1">
-                {/* Jobs List */}
-                <div className="lg:col-span-2">
-                  <Card className="bg-card border-border border-none">
-                    <CardHeader className="flex flex-row items-center justify-between">
-                      <CardTitle className="text-lg">Your Posted Jobs</CardTitle>
-                      <Button size="sm" onClick={() => navigate('/post-job')} className="flex items-center gap-2">
-                        <Plus className="w-4 h-4" />
-                        Post New Job
-                      </Button>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="px-0 py-2">
-                        {loading ? (
-                          <Loader />
-                        ) : posterJobs.length === 0 ? (
-                          <p className="text-center text-muted-foreground py-10">
-                            No jobs posted yet.
-                          </p>
-                        ) : (
-                          <div className="flex flex-col gap-3">
-                            {posterJobs.map((job) => (
-                              <div
-                                key={job._id}
-                                className="p-5 rounded-md border border-border hover:border-primary/30 transition-all w-full"
-                              >
-                                {/* JOB HEADER */}
-                                <div className="flex flex-wrap items-start justify-between mb-3 w-full gap-2">
-                                  <div className="flex-1 min-w-[120px]">
-                                    <h3 className="font-semibold text-foreground truncate">{job.type}</h3>
-                                    <p className="text-sm text-muted-foreground truncate">
-                                      {job.quantity || "No quantity specified"} Items
-                                    </p>
-                                  </div>
-                                  <Badge className={getStatusColor(job.status)}>
-                                    {job.status || "Pending"}
-                                  </Badge>
+              <Card className="bg-card border-border">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center">
+                      <CheckCircle className="w-5 h-5 text-green-500" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">{posterStats.completedJobs}</p>
+                      <p className="text-xs text-muted-foreground">Completed</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-card border-border">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
+                      <DollarSign className="w-5 h-5 text-accent" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">₦{posterStats.totalSpent.toLocaleString()}</p>
+                      <p className="text-xs text-muted-foreground">Total Spent</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-card border-border">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
+                      <Star className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">{posterStats.averageRating}</p>
+                      <p className="text-xs text-muted-foreground">Rating</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Main Content */}
+            <div className="grid lg:grid-cols-3 gap-1">
+              {/* Jobs List */}
+              <div className="lg:col-span-2">
+                <Card className="bg-card border-border border-none">
+                  <CardHeader className="flex flex-row items-center justify-between">
+                    <CardTitle className="text-lg">Your Posted Jobs</CardTitle>
+                    <Button size="sm" onClick={() => navigate('/post-job')} className="flex items-center gap-2">
+                      <Plus className="w-4 h-4" />
+                      Post New Job
+                    </Button>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="px-0 py-2">
+                      {loading ? (
+                        <Loader />
+                      ) : posterJobs.length === 0 ? (
+                        <p className="text-center text-muted-foreground py-10">
+                          No jobs posted yet.
+                        </p>
+                      ) : (
+                        <div className="flex flex-col gap-3">
+                          {posterJobs.map((job) => (
+                            <div
+                              key={job._id}
+                              className="p-5 rounded-md border border-border hover:border-primary/30 transition-all w-full"
+                            >
+                              {/* JOB HEADER */}
+                              <div className="flex flex-wrap items-start justify-between mb-3 w-full gap-2">
+                                <div className="flex-1 min-w-[120px]">
+                                  <h3 className="font-semibold text-foreground truncate">{job.type}</h3>
+                                  <p className="text-sm text-muted-foreground truncate">
+                                    {job.quantity || "No quantity specified"} Items
+                                  </p>
                                 </div>
+                                <Badge className={getStatusColor(job.status)}>
+                                  {job.status || "Pending"}
+                                </Badge>
+                              </div>
 
-                                {/* META INFO */}
-                                <div className="flex flex-wrap gap-0 text-sm text-muted-foreground mb-3">
-                                  <span className="flex items-center gap-1 min-w-[50px]">
-                                    <MapPin className="w-3 h-3" />
-                                    {job.hostel || "No location"}
-                                  </span>
-                                  <span className="flex items-center gap-1 min-w-[50px]">
-                                    <LucideHouse className="w-3 h-3" />
-                                    {job.room || "No room"}
-                                  </span>
-                                  <span className="flex items-center gap-1 min-w-[120px]">
-                                    <Calendar className="w-3 h-3" />
-                                    {job.createdAt
-                                      ? new Date(job.createdAt).toLocaleDateString("en-US", {
-                                        month: "short",
-                                        day: "numeric",
-                                        year: "numeric",
-                                      })
-                                      : "No date"}
-                                  </span>
-                                </div>
+                              {/* META INFO */}
+                              <div className="flex flex-wrap gap-0 text-sm text-muted-foreground mb-3">
+                                <span className="flex items-center gap-1 min-w-[50px]">
+                                  <MapPin className="w-3 h-3" />
+                                  {job.hostel || "No location"}
+                                </span>
+                                <span className="flex items-center gap-1 min-w-[50px]">
+                                  <LucideHouse className="w-3 h-3" />
+                                  {job.room || "No room"}
+                                </span>
+                                <span className="flex items-center gap-1 min-w-[120px]">
+                                  <Calendar className="w-3 h-3" />
+                                  {job.createdAt
+                                    ? new Date(job.createdAt).toLocaleDateString("en-US", {
+                                      month: "short",
+                                      day: "numeric",
+                                      year: "numeric",
+                                    })
+                                    : "No date"}
+                                </span>
+                              </div>
 
-                                {/* WASHER INFO & PRICE */}
-                                <div className="flex flex-wrap items-center justify-between gap-2 w-full">
-                                  <div className="flex items-center gap-2 flex-wrap min-w-[120px]">
-                                    {job.status === "Applied" && job.applicantName ? (
-                                      <>
-                                        <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
-                                          <span className="text-xs font-medium text-primary">
-                                            {job.applicantName.charAt(0)}
-                                          </span>
-                                        </div>
-                                        <span className="text-sm text-foreground truncate">{job.applicantName}</span>
-                                        {/* <span className="flex items-center text-xs text-yellow-500">
-                                          <Star className="w-3 h-3 fill-current" />
-                                          {job.washerRating || "0.0"}
-                                        </span> */}
-                                      </>
-                                    ) : (
-                                      <span className="text-sm text-muted-foreground truncate">
-                                        Waiting for washer...
+                              <div className="flex flex-wrap items-center justify-between gap-2 w-full">
+                                <div className="flex items-center gap-2 flex-wrap min-w-[120px]">
+                                  {job.applicantName ? (
+                                    <>
+                                      <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
+                                        <span className="text-xs font-medium text-primary">
+                                          {job.applicantName.charAt(0)}
+                                        </span>
+                                      </div>
+                                      <span className="text-sm text-foreground truncate">
+                                        {job.applicantName}
+                                        {job.status === "Completed" && (
+                                          <span className="ml-1 text-xs text-green-600">(Completed)</span>
+                                        )}
                                       </span>
-                                    )}
-
-                                  </div>
-
-                                  <span className="font-bold text-primary min-w-[80px]">
-                                    ₦{Number(job.price || 0).toLocaleString()}
-                                  </span>
-                                </div>
-
-                                {/* BUTTONS */}
-                                <div className="flex flex-wrap gap-2 mt-3 w-full">
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="flex-1 min-w-[100px]"
-                                    onClick={() => handleViewDetails(job)}
-                                  >
-                                    <Eye className="w-3 h-3" /> View Details
-                                  </Button>
-                                  {job.status === "Applied" && (
-                                    <Button variant="outline" size="sm" className="flex-1 min-w-[100px]">
-                                      <MessageSquare className="w-3 h-3" /> Message
-                                    </Button>
+                                    </>
+                                  ) : (
+                                    <span className="text-sm text-muted-foreground truncate">
+                                      Waiting for washer...
+                                    </span>
                                   )}
 
-                                  {job.status === "Applied" && (
+
+                                </div>
+
+                                <span className="font-bold text-primary min-w-[80px]">
+                                  ₦{Number(job.price || 0).toLocaleString()}
+                                </span>
+                              </div>
+
+                              {/* <span className="flex items-center text-xs text-yellow-500">
+                                      <Star className="w-3 h-3 fill-current" />
+                                      {job.washerRating || "0.0"}
+                                    </span> */}
+                              {/* BUTTONS */}
+                              <div className="flex flex-wrap gap-2 mt-3 w-full">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="flex-1 min-w-[100px]"
+                                  onClick={() => handleViewDetails(job)}
+                                >
+                                  <Eye className="w-3 h-3" /> View Details
+                                </Button>
+                                {job.status === "Applied" && (
+                                  <Button variant="outline" size="sm" className="flex-1 min-w-[100px]">
+                                    <MessageSquare className="w-3 h-3" /> Message
+                                  </Button>
+                                )}
+
+                                {job.status === "Applied" && (
                                   <Button
                                     disabled={job.status !== "Pending"}
                                     variant=""
@@ -455,137 +534,137 @@ const Dashboard = () => {
                                   >
                                     <Trash className="w-3 h-3" /> Cancel
                                   </Button>
-                                  )}
-                                </div>
+                                )}
                               </div>
-                            ))}
-                          </div>
-                        )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                  </CardContent>
+                </Card>
+              </div>
+
+
+              {selectedJob && (
+                <Dialog open={openModal} onOpenChange={setOpenModal}>
+                  <DialogContent className="w-[95%] sm:max-w-lg rounded-xl p-4 max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle className="text-xl font-bold text-center">
+                        Job Details
+                      </DialogTitle>
+                    </DialogHeader>
+
+                    <div className="space-y-4">
+
+                      {/* Job Type + Quantity */}
+                      <div className="bg-muted/40 p-3 rounded-lg">
+                        <h3 className="text-lg font-semibold text-foreground">
+                          {selectedJob.type}
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                          {selectedJob.quantity} items
+                        </p>
                       </div>
 
-                    </CardContent>
-                  </Card>
-                </div>
-
-
-                {selectedJob && (
-                  <Dialog open={openModal} onOpenChange={setOpenModal}>
-                    <DialogContent className="w-[95%] sm:max-w-lg rounded-xl p-4 max-h-[90vh] overflow-y-auto">
-                      <DialogHeader>
-                        <DialogTitle className="text-xl font-bold text-center">
-                          Job Details
-                        </DialogTitle>
-                      </DialogHeader>
-
-                      <div className="space-y-4">
-
-                        {/* Job Type + Quantity */}
-                        <div className="bg-muted/40 p-3 rounded-lg">
-                          <h3 className="text-lg font-semibold text-foreground">
-                            {selectedJob.type}
-                          </h3>
-                          <p className="text-sm text-muted-foreground">
-                            {selectedJob.quantity} items
-                          </p>
-                        </div>
-
-                        {/* Location */}
-                        <div className="bg-muted/40 p-3 rounded-lg flex items-center gap-2 text-sm">
-                          <MapPin className="w-5 h-5 text-primary" />
-                          <p className="text-muted-foreground">
-                            {selectedJob.hostel}, Block {selectedJob.block}, Room {selectedJob.room}
-                          </p>
-                        </div>
-
-                        {/* Dates */}
-                        <div className="bg-muted/40 p-3 rounded-lg space-y-1 text-sm">
-                          <p>
-                            <strong>Posted:</strong>{" "}
-                            {selectedJob.createdAt
-                              ? new Date(selectedJob.createdAt).toLocaleDateString("en-US", {
-                                month: "short",
-                                day: "numeric",
-                                year: "numeric",
-                              })
-                              : "No date"}{" "}
-                            at {selectedJob.createdAt ? selectedJob.createdAt.split("T")[1].substring(0, 5) : "No time"}
-                          </p>
-
-                          <p>
-                            <strong>Pickup:</strong>{" "}
-                            {selectedJob.pickupDate
-                              ? new Date(selectedJob.pickupDate).toLocaleDateString("en-US", {
-                                month: "short",
-                                day: "numeric",
-                                year: "numeric",
-                              })
-                              : "No date"}{" "}
-                            at {selectedJob.pickupTime}
-                          </p>
-
-                          <p>
-                            <strong>Delivery:</strong>{" "}
-                            {selectedJob.deliveryDate
-                              ? new Date(selectedJob.deliveryDate).toLocaleDateString("en-US", {
-                                month: "short",
-                                day: "numeric",
-                                year: "numeric",
-                              })
-                              : "No date"}{" "}
-                            at {selectedJob.deliveryTime}
-                          </p>
-                        </div>
-
-                        {/* Description */}
-                        {selectedJob.description && (
-                          <div className="bg-muted/40 p-3 rounded-lg text-sm">
-                            <strong>Description:</strong>
-                            <p className="text-muted-foreground leading-5">
-                              {selectedJob.description}
-                            </p>
-                          </div>
-                        )}
-
-                        {/* Price + Status */}
-                        <div className="flex items-center justify-between">
-                          <p className="font-bold text-primary text-lg">
-                            ₦{selectedJob.price.toLocaleString()}
-                          </p>
-
-                          <Badge className={getStatusColor(selectedJob.status)}>
-                            {selectedJob.status}
-                          </Badge>
-                        </div>
+                      {/* Location */}
+                      <div className="bg-muted/40 p-3 rounded-lg flex items-center gap-2 text-sm">
+                        <MapPin className="w-5 h-5 text-primary" />
+                        <p className="text-muted-foreground">
+                          {selectedJob.hostel}, Block {selectedJob.block}, Room {selectedJob.room}
+                        </p>
                       </div>
 
-                      <DialogFooter className="pt-3">
-                        <Button
-                          variant="secondary"
-                          className="w-full"
-                          onClick={() => setOpenModal(false)}
-                        >
-                          Close
-                        </Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                )}
+                      {/* Dates */}
+                      <div className="bg-muted/40 p-3 rounded-lg space-y-1 text-sm">
+                        <p>
+                          <strong>Posted:</strong>{" "}
+                          {selectedJob.createdAt
+                            ? new Date(selectedJob.createdAt).toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            })
+                            : "No date"}{" "}
+                          at {selectedJob.createdAt ? selectedJob.createdAt.split("T")[1].substring(0, 5) : "No time"}
+                        </p>
 
+                        <p>
+                          <strong>Pickup:</strong>{" "}
+                          {selectedJob.pickupDate
+                            ? new Date(selectedJob.pickupDate).toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            })
+                            : "No date"}{" "}
+                          at {selectedJob.pickupTime}
+                        </p>
 
-                {/* Notifications */}
-                <div>
-                  <Card className="bg-card border-border border-none">
-                    <CardHeader>
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <Bell className="w-5 h-5" />
-                        Notifications
-                        <Badge className="bg-accent text-accent-foreground ml-auto">
-                          {notifications.filter(n => n.unread).length}
+                        <p>
+                          <strong>Delivery:</strong>{" "}
+                          {selectedJob.deliveryDate
+                            ? new Date(selectedJob.deliveryDate).toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            })
+                            : "No date"}{" "}
+                          at {selectedJob.deliveryTime}
+                        </p>
+                      </div>
+
+                      {/* Description */}
+                      {selectedJob.description && (
+                        <div className="bg-muted/40 p-3 rounded-lg text-sm">
+                          <strong>Description:</strong>
+                          <p className="text-muted-foreground leading-5">
+                            {selectedJob.description}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Price + Status */}
+                      <div className="flex items-center justify-between">
+                        <p className="font-bold text-primary text-lg">
+                          ₦{selectedJob.price.toLocaleString()}
+                        </p>
+
+                        <Badge className={getStatusColor(selectedJob.status)}>
+                          {selectedJob.status}
                         </Badge>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      {/* {notifications.map((notification) => (
+                      </div>
+                    </div>
+
+                    <DialogFooter className="pt-3">
+                      <Button
+                        variant="secondary"
+                        className="w-full"
+                        onClick={() => setOpenModal(false)}
+                      >
+                        Close
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              )}
+
+
+              {/* Notifications */}
+              <div>
+                <Card className="bg-card border-border border-none">
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Bell className="w-5 h-5" />
+                      Notifications
+                      <Badge className="bg-accent text-accent-foreground ml-auto">
+                        {notifications.filter(n => n.unread).length}
+                      </Badge>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {/* {notifications.map((notification) => (
                         <div
                           key={notification.id}
                           className={`p-3 rounded-lg ${notification.unread
@@ -598,167 +677,183 @@ const Dashboard = () => {
                         </div>
                       ))} */}
 
-                      {notifications.map((notification) => (
-                        <div
-                          key={notification._id}
-                          className={`p-3 rounded-lg ${notification.unread
-                            ? "bg-primary/10 border border-primary/20"
-                            : "bg-background border border-border"
-                            }`}
-                        >
-                          <p className="text-sm text-foreground">{notification.message}</p>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {new Date(notification.createdAt).toLocaleString()}
-                          </p>
-                        </div>
-                      ))}
+                    {notifications.map((notification) => (
+                      <div
+                        key={notification._id}
+                        className={`p-3 rounded-lg ${notification.unread
+                          ? "bg-primary/10 border border-primary/20"
+                          : "bg-background border border-border"
+                          }`}
+                      >
+                        <p className="text-sm text-foreground">{notification.message}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {new Date(notification.createdAt).toLocaleString()}
+                        </p>
+                      </div>
+                    ))}
 
-                    </CardContent>
-                  </Card>
-                </div>
+                  </CardContent>
+                </Card>
               </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {/* Washer Dashboard */}
-          {role === "washer" && (
-            <div className="space-y-8 animate-fade-in">
-              {/* Stats Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-                <Card className="bg-card border-border">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
-                        <Briefcase className="w-5 h-5 text-primary" />
-                      </div>
-                      <div>
-                        <p className="text-2xl font-bold text-foreground">{washerStats.jobsAccepted}</p>
-                        <p className="text-xs text-muted-foreground">Jobs Accepted</p>
-                      </div>
+        {/* Washer Dashboard */}
+        {role === "washer" && (
+          <div className="space-y-8 animate-fade-in">
+            {/* Stats Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+              <Card className="bg-card border-border">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
+                      <Briefcase className="w-5 h-5 text-primary" />
                     </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-card border-border">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center">
-                        <CheckCircle className="w-5 h-5 text-green-500" />
-                      </div>
-                      <div>
-                        <p className="text-2xl font-bold text-foreground">{washerStats.completedJobs}</p>
-                        <p className="text-xs text-muted-foreground">Completed</p>
-                      </div>
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">{washerStats.jobsAccepted}</p>
+                      <p className="text-xs text-muted-foreground">Jobs Accepted</p>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </CardContent>
+              </Card>
 
-                <Card className="bg-card border-border">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-yellow-500/20 flex items-center justify-center">
-                        <Clock className="w-5 h-5 text-yellow-500" />
-                      </div>
-                      <div>
-                        <p className="text-2xl font-bold text-foreground">{washerStats.pendingJobs}</p>
-                        <p className="text-xs text-muted-foreground">Pending</p>
-                      </div>
+              <Card className="bg-card border-border">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center">
+                      <CheckCircle className="w-5 h-5 text-green-500" />
                     </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-card border-border">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
-                        <DollarSign className="w-5 h-5 text-accent" />
-                      </div>
-                      <div>
-                        <p className="text-2xl font-bold text-foreground">₦{washerStats.totalEarnings.toLocaleString()}</p>
-                        <p className="text-xs text-muted-foreground">Total Earnings</p>
-                      </div>
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">{washerStats.completedJobs}</p>
+                      <p className="text-xs text-muted-foreground">Completed</p>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </CardContent>
+              </Card>
 
-                <Card className="bg-card border-border">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center">
-                        <TrendingUp className="w-5 h-5 text-green-500" />
-                      </div>
-                      <div>
-                        <p className="text-2xl font-bold text-foreground">₦{washerStats.thisWeekEarnings.toLocaleString()}</p>
-                        <p className="text-xs text-muted-foreground">This Week</p>
-                      </div>
+              <Card className="bg-card border-border">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-yellow-500/20 flex items-center justify-center">
+                      <Clock className="w-5 h-5 text-yellow-500" />
                     </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-card border-border">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
-                        <Star className="w-5 h-5 text-primary" />
-                      </div>
-                      <div>
-                        <p className="text-2xl font-bold text-foreground">{washerStats.averageRating}</p>
-                        <p className="text-xs text-muted-foreground">Rating</p>
-                      </div>
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">{washerStats.pendingJobs}</p>
+                      <p className="text-xs text-muted-foreground">Pending</p>
                     </div>
-                  </CardContent>
-                </Card>
-              </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-              {/* Main Content */}
-              <div className="grid lg:grid-cols-3 gap-6">
-                {/* Jobs List */}
-                <div className="lg:col-span-2">
-                  <Card className="bg-card border-border">
-                    <CardHeader className="flex flex-row items-center justify-between">
-                      <CardTitle className="text-lg">Your Active Jobs</CardTitle>
-                      <Button size="sm" onClick={() => navigate('/browse')} className="flex items-center gap-2">
-                        <Eye className="w-4 h-4" />
-                        Browse Jobs
-                      </Button>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      {washerJobs.map((job) => (
+              <Card className="bg-card border-border">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
+                      <DollarSign className="w-5 h-5 text-accent" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">₦{washerStats.totalEarnings.toLocaleString()}</p>
+                      <p className="text-xs text-muted-foreground">Total Earnings</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-card border-border">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center">
+                      <TrendingUp className="w-5 h-5 text-green-500" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">₦{washerStats.thisWeekEarnings.toLocaleString()}</p>
+                      <p className="text-xs text-muted-foreground">This Week</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-card border-border">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
+                      <Star className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">{washerStats.averageRating}</p>
+                      <p className="text-xs text-muted-foreground">Rating</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Main Content */}
+            <div className="grid lg:grid-cols-3 gap-6">
+              {/* Jobs List */}
+              <div className="lg:col-span-2">
+                <Card className="bg-card border-border">
+                  <CardHeader className="flex flex-row items-center justify-between">
+                    <CardTitle className="text-lg">Your Active Jobs</CardTitle>
+                    <Button size="sm" onClick={() => navigate('/browse')} className="flex items-center gap-2">
+                      <Eye className="w-4 h-4" />
+                      Browse Jobs
+                    </Button>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+
+                    {loadin ? (
+                      <div className="py-20 flex justify-center">
+                        <Loader />
+                      </div>
+                    ) : washerJobs.length === 0 ? (
+                      <p className="text-center text-muted-foreground py-10">
+                        No jobs available at the moment.
+                      </p>
+                    ) : (
+                      washerJobs.map((job) => (
                         <div
-                          key={job.id}
+                          key={job._id}
                           className="p-4 rounded-xl bg-background border border-border hover:border-primary/30 transition-all"
                         >
                           <div className="flex items-start justify-between mb-3">
                             <div>
                               <h3 className="font-semibold text-foreground">{job.type}</h3>
-                              <p className="text-sm text-muted-foreground">{job.quantity}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {job.quantity} clothes
+                              </p>
                             </div>
-                            <Badge className={getStatusColor(job.status)}>{job.status}</Badge>
+                            <Badge className={getStatusColor(job.status)}>
+                              {job.status}
+                            </Badge>
                           </div>
 
                           <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-3">
                             <span className="flex items-center gap-1">
                               <MapPin className="w-3 h-3" />
-                              {job.location}
+                              {job.hostel}, {job.block} {job.room}
                             </span>
                             <span className="flex items-center gap-1">
                               <Clock className="w-3 h-3" />
-                              {job.deadline}
+                              {job.pickupDate}
                             </span>
                           </div>
 
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               <div className="w-6 h-6 rounded-full bg-accent/20 flex items-center justify-center">
-                                <span className="text-xs font-medium text-accent">{job.poster.charAt(0)}</span>
+                                <span className="text-xs font-medium text-accent">
+                                  {job.userId.fullname.charAt(0)}
+                                </span>
                               </div>
-                              <span className="text-sm text-foreground">{job.poster}</span>
-                              <span className="flex items-center text-xs text-yellow-500">
-                                <Star className="w-3 h-3 fill-current" />
-                                {job.posterRating}
+                              <span className="text-sm text-foreground">
+                                {job.userId.fullname}
                               </span>
                             </div>
-                            <span className="font-bold text-green-500">+₦{job.price.toLocaleString()}</span>
+                            <span className="font-bold text-green-500">
+                              ₦{job.price.toLocaleString()}
+                            </span>
                           </div>
 
                           <div className="flex gap-2 mt-3">
@@ -766,63 +861,94 @@ const Dashboard = () => {
                               <MessageSquare className="w-3 h-3 mr-1" />
                               Message
                             </Button>
-                            {job.status === "In Progress" && (
-                              <Button size="sm" className="flex-1 bg-green-500 hover:bg-green-600">
+
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="flex-1"
+                              onClick={() =>
+                                Swal.fire({
+                                  title: "Job Details",
+                                  html: `
+                <p><b>Poster:</b> ${job.userId.fullname}</p>
+                <p><b>Phone Number:</b> ${job.userId.phonenumber}</p>
+                <p><b>Hostel:</b> ${job.hostel}</p>
+                <p><b>Block:</b> ${job.block}</p>
+                <p><b>Room:</b> ${job.room}</p>
+                <p><b>Pickup:</b> ${job.pickupDate} ${job.pickupTime}</p>
+                <p><b>Delivery:</b> ${job.deliveryDate} ${job.deliveryTime}</p>
+                <p><b>Description:</b> ${job.description}</p>
+              `,
+                                  // icon: "info",
+                                })
+                              }
+                            >
+                              View More
+                            </Button>
+
+                            {job.status !== "Completed" && (
+                              <Button
+                                size="sm"
+                                className="flex-1 bg-green-600 hover:bg-green-700"
+                                onClick={() => handleCompleteJob(job._id)}
+                              >
                                 <CheckCircle className="w-3 h-3 mr-1" />
                                 Mark Complete
                               </Button>
                             )}
                           </div>
                         </div>
-                      ))}
-                    </CardContent>
-                  </Card>
-                </div>
+                      ))
+                    )}
 
-                {/* Earnings Chart & Notifications */}
-                <div className="space-y-6">
-                  {/* Weekly Earnings */}
-                  <Card className="bg-card border-border">
-                    <CardHeader>
-                      <CardTitle className="text-lg">Weekly Earnings</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex items-end justify-between h-32 gap-2">
-                        {earningsData.map((day, index) => (
-                          <div key={index} className="flex flex-col items-center gap-2 flex-1">
-                            <div
-                              className="w-full bg-primary/20 rounded-t-lg transition-all hover:bg-primary/30"
-                              style={{
-                                height: `${(day.amount / 5000) * 100}%`,
-                                minHeight: day.amount > 0 ? "8px" : "4px"
-                              }}
-                            />
-                            <span className="text-xs text-muted-foreground">{day.day}</span>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="mt-4 pt-4 border-t border-border">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm text-muted-foreground">Total This Week</span>
-                          <span className="font-bold text-green-500">₦{washerStats.thisWeekEarnings.toLocaleString()}</span>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Earnings Chart & Notifications */}
+              <div className="space-y-6">
+                {/* Weekly Earnings */}
+                <Card className="bg-card border-border">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Weekly Earnings</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-end justify-between h-32 gap-2">
+                      {earningsData.map((day, index) => (
+                        <div key={index} className="flex flex-col items-center gap-2 flex-1">
+                          <div
+                            className="w-full bg-primary/20 rounded-t-lg transition-all hover:bg-primary/30"
+                            style={{
+                              height: `${(day.amount / 5000) * 100}%`,
+                              minHeight: day.amount > 0 ? "8px" : "4px"
+                            }}
+                          />
+                          <span className="text-xs text-muted-foreground">{day.day}</span>
                         </div>
+                      ))}
+                    </div>
+                    <div className="mt-4 pt-4 border-t border-border">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground">Total This Week</span>
+                        <span className="font-bold text-green-500">₦{washerStats.thisWeekEarnings.toLocaleString()}</span>
                       </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </CardContent>
+                </Card>
 
-                  {/* Notifications */}
-                  <Card className="bg-card border-border">
-                    <CardHeader>
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <Bell className="w-5 h-5" />
-                        Notifications
-                        {/* <Badge className="bg-accent text-accent-foreground ml-auto">
+                {/* Notifications */}
+                <Card className="bg-card border-border">
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Bell className="w-5 h-5" />
+                      Notifications
+                      {/* <Badge className="bg-accent text-accent-foreground ml-auto">
                           {notifications.filter(n => n.unread).length}
                         </Badge> */}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      {/* {notifications.slice(0, 3).map((notification) => (
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {/* {notifications.slice(0, 3).map((notification) => (
                         <div
                           key={notification.id}
                           className={`p-3 rounded-lg ${notification.unread
@@ -834,17 +960,17 @@ const Dashboard = () => {
                           <p className="text-xs text-muted-foreground mt-1">{notification.time}</p>
                         </div>
                       ))} */}
-                    </CardContent>
-                  </Card>
-                </div>
+                  </CardContent>
+                </Card>
               </div>
             </div>
-          )}
-        </div>
-      </main>
+          </div>
+        )}
+      </div>
+    </main>
 
-    </div>
-  );
+  </div>
+);
 };
 
 export default Dashboard;
