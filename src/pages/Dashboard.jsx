@@ -171,6 +171,8 @@ const Dashboard = () => {
           `http://localhost:5000/userlaundry/getWasherJobs/${washerId}`
         );
         const data = await res.json();
+        console.log(data, "dataaaaaaaaaaaaaaaa");
+
         setWasherJobs(data);
       } catch (error) {
         console.log("Error fetching jobs:", error);
@@ -240,6 +242,11 @@ const Dashboard = () => {
         console.log(err);
       });
   }, []);
+
+
+  const user = JSON.parse(localStorage.getItem("laundryUser"));
+  const firstName = user?.fullname?.split(" ")[0] || "User";
+
 
 
 
@@ -325,18 +332,18 @@ const Dashboard = () => {
 
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-4">
-          {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-foreground mb-2">
-                Welcome back, Chidi! 👋
-              </h1>
+            
+              <h2 className="text-2xl md:text-3xl font-bold">
+                Welcome back, <span className="text-primary">{firstName}!</span>
+              </h2>
+
               <p className="text-muted-foreground">
                 Here's what's happening with your laundry today
               </p>
             </div>
 
-            {/* Role Switch */}
             <div className="flex items-center gap-3 bg-card border border-border rounded-xl p-1">
               <Button
                 variant={role === "poster" ? "default" : "ghost"}
