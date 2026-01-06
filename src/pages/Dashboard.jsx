@@ -321,6 +321,159 @@ const Dashboard = () => {
 
 
 
+  const [chatJob, setChatJob] = useState(null);
+  const openChat = (job) => {
+    setChatJob(job);
+  };
+  const ChatModal = ({ job, onClose }) => {
+    const user = JSON.parse(localStorage.getItem("laundryUser"));
+    const [messages, setMessages] = useState([]);
+    const [text, setText] = useState("");
+    const [loadingMessages, setLoadingMessages] = useState(true); // new
+    useEffect(() => {
+      // Lock the body scroll when modal is open
+      document.body.style.overflow = "hidden";
+      return () => {
+        // Restore scroll when modal closes
+        document.body.style.overflow = "auto";
+      };
+    }, []);
+
+
+    useEffect(() => {
+      fetch(`http://localhost:5000/userlaundry/getmessages/${job._id}`, {
+        // method: "GET",
+        headers: { Authorization: `Bearer ${user.token}` },
+      })
+        // .then(res => res.json())
+        // .then(setMessages);
+        .then(res => res.json())
+        .then(data => {
+          setMessages(Array.isArray(data) ? data : []);
+          setLoadingMessages(false); // done loading
+        })
+        .catch(err => {
+          console.error(err);
+          setLoadingMessages(false);
+        });
+    }, [job._id]);
+
+    const sendMessage = async () => {
+      if (!text.trim()) return;
+
+      const senderId = user.id;
+
+      const receiverId =
+        senderId === String(job.userId?._id || job.userId)
+          ? job.applicant // washer
+          : String(job.userId?._id || job.userId); // poster
+
+      if (!receiverId) {
+        alert("Cannot send message: receiver not defined yet!");
+        return;
+      }
+
+      const messageData = {
+        jobId: job._id,
+        senderId,
+        receiverId,
+        text,
+      };
+
+      try {
+        // Send to server
+        const response = await fetch("http://localhost:5000/userlaundry/sendmessages", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(messageData),
+        });
+
+        if (!response.ok) throw new Error("Failed to send message");
+
+        // Add the new message to the messages array immediately
+        setMessages(prev => [
+          ...prev,
+          {
+            _id: Math.random().toString(36).substring(2), // temporary ID for React key
+            text,
+            sender: { _id: senderId },
+            createdAt: new Date().toISOString(),
+          },
+        ]);
+
+        setText(""); // clear input
+      } catch (err) {
+        console.error(err);
+        alert("Failed to send message");
+      }
+    };
+
+
+
+
+
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/50 w-full h-full p-2">
+        <div className="bg-card w-full max-w-md rounded-xl shadow-xl flex flex-col p-4 max-h-[75vh]">
+
+          {/* Header */}
+          <div className="flex justify-between items-center mb-3 border-b border-border pb-2">
+            <span className="font-semibold text-lg">Chat</span>
+            <button
+              onClick={onClose}
+              className="text-muted-foreground hover:text-red-500 transition-colors text-lg"
+            >
+              ✕
+            </button>
+          </div>
+
+          {/* Messages */}
+          <div className="flex-1 overflow-y-auto space-y-2 mb-3 scrollbar-thin scrollbar-thumb-primary/50 scrollbar-track-muted/20 px-1">
+             {loadingMessages ? (
+            <p className="text-center text-sm text-muted-foreground mt-2">Loading messages...</p>
+          ) : messages.length > 0 ? (
+            messages.map((msg) => (
+              <div
+                key={msg._id}
+                className={`p-2 rounded-lg max-w-[75%] break-words ${
+                  msg.sender?._id === user.id ? "ml-auto bg-primary text-white" : "bg-muted text-foreground"
+                }`}
+              >
+                <p className="text-sm">{msg.text}</p>
+              </div>
+            ))
+          ) : (
+            <p className="text-center text-sm text-muted-foreground mt-2">
+              No messages yet.
+            </p>
+          )}
+        </div>
+
+          {/* Input */}
+          <div className="flex gap-2">
+            <textarea
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              rows={2}
+              className="flex-1 border rounded-md px-3 py-2 text-sm resize-none h-[50px]"
+              placeholder="Type a message..."
+            />
+            <Button onClick={sendMessage} className="min-w-[70px]">
+              Send
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+
+  };
+
+
+
+
+
 
 
 
@@ -334,7 +487,7 @@ const Dashboard = () => {
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
             <div>
-            
+
               <h2 className="text-2xl md:text-3xl font-bold">
                 Welcome back, <span className="text-primary">{firstName}!</span>
               </h2>
@@ -343,7 +496,6 @@ const Dashboard = () => {
                 Here's what's happening with your laundry today
               </p>
             </div>
-
             <div className="flex items-center gap-3 bg-card border border-border rounded-xl p-1">
               <Button
                 variant={role === "poster" ? "default" : "ghost"}
@@ -549,9 +701,16 @@ const Dashboard = () => {
                                     <Eye className="w-3 h-3" /> View Details
                                   </Button>
                                   {job.status === "Applied" && (
-                                    <Button variant="outline" size="sm" className="flex-1 min-w-[100px]">
+                                    <Button variant="outline" size="sm" className="flex-1 min-w-[100px]" onClick={() => openChat(job)}>
                                       <MessageSquare className="w-3 h-3" /> Message
                                     </Button>
+
+                                  )}
+                                  {chatJob && (
+                                    <ChatModal
+                                      job={chatJob}
+                                      onClose={() => setChatJob(null)}
+                                    />
                                   )}
 
                                   {job.status === "Applied" && (
@@ -575,6 +734,9 @@ const Dashboard = () => {
                     </CardContent>
                   </Card>
                 </div>
+
+
+
 
 
                 {selectedJob && (
@@ -887,10 +1049,16 @@ const Dashboard = () => {
                             </div>
 
                             <div className="flex gap-2 mt-3">
-                              <Button variant="outline" size="sm" className="flex-1">
+                              <Button variant="outline" size="sm" className="flex-1" onClick={() => openChat(job)}>
                                 <MessageSquare className="w-3 h-3 mr-1" />
                                 Message
                               </Button>
+                              {chatJob && (
+                                <ChatModal
+                                  job={chatJob}
+                                  onClose={() => setChatJob(null)}
+                                />
+                              )}
 
                               <Button
                                 variant="outline"
@@ -900,15 +1068,15 @@ const Dashboard = () => {
                                   Swal.fire({
                                     title: "Job Details",
                                     html: `
-                <p><b>Poster:</b> ${job.userId.fullname}</p>
-                <p><b>Phone Number:</b> ${job.userId.phonenumber}</p>
-                <p><b>Pickup:</b> ${formatDate(job.pickupDate)} ${formatTime(job.pickupTime)}</p>
-                <p><b>Delivery:</b> ${formatDate(job.deliveryDate)} ${formatTime(job.deliveryTime)}</p>
-                <p><b>Description:</b> ${job.description}</p>
-                <p><b>Hostel:</b> ${job.hostel}</p>
-                <p><b>Block:</b> ${job.block}</p>
-                <p><b>Room:</b> ${job.room}</p>
-              `,
+                                        <p><b>Poster:</b> ${job.userId.fullname}</p>
+                                        <p><b>Phone Number:</b> ${job.userId.phonenumber}</p>
+                                        <p><b>Pickup:</b> ${formatDate(job.pickupDate)} ${formatTime(job.pickupTime)}</p>
+                                        <p><b>Delivery:</b> ${formatDate(job.deliveryDate)} ${formatTime(job.deliveryTime)}</p>
+                                        <p><b>Description:</b> ${job.description}</p>
+                                        <p><b>Hostel:</b> ${job.hostel}</p>
+                                        <p><b>Block:</b> ${job.block}</p>
+                                        <p><b>Room:</b> ${job.room}</p>
+                                      `,
                                     // icon: "info",
                                   })
                                 }
