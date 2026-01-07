@@ -46,14 +46,15 @@ const posterStats = {
   averageRating: 4.8
 };
 
-const washerStats = {
-  jobsAccepted: 24,
-  completedJobs: 21,
-  pendingJobs: 3,
-  totalEarnings: 85000,
-  averageRating: 4.9,
-  thisWeekEarnings: 15000
-};
+// const washerStats = {
+//   jobsAccepted: 24,
+//   completedJobs: 21,
+//   pendingJobs: 3,
+//   totalEarnings: 85000,
+//   averageRating: 4.9,
+//   thisWeekEarnings: 15000
+// };
+
 
 // const washerJobs = [
 //   {
@@ -129,8 +130,48 @@ const getStatusColor = (status) => {
 
 
 const Dashboard = () => {
+ const [role, setRole] = useState("poster");
 
-  const [role, setRole] = useState("poster");
+const [washerStats, setWasherStats] = useState({
+  jobsAccepted: 0,             // total jobs applied by washer
+  completedJobs: 0,            // completed jobs
+  appliedJobs: 0,              // current active jobs (not completed)
+  currentJobsTotalPrice: 0,    // total price of current applied jobs
+  completedEarnings: 0,        // total earnings from completed jobs
+  jobPrices: [],               // array of { jobId, price, status }
+});
+
+useEffect(() => {
+  if (role !== "washer") return;
+
+  const user = JSON.parse(localStorage.getItem("laundryUser"));
+  if (!user?.token) return;
+
+  console.log("Fetching washer stats for user:", user);
+
+  fetch("http://localhost:5000/userlaundry/washerstats", {
+    headers: {
+      Authorization: `Bearer ${user.token}`,
+    },
+  })
+    .then(res => {
+      if (!res.ok) throw new Error(`HTTP ${res.status} - ${res.statusText}`);
+      return res.json();
+    })
+    .then(data => {
+      setWasherStats({
+        jobsAccepted: data.jobsAccepted || 0,
+        completedJobs: data.completedJobs || 0,
+        appliedJobs: data.appliedJobs || 0,
+        currentJobsTotalPrice: data.currentJobsTotalPrice || 0,
+        completedEarnings: data.completedEarnings || 0,
+        jobPrices: Array.isArray(data.jobPrices) ? data.jobPrices : [],
+      });
+    })
+    .catch(err => console.error("Failed to fetch washer stats:", err));
+}, [role]);
+
+
   const navigate = useNavigate();
 
   const [posterJobs, setPosterJobs] = useState([]);
@@ -431,25 +472,24 @@ const Dashboard = () => {
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto space-y-2 mb-3 scrollbar-thin scrollbar-thumb-primary/50 scrollbar-track-muted/20 px-1">
-             {loadingMessages ? (
-            <p className="text-center text-sm text-muted-foreground mt-2">Loading messages...</p>
-          ) : messages.length > 0 ? (
-            messages.map((msg) => (
-              <div
-                key={msg._id}
-                className={`p-2 rounded-lg max-w-[75%] break-words ${
-                  msg.sender?._id === user.id ? "ml-auto bg-primary text-white" : "bg-muted text-foreground"
-                }`}
-              >
-                <p className="text-sm">{msg.text}</p>
-              </div>
-            ))
-          ) : (
-            <p className="text-center text-sm text-muted-foreground mt-2">
-              No messages yet.
-            </p>
-          )}
-        </div>
+            {loadingMessages ? (
+              <p className="text-center text-sm text-muted-foreground mt-2">Loading messages...</p>
+            ) : messages.length > 0 ? (
+              messages.map((msg) => (
+                <div
+                  key={msg._id}
+                  className={`p-2 rounded-lg max-w-[75%] break-words ${msg.sender?._id === user.id ? "ml-auto bg-primary text-white" : "bg-muted text-foreground"
+                    }`}
+                >
+                  <p className="text-sm">{msg.text}</p>
+                </div>
+              ))
+            ) : (
+              <p className="text-center text-sm text-muted-foreground mt-2">
+                No messages yet.
+              </p>
+            )}
+          </div>
 
           {/* Input */}
           <div className="flex gap-2">
@@ -903,8 +943,11 @@ const Dashboard = () => {
                         <Briefcase className="w-5 h-5 text-primary" />
                       </div>
                       <div>
-                        <p className="text-2xl font-bold text-foreground">{washerStats.jobsAccepted}</p>
-                        <p className="text-xs text-muted-foreground">Jobs Accepted</p>
+                        {/* Applied Jobs: {washerStats.appliedJobs}  */}
+                        <p className="text-2xl font-bold text-foreground">
+                           {washerStats.appliedJobs} 
+                        </p>
+                        <p className="text-xs text-muted-foreground">Applied Jobs</p>
                       </div>
                     </div>
                   </CardContent>
@@ -917,6 +960,7 @@ const Dashboard = () => {
                         <CheckCircle className="w-5 h-5 text-green-500" />
                       </div>
                       <div>
+                        {/* Completed Jobs: {washerStats.completedJobs} */}
                         <p className="text-2xl font-bold text-foreground">{washerStats.completedJobs}</p>
                         <p className="text-xs text-muted-foreground">Completed</p>
                       </div>
@@ -931,8 +975,20 @@ const Dashboard = () => {
                         <Clock className="w-5 h-5 text-yellow-500" />
                       </div>
                       <div>
-                        <p className="text-2xl font-bold text-foreground">{washerStats.pendingJobs}</p>
-                        <p className="text-xs text-muted-foreground">Pending</p>
+                        {/* <p className="text-2xl font-bold text-foreground">{washerStats.jobPrices}</p> */}
+
+                        {/* {washerStats.jobPrices.length > 0 ? (
+                          washerStats.jobPrices.map(job => (
+                            <p className="text-2xl font-bold text-foreground" key={job.jobId}>
+                               ₦{job.price.toLocaleString()} 
+                            </p>
+                          ))
+                        ) : (
+                          <p>0</p>
+                        )} */}
+
+                        <p className="text-2xl font-bold text-foreground">₦{washerStats.currentJobsTotalPrice.toLocaleString()}</p>                        
+                        <p className="text-xs text-muted-foreground">Current Jobs Total Price</p>
                       </div>
                     </div>
                   </CardContent>
@@ -942,11 +998,14 @@ const Dashboard = () => {
                   <CardContent className="p-4">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
-                        <DollarSign className="w-5 h-5 text-accent" />
+                        {/* <DollarSign className="w-5 h-5 text-accent" /> */}
+                        <b  className="w-5 h-5 text-accent text-center">₦</b>
                       </div>
                       <div>
-                        <p className="text-2xl font-bold text-foreground">₦{washerStats.totalEarnings.toLocaleString()}</p>
-                        <p className="text-xs text-muted-foreground">Total Earnings</p>
+
+                        <p className="text-2xl font-bold text-foreground"> ₦{washerStats.completedEarnings.toLocaleString()}</p>
+                        {/* <p className="text-2xl font-bold text-foreground">₦{washerStats.totalEarnings.toLocaleString()}</p>  */}
+                        <p className="text-xs text-muted-foreground">Earnings</p>
                       </div>
                     </div>
                   </CardContent>
@@ -959,8 +1018,8 @@ const Dashboard = () => {
                         <TrendingUp className="w-5 h-5 text-green-500" />
                       </div>
                       <div>
-                        <p className="text-2xl font-bold text-foreground">₦{washerStats.thisWeekEarnings.toLocaleString()}</p>
-                        <p className="text-xs text-muted-foreground">This Week</p>
+                        {/* <p className="text-2xl font-bold text-foreground">₦{washerStats.thisWeekEarnings.toLocaleString()}</p> */}
+                        {/* <p className="text-xs text-muted-foreground">This Week</p> */}
                       </div>
                     </div>
                   </CardContent>
@@ -1128,7 +1187,7 @@ const Dashboard = () => {
                       <div className="mt-4 pt-4 border-t border-border">
                         <div className="flex justify-between items-center">
                           <span className="text-sm text-muted-foreground">Total This Week</span>
-                          <span className="font-bold text-green-500">₦{washerStats.thisWeekEarnings.toLocaleString()}</span>
+                          {/* <span className="font-bold text-green-500">₦{washerStats.thisWeekEarnings.toLocaleString()}</span> */}
                         </div>
                       </div>
                     </CardContent>
