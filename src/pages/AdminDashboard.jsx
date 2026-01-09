@@ -140,6 +140,13 @@ const AdminDashboard = () => {
     job.location.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+
+  const LogoutBtn = ()=>{
+    navigate("/adminauth")
+  sessionStorage.removeItem("admin")
+  sessionStorage.removeItem("adminToken")
+  }
+
   return (
     <div className="min-h-screen bg-background flex">
       {/* Sidebar */}
@@ -186,11 +193,13 @@ const AdminDashboard = () => {
           <Button 
             variant="ghost" 
             className={`w-full ${sidebarOpen ? 'justify-start' : 'justify-center'} text-red-400 hover:text-red-300 hover:bg-red-500/10`}
-            onClick={() => navigate('/')}
+            // onClick={() => navigate('/adminauth')}
+            onClick={LogoutBtn}
           >
             <LogOut className="w-5 h-5" />
             {sidebarOpen && <span className="ml-2">Logout</span>}
           </Button>
+    
         </div>
       </aside>
 

@@ -18,8 +18,8 @@ const Navbardb = () => {
 
     const navigave = useNavigate()
     const LogoutBtn = () => {
-        localStorage.removeItem("laundryToken");
-        localStorage.removeItem("laundryUser");
+        sessionStorage.removeItem("laundryToken");
+        sessionStorage.removeItem("laundryUser");
         navigave("/login")
     }
 

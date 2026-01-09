@@ -49,7 +49,7 @@ const Browse = () => {
   // Apply for job
   const handleApplyJob = async (jobId) => {
     
-const currentUser = JSON.parse(localStorage.getItem("laundryUser"));
+const currentUser = JSON.parse(sessionStorage.getItem("laundryUser"));
 
   const result = await Swal.fire({
     title: "Apply for this job?",

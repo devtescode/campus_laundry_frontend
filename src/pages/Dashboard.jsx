@@ -367,7 +367,7 @@ useEffect(() => {
     setChatJob(job);
   };
   const ChatModal = ({ job, onClose }) => {
-    const user = JSON.parse(localStorage.getItem("laundryUser"));
+    const user = JSON.parse(sessionStorage.getItem("laundryUser"));
     const [messages, setMessages] = useState([]);
     const [text, setText] = useState("");
     const [loadingMessages, setLoadingMessages] = useState(true); // new

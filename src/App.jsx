@@ -14,6 +14,8 @@ import NotFound from "./pages/NotFound";
 import Emailverify from "./pages/Emailverify";
 import Userprotected from "./pages/Userprotected/Userprotected";
 import Washerhistory from "./pages/Washerhistory";
+import AdminAuth from "./pages/AdminAuth";
+import Adminprotected from "./pages/Adminprotected/Adminprotected";
 
 const queryClient = new QueryClient();
 
@@ -39,10 +41,24 @@ const App = () => (
             <Route path="/get-history" element={<Washerhistory/>}/>
           </Route>
 
-          <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/verify-email/:token" element={<Emailverify />} />
+
+          
+
+          <Route
+          element={
+            <Adminprotected>
+              <></>
+            </Adminprotected>
+          }
+          >
+          <Route path="/admin" element={<AdminDashboard />} />
+          </Route>
+          <Route path="/adminauth" element={<AdminAuth/>}/>
+
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
