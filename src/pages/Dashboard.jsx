@@ -144,7 +144,7 @@ const [washerStats, setWasherStats] = useState({
 useEffect(() => {
   if (role !== "washer") return;
 
-  const user = JSON.parse(localStorage.getItem("laundryUser"));
+  const user = JSON.parse(sessionStorage.getItem("laundryUser"));
   if (!user?.token) return;
 
   console.log("Fetching washer stats for user:", user);
@@ -178,7 +178,7 @@ useEffect(() => {
   const [loading, setLoadingJobs] = useState(true);
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("laundryUser"));
+    const user = JSON.parse(sessionStorage.getItem("laundryUser"));
     const userId = user?.id;
 
     const fetchUserJobs = async () => {
@@ -207,7 +207,7 @@ useEffect(() => {
     const fetchWasherJobs = async () => {
       // const washerId = currentUser._id; // logged-in washer
       try {
-        const washerId = JSON.parse(localStorage.getItem("laundryUser")).id;
+        const washerId = JSON.parse(sessionStorage.getItem("laundryUser")).id;
         const res = await fetch(
           `http://localhost:5000/userlaundry/getWasherJobs/${washerId}`
         );
@@ -271,7 +271,7 @@ useEffect(() => {
   // `http://localhost:5000/userlaundry/notifications/${user.id}`
   const [notifications, setNotifications] = useState([]);
 
-  const userId = JSON.parse(localStorage.getItem("laundryUser")).id;
+  const userId = JSON.parse(sessionStorage.getItem("laundryUser")).id;
 
   useEffect(() => {
     axios.get(`http://localhost:5000/userlaundry/notifications/${userId}`)
@@ -285,7 +285,7 @@ useEffect(() => {
   }, []);
 
 
-  const user = JSON.parse(localStorage.getItem("laundryUser"));
+  const user = JSON.parse(sessionStorage.getItem("laundryUser"));
   const firstName = user?.fullname?.split(" ")[0] || "User";
 
 
@@ -297,7 +297,7 @@ useEffect(() => {
 
 
   const handleCompleteJob = async (jobId) => {
-    const washerId = JSON.parse(localStorage.getItem("laundryUser")).id;
+    const washerId = JSON.parse(sessionStorage.getItem("laundryUser")).id;
 
     const result = await Swal.fire({
       title: "Mark job as completed?",

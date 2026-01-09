@@ -11,7 +11,7 @@ const Washerhistory = () => {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const washer = JSON.parse(localStorage.getItem("laundryUser"));
+        const washer = JSON.parse(sessionStorage.getItem("laundryUser"));
         if (!washer?.id) return;
 
         const res = await fetch(

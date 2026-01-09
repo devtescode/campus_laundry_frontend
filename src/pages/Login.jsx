@@ -50,9 +50,9 @@ const Login = () => {
         return;
       }
 
-      // Save user to localStorage
-      localStorage.setItem("laundryUser", JSON.stringify(data.user));
-      localStorage.setItem("laundryToken", data.user.token);
+      // Save user to sessionStorage
+      sessionStorage.setItem("laundryUser", JSON.stringify(data.user));
+      sessionStorage.setItem("laundryToken", data.user.token);
 
 
       toast({

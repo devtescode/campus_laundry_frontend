@@ -2,7 +2,7 @@ import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 
 const Userprotected = () => {
-  const token = localStorage.getItem("laundryToken");
+  const token = sessionStorage.getItem("laundryToken");
 
   if (!token) {
     return <Navigate to="/login" replace />;

@@ -47,7 +47,7 @@ const PostJob = () => {
 
   const handleSubmit = async () => {
     try {
-      const user = JSON.parse(localStorage.getItem("laundryUser"));
+      const user = JSON.parse(sessionStorage.getItem("laundryUser"));
       
 
       const payload = {
