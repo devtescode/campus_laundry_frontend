@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 
 const Adminanalytics = () => {
+    
     return (
         <div className="space-y-6 animate-fade-in">
             <div className="grid md:grid-cols-4 gap-4">
