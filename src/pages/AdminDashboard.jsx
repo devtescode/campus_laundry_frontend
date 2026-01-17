@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -99,13 +100,36 @@ const getStatusBadge = (status) => {
 };
 
 const AdminDashboard = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const isMobile = useIsMobile();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedJob, setSelectedJob] = useState(null);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Initialize sidebar state after component mounts
+  useEffect(() => {
+    setMounted(true);
+    setSidebarOpen(!isMobile);
+  }, [isMobile]);
+
+  // Close sidebar on mobile when screen size changes
+  useEffect(() => {
+    if (mounted && isMobile) {
+      setSidebarOpen(false);
+    }
+  }, [isMobile, mounted]);
+
+  // Close sidebar when clicking on a nav item
+  const handleNavClick = (tabId) => {
+    setActiveTab(tabId);
+    if (isMobile) {
+      setSidebarOpen(false);
+    }
+  };
 
   const handleBanUser = (user) => {
     toast({
@@ -148,9 +172,14 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex">
-      {/* Sidebar */}
-      <aside className={`${sidebarOpen ? 'w-64' : 'w-20'} bg-card border-r border-border transition-all duration-300 flex flex-col`}>
+    <div className="min-h-screen bg-background flex flex-col md:flex-row">
+      {/* Sidebar - Hidden on mobile by default, visible on desktop */}
+      {mounted && (
+        <aside className={`${
+          sidebarOpen 
+            ? 'w-full md:w-64 absolute md:relative z-40 h-screen md:h-auto' 
+            : 'hidden md:flex md:w-20'
+        } bg-card border-r border-border transition-all duration-300 flex flex-col`}>
         <div className="p-4 border-b border-border flex items-center justify-between">
           {sidebarOpen && (
             <div className="flex items-center gap-2">
@@ -160,8 +189,13 @@ const AdminDashboard = () => {
               <span className="font-bold text-foreground">Admin Panel</span>
             </div>
           )}
-          <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(!sidebarOpen)}>
-            {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="md:hidden"
+          >
+            <X className="w-5 h-5" />
           </Button>
         </div>
 
@@ -177,7 +211,7 @@ const AdminDashboard = () => {
               key={item.id}
               variant={activeTab === item.id ? "default" : "ghost"}
               className={`w-full ${sidebarOpen ? 'justify-start' : 'justify-center'}`}
-              onClick={() => setActiveTab(item.id)}
+              onClick={() => handleNavClick(item.id)}
             >
               <item.icon className="w-5 h-5" />
               {sidebarOpen && <span className="ml-2">{item.label}</span>}
@@ -199,25 +233,36 @@ const AdminDashboard = () => {
             <LogOut className="w-5 h-5" />
             {sidebarOpen && <span className="ml-2">Logout</span>}
           </Button>
+          
     
         </div>
       </aside>
+      )}
 
       {/* Main Content */}
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 overflow-auto w-full">
         {/* Header */}
         <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border p-4">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">
-                {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Manage your LaundryHub platform
-              </p>
+            <div className="flex items-center gap-4">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+              >
+                <Menu className="w-5 h-5" />
+              </Button>
+              <div>
+                <h1 className="text-2xl font-bold text-foreground">
+                  {/* {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} */}
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                  {/* Manage your LaundryHub platform */}
+                </p>
+              </div>
             </div>
             <div className="flex items-center gap-4">
-              <div className="relative">
+              <div className="relative hidden sm:block">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input 
                   placeholder="Search..." 
