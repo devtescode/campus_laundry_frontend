@@ -1,11 +1,16 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { Input } from "@/components/ui/input";
+
 import { 
   Users, 
   Briefcase, 
+  DollarSign, 
   Search,
+  Ban,
   Shield,
   BarChart3,
   AlertTriangle,
@@ -15,7 +20,8 @@ import {
   Menu,
   X,
   Home,
-
+  UserCheck,
+  ShoppingBag,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -25,6 +31,16 @@ import Adminanalytics from "./Adminanalytics";
 import Adminreport from "./Adminreport";
 import Adminoverview from "./Adminoverview";
 
+const stats = {
+  totalUsers: 1247,
+  activeUsers: 892,
+  totalJobs: 3456,
+  activeJobs: 234,
+  totalRevenue: 2450000,
+  monthlyGrowth: 12.5,
+  bannedUsers: 23,
+  reportedPosts: 15
+};
 
 
 
@@ -149,9 +165,7 @@ const AdminDashboard = () => {
       </aside>
       )}
 
-      {/* Main Content */}
       <main className="flex-1 overflow-auto w-full">
-        {/* Header */}
         <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
