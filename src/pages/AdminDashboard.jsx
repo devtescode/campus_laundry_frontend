@@ -48,6 +48,9 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import Adminuserdisplay from "./Adminuserdisplay";
+import Adminjobdisplay from "./Adminjobdisplay";
+import Adminanalytics from "./Adminanalytics";
 
 // Mock data
 const stats = {
@@ -131,38 +134,8 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleBanUser = (user) => {
-    toast({
-      title: "User Banned",
-      description: `${user.name} has been banned from the platform.`,
-    });
-  };
+ 
 
-  const handleUnbanUser = (user) => {
-    toast({
-      title: "User Unbanned",
-      description: `${user.name} has been unbanned.`,
-    });
-  };
-
-  const handleDeleteJob = (job) => {
-    toast({
-      title: "Job Deleted",
-      description: `Job #${job.id} has been removed from the platform.`,
-    });
-  };
-
-  const filteredUsers = users.filter(user => 
-    user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.university.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const filteredJobs = jobs.filter(job =>
-    job.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    job.poster.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    job.location.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
 
   const LogoutBtn = ()=>{
@@ -465,280 +438,19 @@ const AdminDashboard = () => {
 
           {/* Users Tab */}
           {activeTab === "users" && (
-            <div className="space-y-6 animate-fade-in">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
-                    {stats.activeUsers} Active
-                  </Badge>
-                  <Badge className="bg-red-500/20 text-red-400 border-red-500/30">
-                    {stats.bannedUsers} Banned
-                  </Badge>
-                </div>
-              </div>
-
-              <Card className="bg-card border-border">
-                <CardContent className="p-0">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="border-border">
-                        <TableHead>User</TableHead>
-                        <TableHead>University</TableHead>
-                        <TableHead>Role</TableHead>
-                        <TableHead>Jobs</TableHead>
-                        <TableHead>Rating</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Joined</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredUsers.map((user) => (
-                        <TableRow key={user.id} className="border-border">
-                          <TableCell>
-                            <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-                                <span className="text-xs font-medium text-primary">{user.name.charAt(0)}</span>
-                              </div>
-                              <div>
-                                <p className="font-medium text-foreground">{user.name}</p>
-                                <p className="text-xs text-muted-foreground">{user.email}</p>
-                              </div>
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-muted-foreground">{user.university}</TableCell>
-                          <TableCell>
-                            <Badge variant="outline" className="text-xs">
-                              {user.role}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-muted-foreground">{user.jobs}</TableCell>
-                          <TableCell>
-                            <span className="flex items-center gap-1 text-yellow-500">
-                              ★ {user.rating}
-                            </span>
-                          </TableCell>
-                          <TableCell>
-                            <Badge className={getStatusBadge(user.status)}>
-                              {user.status}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-muted-foreground">{user.joined}</TableCell>
-                          <TableCell className="text-right">
-                            <div className="flex items-center justify-end gap-2">
-                              <Button variant="ghost" size="icon">
-                                <Eye className="w-4 h-4" />
-                              </Button>
-                              <Dialog>
-                                <DialogTrigger asChild>
-                                  <Button 
-                                    variant="ghost" 
-                                    size="icon"
-                                    className={user.status === "Banned" ? "text-green-400" : "text-red-400"}
-                                  >
-                                    {user.status === "Banned" ? <CheckCircle className="w-4 h-4" /> : <Ban className="w-4 h-4" />}
-                                  </Button>
-                                </DialogTrigger>
-                                <DialogContent>
-                                  <DialogHeader>
-                                    <DialogTitle>
-                                      {user.status === "Banned" ? "Unban User" : "Ban User"}
-                                    </DialogTitle>
-                                    <DialogDescription>
-                                      Are you sure you want to {user.status === "Banned" ? "unban" : "ban"} {user.name}?
-                                      {user.status !== "Banned" && " This will prevent them from accessing the platform."}
-                                    </DialogDescription>
-                                  </DialogHeader>
-                                  <DialogFooter>
-                                    <Button variant="outline">Cancel</Button>
-                                    <Button 
-                                      variant={user.status === "Banned" ? "default" : "destructive"}
-                                      onClick={() => user.status === "Banned" ? handleUnbanUser(user) : handleBanUser(user)}
-                                    >
-                                      {user.status === "Banned" ? "Unban" : "Ban"} User
-                                    </Button>
-                                  </DialogFooter>
-                                </DialogContent>
-                              </Dialog>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-            </div>
+           <Adminuserdisplay/>
           )}
 
           {/* Jobs Tab */}
           {activeTab === "jobs" && (
-            <div className="space-y-6 animate-fade-in">
-              <div className="flex items-center gap-4">
-                <Badge className="bg-primary/20 text-primary border-primary/30">
-                  {stats.activeJobs} Active
-                </Badge>
-                <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
-                  {jobs.filter(j => j.reported).length} Reported
-                </Badge>
-              </div>
-
-              <Card className="bg-card border-border">
-                <CardContent className="p-0">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="border-border">
-                        <TableHead>ID</TableHead>
-                        <TableHead>Type</TableHead>
-                        <TableHead>Poster</TableHead>
-                        <TableHead>Washer</TableHead>
-                        <TableHead>Price</TableHead>
-                        <TableHead>Location</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredJobs.map((job) => (
-                        <TableRow key={job.id} className={`border-border ${job.reported ? 'bg-red-500/5' : ''}`}>
-                          <TableCell className="font-mono text-muted-foreground">#{job.id}</TableCell>
-                          <TableCell className="text-foreground">{job.type}</TableCell>
-                          <TableCell className="text-muted-foreground">{job.poster}</TableCell>
-                          <TableCell className="text-muted-foreground">{job.washer || "—"}</TableCell>
-                          <TableCell className="text-foreground font-medium">₦{job.price.toLocaleString()}</TableCell>
-                          <TableCell className="text-muted-foreground">{job.location}</TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <Badge className={getStatusBadge(job.status)}>
-                                {job.status}
-                              </Badge>
-                              {job.reported && (
-                                <AlertTriangle className="w-4 h-4 text-yellow-500" />
-                              )}
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-muted-foreground">{job.date}</TableCell>
-                          <TableCell className="text-right">
-                            <div className="flex items-center justify-end gap-2">
-                              <Button variant="ghost" size="icon">
-                                <Eye className="w-4 h-4" />
-                              </Button>
-                              <Dialog>
-                                <DialogTrigger asChild>
-                                  <Button variant="ghost" size="icon" className="text-red-400">
-                                    <Trash2 className="w-4 h-4" />
-                                  </Button>
-                                </DialogTrigger>
-                                <DialogContent>
-                                  <DialogHeader>
-                                    <DialogTitle>Delete Job</DialogTitle>
-                                    <DialogDescription>
-                                      Are you sure you want to delete job #{job.id}? This action cannot be undone.
-                                    </DialogDescription>
-                                  </DialogHeader>
-                                  <DialogFooter>
-                                    <Button variant="outline">Cancel</Button>
-                                    <Button variant="destructive" onClick={() => handleDeleteJob(job)}>
-                                      Delete Job
-                                    </Button>
-                                  </DialogFooter>
-                                </DialogContent>
-                              </Dialog>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-            </div>
+            <Adminjobdisplay/>
           )}
 
           {/* Analytics Tab */}
           {activeTab === "analytics" && (
-            <div className="space-y-6 animate-fade-in">
-              <div className="grid md:grid-cols-4 gap-4">
-                <Card className="bg-card border-border">
-                  <CardContent className="p-4 text-center">
-                    <Activity className="w-8 h-8 text-primary mx-auto mb-2" />
-                    <p className="text-2xl font-bold text-foreground">89%</p>
-                    <p className="text-sm text-muted-foreground">Job Completion Rate</p>
-                  </CardContent>
-                </Card>
-                <Card className="bg-card border-border">
-                  <CardContent className="p-4 text-center">
-                    <TrendingUp className="w-8 h-8 text-green-500 mx-auto mb-2" />
-                    <p className="text-2xl font-bold text-foreground">₦3,200</p>
-                    <p className="text-sm text-muted-foreground">Avg. Job Value</p>
-                  </CardContent>
-                </Card>
-                <Card className="bg-card border-border">
-                  <CardContent className="p-4 text-center">
-                    <Users className="w-8 h-8 text-accent mx-auto mb-2" />
-                    <p className="text-2xl font-bold text-foreground">4.7</p>
-                    <p className="text-sm text-muted-foreground">Avg. User Rating</p>
-                  </CardContent>
-                </Card>
-                <Card className="bg-card border-border">
-                  <CardContent className="p-4 text-center">
-                    <Briefcase className="w-8 h-8 text-yellow-500 mx-auto mb-2" />
-                    <p className="text-2xl font-bold text-foreground">2.3hrs</p>
-                    <p className="text-sm text-muted-foreground">Avg. Job Duration</p>
-                  </CardContent>
-                </Card>
-              </div>
-
-              <div className="grid lg:grid-cols-2 gap-6">
-                <Card className="bg-card border-border">
-                  <CardHeader>
-                    <CardTitle>Monthly Revenue</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="h-64 flex items-end justify-between gap-2">
-                      {[180, 220, 195, 280, 310, 290, 350, 420, 380, 450, 520, 580].map((value, index) => (
-                        <div key={index} className="flex flex-col items-center gap-2 flex-1">
-                          <div 
-                            className="w-full bg-green-500/20 rounded-t-lg hover:bg-green-500/30 transition-colors"
-                            style={{ height: `${(value / 580) * 100}%` }}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                    <div className="flex justify-between mt-2 text-xs text-muted-foreground">
-                      <span>Jan</span>
-                      <span>Dec</span>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-card border-border">
-                  <CardHeader>
-                    <CardTitle>User Growth</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="h-64 flex items-end justify-between gap-2">
-                      {[50, 80, 120, 180, 250, 340, 420, 520, 650, 800, 980, 1247].map((value, index) => (
-                        <div key={index} className="flex flex-col items-center gap-2 flex-1">
-                          <div 
-                            className="w-full bg-primary/20 rounded-t-lg hover:bg-primary/30 transition-colors"
-                            style={{ height: `${(value / 1247) * 100}%` }}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                    <div className="flex justify-between mt-2 text-xs text-muted-foreground">
-                      <span>Jan</span>
-                      <span>Dec</span>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
+            <Adminanalytics/>
           )}
 
-          {/* Reports Tab */}
           {activeTab === "reports" && (
             <div className="space-y-6 animate-fade-in">
               <Card className="bg-card border-border">
