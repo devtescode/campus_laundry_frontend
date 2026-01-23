@@ -20,6 +20,7 @@ const Adminoverview = () => {
         bannedUsers: 23,
         reportedPosts: 15
     };
+    
     const recentActivity = [
         { id: 1, action: "New user registered", user: "Blessing A.", time: "2 mins ago", type: "user" },
         { id: 2, action: "Job reported for spam", user: "Anonymous", time: "15 mins ago", type: "report" },

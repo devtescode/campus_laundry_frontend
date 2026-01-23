@@ -8,9 +8,7 @@ import { Input } from "@/components/ui/input";
 import { 
   Users, 
   Briefcase, 
-  DollarSign, 
   Search,
-  Ban,
   Shield,
   BarChart3,
   AlertTriangle,
@@ -20,8 +18,6 @@ import {
   Menu,
   X,
   Home,
-  UserCheck,
-  ShoppingBag,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -87,11 +83,6 @@ const AdminDashboard = () => {
       setSidebarOpen(false);
     }
   };
-
- 
-
-
-
   const LogoutBtn = ()=>{
     navigate("/adminauth")
   sessionStorage.removeItem("admin")
@@ -153,14 +144,11 @@ const AdminDashboard = () => {
           <Button 
             variant="ghost" 
             className={`w-full ${sidebarOpen ? 'justify-start' : 'justify-center'} text-red-400 hover:text-red-300 hover:bg-red-500/10`}
-            // onClick={() => navigate('/adminauth')}
             onClick={LogoutBtn}
           >
             <LogOut className="w-5 h-5" />
             {sidebarOpen && <span className="ml-2">Logout</span>}
           </Button>
-          
-    
         </div>
       </aside>
       )}
@@ -233,5 +221,4 @@ const AdminDashboard = () => {
     </div>
   );
 };
-
 export default AdminDashboard;
