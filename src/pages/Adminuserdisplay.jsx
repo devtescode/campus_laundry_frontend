@@ -4,7 +4,8 @@ import axios from "axios";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Ban, Eye, CheckCircle } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Ban, Eye, CheckCircle, Search } from "lucide-react";
 
 import {
   Table,
@@ -24,11 +25,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import Loader from "./Loaderpage/Loader";
 
 const Adminuserdisplay = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // ✅ Fetch users from backend
   const fetchUsers = async () => {
@@ -50,38 +54,38 @@ const Adminuserdisplay = () => {
   }, []);
 
   // ✅ Ban user
-  const handleBanUser = async (user) => {
-    try {
-      await axios.put(
-        `http://localhost:5000/api/users/ban/${user._id}`
-      );
+  // const handleBanUser = async (user) => {
+  //   try {
+  //     await axios.put(
+  //       `http://localhost:5000/api/users/ban/${user._id}`
+  //     );
 
-      setUsers((prev) =>
-        prev.map((u) =>
-          u._id === user._id ? { ...u, status: "Banned" } : u
-        )
-      );
-    } catch (error) {
-      console.error("Error banning user:", error);
-    }
-  };
+  //     setUsers((prev) =>
+  //       prev.map((u) =>
+  //         u._id === user._id ? { ...u, status: "Banned" } : u
+  //       )
+  //     );
+  //   } catch (error) {
+  //     console.error("Error banning user:", error);
+  //   }
+  // };
 
-  // ✅ Unban user
-  const handleUnbanUser = async (user) => {
-    try {
-      await axios.put(
-        `http://localhost:5000/api/users/unban/${user._id}`
-      );
+  // // ✅ Unban user
+  // const handleUnbanUser = async (user) => {
+  //   try {
+  //     await axios.put(
+  //       `http://localhost:5000/api/users/unban/${user._id}`
+  //     );
 
-      setUsers((prev) =>
-        prev.map((u) =>
-          u._id === user._id ? { ...u, status: "Active" } : u
-        )
-      );
-    } catch (error) {
-      console.error("Error unbanning user:", error);
-    }
-  };
+  //     setUsers((prev) =>
+  //       prev.map((u) =>
+  //         u._id === user._id ? { ...u, status: "Active" } : u
+  //       )
+  //     );
+  //   } catch (error) {
+  //     console.error("Error unbanning user:", error);
+  //   }
+  // };
 
   // ✅ Badge styling
   const getStatusBadge = (status) => {
@@ -95,7 +99,7 @@ const Adminuserdisplay = () => {
 
   // ✅ Filter users
   const filteredUsers = users.filter((user) =>
-    (user.fullName || "")
+    (user.fullname || "")
       .toLowerCase()
       .includes(searchQuery.toLowerCase()) ||
     (user.email || "")
@@ -105,12 +109,20 @@ const Adminuserdisplay = () => {
       .toLowerCase()
       .includes(searchQuery.toLowerCase())
   );
+  
+  
+
+  // ✅ Handle view user details
+  const handleViewUser = (user) => {
+    setSelectedUser(user);
+    setIsModalOpen(true);
+  };
 
   // ✅ Loading UI
   if (loading) {
     return (
-      <div className="text-center py-10 text-muted-foreground">
-        Loading users...
+      <div className="flex justify-center items-center py-20">
+        <Loader />
       </div>
     );
   }
@@ -118,6 +130,39 @@ const Adminuserdisplay = () => {
   return (
     <div className="space-y-6 animate-fade-in">
       <Card className="bg-card border-border">
+        <div className="p-4 border-b border-border">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold">User Management</h2>
+              <div className="text-sm text-muted-foreground sm:hidden">
+                {searchQuery ? (
+                  <>{filteredUsers.length} of {users.length} users</>
+                ) : (
+                  <>Total: {users.length}</>
+                )}
+              </div>
+            </div>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+              <div className="relative flex-1 sm:max-w-sm">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                <Input
+                  type="text"
+                  placeholder="Search users by name, email..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <div className="hidden sm:block text-sm text-muted-foreground">
+                {searchQuery ? (
+                  <>Showing <span className="font-medium text-foreground">{filteredUsers.length}</span> of <span className="font-medium text-foreground">{users.length}</span> users</>
+                ) : (
+                  <>Total Users: <span className="font-medium text-foreground">{users.length}</span></>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
         <CardContent className="p-0">
           <Table>
             <TableHeader>
@@ -125,9 +170,9 @@ const Adminuserdisplay = () => {
                 <TableHead>User</TableHead>
                 {/* <TableHead>University</TableHead> */}
                 <TableHead>Role</TableHead>
-                <TableHead>Jobs</TableHead>
-                <TableHead>Rating</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>Post</TableHead>
+                <TableHead>Job</TableHead>
+                {/* <TableHead>Status</TableHead> */}
                 <TableHead>Joined</TableHead>
                 <TableHead className="text-right">
                   Actions
@@ -168,20 +213,20 @@ const Adminuserdisplay = () => {
                   </TableCell>
 
                   <TableCell className="text-muted-foreground">
-                    {user.jobs || 0}
+                    {user.jobs || "-"}
                   </TableCell>
 
                   <TableCell>
-                    <span className="flex items-center gap-1 text-yellow-500">
-                      ★ {user.rating || 0}
+                    <span className="flex items-center gap-1 text-black-500">
+                      {user.jobsWashed  || "-"}
                     </span>
                   </TableCell>
 
-                  <TableCell>
+                  {/* <TableCell>
                     <Badge className={getStatusBadge(user.status)}>
                       {user.status || "Active"}
                     </Badge>
-                  </TableCell>
+                  </TableCell> */}
 
                   <TableCell className="text-muted-foreground">
                     {user.createdAt
@@ -191,11 +236,15 @@ const Adminuserdisplay = () => {
 
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <Button variant="ghost" size="icon">
+                      <Button 
+                        variant="ghost" 
+                        size="icon"
+                        onClick={() => handleViewUser(user)}
+                      >
                         <Eye className="w-4 h-4" />
                       </Button>
 
-                      <Dialog>
+                      {/* <Dialog>
                         <DialogTrigger asChild>
                           <Button
                             variant="ghost"
@@ -255,7 +304,7 @@ const Adminuserdisplay = () => {
                             </Button>
                           </DialogFooter>
                         </DialogContent>
-                      </Dialog>
+                      </Dialog> */}
                     </div>
                   </TableCell>
                 </TableRow>
@@ -264,6 +313,88 @@ const Adminuserdisplay = () => {
           </Table>
         </CardContent>
       </Card>
+
+      {/* User Details Modal */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>User Details</DialogTitle>
+            <DialogDescription>
+              Detailed information about the selected user
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedUser && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                  <span className="text-lg font-medium text-primary">
+                    {selectedUser.fullname?.charAt(0)}
+                  </span>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg">{selectedUser.fullname}</h3>
+                  <p className="text-sm text-muted-foreground">{selectedUser.email}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Role</label>
+                  <p className="text-sm">{selectedUser.role || "Not specified"}</p>
+                </div>
+                {/* <div>
+                  <label className="text-sm font-medium text-muted-foreground">Status</label>
+                  <Badge className={getStatusBadge(selectedUser.status)}>
+                    {selectedUser.status || "Active"}
+                  </Badge>
+                </div> */}
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Post</label>
+                  <p className="text-sm">{selectedUser.jobs || "-"}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Job</label>
+                  <p className="text-sm flex items-center gap-1">
+                    <span className="text-yellow-500"></span> {selectedUser.jobsWashed  || "-"}
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-muted-foreground">Joined Date</label>
+                <p className="text-sm">
+                  {selectedUser.createdAt
+                    ? new Date(selectedUser.createdAt).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })
+                    : "Not available"}
+                </p>
+              </div>
+
+              {selectedUser.phonenumber && (
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Phone Number</label>
+                  <p className="text-sm">{selectedUser.phonenumber}</p>
+                </div>
+              )}
+
+              {selectedUser.university && (
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">University</label>
+                  <p className="text-sm">{selectedUser.university}</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button onClick={() => setIsModalOpen(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

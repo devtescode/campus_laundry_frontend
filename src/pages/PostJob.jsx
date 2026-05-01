@@ -92,8 +92,48 @@ const PostJob = () => {
   };
 
 
-  const nextStep = () => setStep(step + 1);
-  const prevStep = () => setStep(step - 1);
+  const nextStep = () => setStep((prevStep) => prevStep + 1);
+  const prevStep = () => setStep((prevStep) => prevStep - 1);
+
+  const canContinue = () => {
+    if (step === 1) {
+      return Boolean(formData.type && formData.quantity && formData.price);
+    }
+    if (step === 2) {
+      return Boolean(formData.hostel && formData.block && formData.room);
+    }
+    if (step === 3) {
+      return Boolean(
+        formData.pickupDate &&
+          formData.pickupTime &&
+          formData.deliveryDate &&
+          formData.deliveryTime,
+      );
+    }
+    return true;
+  };
+
+  const renderNavigation = ({ showBack, nextLabel, nextDisabled, helperText }) => (
+    <div className="mt-6 space-y-3">
+      <div className="flex flex-col sm:flex-row items-center gap-3">
+        {showBack && (
+          <Button type="button" variant="outline" className="flex-1" onClick={prevStep}>
+            <ArrowLeft className="w-4 h-4 mr-2" /> Back
+          </Button>
+        )}
+        <Button
+          type="button"
+          className="flex-1"
+          onClick={nextStep}
+          disabled={nextDisabled}
+        >
+          {nextLabel}
+          <ArrowRight className="w-4 h-4 ml-2" />
+        </Button>
+      </div>
+      <p className="text-xs text-muted-foreground">{helperText}</p>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -102,21 +142,24 @@ const PostJob = () => {
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-4 max-w-2xl">
           {/* Progress Steps */}
-          <div className="flex items-center justify-center mb-12">
-            {[1, 2, 3, 4].map((s) => (
-              <div key={s} className="flex items-center">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-medium transition-all ${step >= s
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-muted-foreground"
-                  }`}>
-                  {step > s ? <CheckCircle className="w-5 h-5" /> : s}
+          <div className="flex flex-col items-center justify-center mb-8 gap-3">
+            <div className="flex items-center justify-center">
+              {[1, 2, 3, 4].map((s) => (
+                <div key={s} className="flex items-center">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center font-medium transition-all ${step >= s
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground"
+                    }`}>
+                    {step > s ? <CheckCircle className="w-5 h-5" /> : s}
+                  </div>
+                  {s < 4 && (
+                    <div className={`w-16 h-1 mx-2 rounded transition-all ${step > s ? "bg-primary" : "bg-muted"
+                      }`} />
+                  )}
                 </div>
-                {s < 4 && (
-                  <div className={`w-16 h-1 mx-2 rounded transition-all ${step > s ? "bg-primary" : "bg-muted"
-                    }`} />
-                )}
-              </div>
-            ))}
+              ))}
+            </div>
+            <div className="text-sm text-muted-foreground">Step {step} of 4</div>
           </div>
 
           {/* Step 1: Laundry Type */}
@@ -137,6 +180,7 @@ const PostJob = () => {
                     <Label
                       key={type.id}
                       htmlFor={type.id}
+                      onClick={() => setFormData({ ...formData, type: type.id })}
                       className={`flex flex-col items-center p-6 rounded-xl border-2 cursor-pointer transition-all ${formData.type === type.id
                           ? "border-primary bg-primary/10"
                           : "border-border hover:border-primary/50"
@@ -177,13 +221,14 @@ const PostJob = () => {
                   </div>
                 </div>
 
-                <Button
-                  className="w-full mt-6"
-                  onClick={nextStep}
-                  disabled={!formData.type || !formData.quantity || !formData.price}
-                >
-                  Continue <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
+                {renderNavigation({
+                  showBack: false,
+                  nextLabel: "Next",
+                  nextDisabled: !canContinue(),
+                  helperText: !canContinue()
+                    ? "Complete type, quantity, and price to continue."
+                    : "",
+                })}
               </CardContent>
             </Card>
           )}
@@ -231,18 +276,14 @@ const PostJob = () => {
                   </div>
                 </div>
 
-                <div className="flex gap-4 mt-6">
-                  <Button variant="outline" className="flex-1" onClick={prevStep}>
-                    <ArrowLeft className="w-4 h-4 mr-2" /> Back
-                  </Button>
-                  <Button
-                    className="flex-1"
-                    onClick={nextStep}
-                    disabled={!formData.hostel || !formData.block || !formData.room}
-                  >
-                    Continue <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
-                </div>
+                {renderNavigation({
+                  showBack: true,
+                  nextLabel: "Next",
+                  nextDisabled: !canContinue(),
+                  helperText: !canContinue()
+                    ? "Complete hostel, block, and room to continue."
+                    : "",
+                })}
               </CardContent>
             </Card>
           )}
@@ -309,18 +350,14 @@ const PostJob = () => {
                   </div>
                 </div>
 
-                <div className="flex gap-4 mt-6">
-                  <Button variant="outline" className="flex-1" onClick={prevStep}>
-                    <ArrowLeft className="w-4 h-4 mr-2" /> Back
-                  </Button>
-                  <Button
-                    className="flex-1"
-                    onClick={nextStep}
-                    disabled={!formData.pickupDate || !formData.deliveryDate}
-                  >
-                    Continue <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
-                </div>
+                {renderNavigation({
+                  showBack: true,
+                  nextLabel: "Next",
+                  nextDisabled: !canContinue(),
+                  helperText: !canContinue()
+                    ? "Fill pickup and delivery date/time to continue."
+                    : "",
+                })}
               </CardContent>
             </Card>
           )}

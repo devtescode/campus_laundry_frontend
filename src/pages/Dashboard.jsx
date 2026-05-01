@@ -214,7 +214,7 @@ useEffect(() => {
         const data = await res.json();
         console.log(data, "dataaaaaaaaaaaaaaaa");
 
-        setWasherJobs(data);
+        setWasherJobs(Array.isArray(data) ? data : data.jobs || []);
       } catch (error) {
         console.log("Error fetching jobs:", error);
       } finally {
