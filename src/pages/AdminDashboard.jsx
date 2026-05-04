@@ -18,6 +18,7 @@ import {
   Menu,
   X,
   Home,
+  MessagesSquare,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -26,6 +27,7 @@ import Adminjobdisplay from "./Adminjobdisplay";
 import Adminanalytics from "./Adminanalytics";
 import Adminreport from "./Adminreport";
 import Adminoverview from "./Adminoverview";
+import Adminchat from "./Adminchat";
 
 const stats = {
   totalUsers: 1247,
@@ -121,6 +123,7 @@ const AdminDashboard = () => {
             { id: "overview", label: "Overview", icon: Home },
             { id: "users", label: "Users", icon: Users },
             { id: "jobs", label: "Jobs", icon: Briefcase },
+            { id: "chats", label: "Chats", icon: MessagesSquare },
             { id: "analytics", label: "Analytics", icon: BarChart3 },
             { id: "reports", label: "Reports", icon: AlertTriangle },
           ].map((item) => (
@@ -215,6 +218,10 @@ const AdminDashboard = () => {
 
           {activeTab === "reports" && (
             <Adminreport/>
+          )}
+
+          {activeTab === "chats" && (
+            <Adminchat/>
           )}
         </div>
       </main>

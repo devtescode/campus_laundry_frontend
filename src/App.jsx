@@ -44,9 +44,6 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/verify-email/:token" element={<Emailverify />} />
-
-          
-
           <Route
           element={
             <Adminprotected>

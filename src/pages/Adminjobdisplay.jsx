@@ -272,7 +272,7 @@ const Adminjobdisplay = () => {
 
                                                     <DialogHeader className="pb-4 border-b">
                                                         <DialogTitle className="text-2xl">
-                                                            Job Details - Job #{selectedJob?.id}
+                                                            Job Details - #{i + 1}
                                                         </DialogTitle>
                                                     </DialogHeader>
 
@@ -409,7 +409,7 @@ const Adminjobdisplay = () => {
                                                                 </div>
                                                             </div>
 
-                                                            {/* WASHER SECTION */}
+                                                            
                                                             <div className="bg-purple-50 dark:bg-purple-950 rounded-lg p-4 space-y-3">
                                                                 <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
                                                                     🧺 Assigned Washer
