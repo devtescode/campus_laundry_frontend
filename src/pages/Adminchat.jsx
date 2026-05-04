@@ -85,7 +85,6 @@ const Adminchat = () => {
                     </div>
                 </div>
             </div>
-
             <div className="grid grid-cols-1 xl:grid-cols-[380px_minmax(0,1fr)] gap-2 min-h-[calc(100vh-200px)]">
                 <Card className="shadow-lg shadow-slate-200/50 overflow-hidden border-none rounded-none">
                     <CardContent className="p-5 space-y-5">
