@@ -75,14 +75,6 @@ const Adminchat = () => {
         <div className="space-y-0 p-0 animate-fade-in">
             <div className="border-none bg-card/80 p-5 shadow-sm backdrop-blur-lg">
                 <div className="flex flex gap-4 xl:flex-row xl:items-center xl:justify-between">
-                    {/* <div className="space-y-2">
-            <p className="text-sm uppercase tracking-[0.24em] text-primary">Admin chat center</p>
-            <h1 className="text-3xl font-semibold text-foreground">Manage support conversations</h1>
-            <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-              Quickly switch between job conversations, review message history, and monitor support activity in a clean, readable layout.
-            </p>
-          </div> */}
-
                     <div className="flex flex-wrap items-center gap-3">
                         <span className="rounded-full bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
                             {chats.length} total threads
