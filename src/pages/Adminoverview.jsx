@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
     Users,
@@ -9,35 +9,65 @@ import {
     UserCheck,
     ShoppingBag,
 } from "lucide-react";
+import axios from 'axios';
 const Adminoverview = () => {
-    const stats = {
-        totalUsers: 1247,
-        activeUsers: 892,
-        totalJobs: 3456,
-        activeJobs: 234,
-        totalRevenue: 2450000,
-        monthlyGrowth: 12.5,
-        bannedUsers: 23,
-        reportedPosts: 15
+
+
+
+    const [recentActivity, setRecentActivity] = useState([]);
+
+    const fetchActivity = async () => {
+        try {
+            const res = await axios.get("http://localhost:5000/admin/recentactivity");
+            setRecentActivity(res.data.activity || []);
+        } catch (err) {
+            console.error(err);
+        }
     };
+
+    useEffect(() => {
+        fetchActivity();
+    }, []);
+
     
-    const recentActivity = [
-        { id: 1, action: "New user registered", user: "Blessing A.", time: "2 mins ago", type: "user" },
-        { id: 2, action: "Job reported for spam", user: "Anonymous", time: "15 mins ago", type: "report" },
-        { id: 3, action: "Payment processed", amount: "₦5,000", time: "30 mins ago", type: "payment" },
-        { id: 4, action: "User banned", user: "Fake Account", time: "1 hour ago", type: "ban" },
-        { id: 5, action: "New job posted", user: "Chidi M.", time: "2 hours ago", type: "job" },
-    ];
+    const [stats, setStats] = useState({
+        totalUsers: 0,
+        totalJobs: 0,
+        activeJobs: 0,
+        totalRevenue: 0,
+        reportedPosts: 0,
+        monthlyGrowth: 0,
+    });
+
+
+    const fetchStats = async () => {
+        try {
+            const res = await axios.get("http://localhost:5000/admin/dashboardstats");
+            setStats(res.data);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    useEffect(() => {
+        fetchStats();
+    }, []);
     return (
         <div className="space-y-6 animate-fade-in">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+
+                {/* USERS */}
                 <Card className="bg-card border-border">
                     <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm text-muted-foreground">Total Users</p>
-                                <p className="text-2xl font-bold text-foreground">{stats.totalUsers.toLocaleString()}</p>
-                                <p className="text-xs text-green-400">+{stats.monthlyGrowth}% this month</p>
+                                <p className="text-2xl font-bold text-foreground">
+                                    {stats.totalUsers.toLocaleString()}
+                                </p>
+                                <p className="text-xs text-green-400">
+                                    +{stats.monthlyGrowth}% this month
+                                </p>
                             </div>
                             <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
                                 <Users className="w-6 h-6 text-primary" />
@@ -46,13 +76,18 @@ const Adminoverview = () => {
                     </CardContent>
                 </Card>
 
+                {/* JOBS */}
                 <Card className="bg-card border-border">
                     <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm text-muted-foreground">Total Jobs</p>
-                                <p className="text-2xl font-bold text-foreground">{stats.totalJobs.toLocaleString()}</p>
-                                <p className="text-xs text-muted-foreground">{stats.activeJobs} active</p>
+                                <p className="text-2xl font-bold text-foreground">
+                                    {stats.totalJobs.toLocaleString()}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                    {stats.activeJobs} active
+                                </p>
                             </div>
                             <div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center">
                                 <Briefcase className="w-6 h-6 text-accent" />
@@ -61,14 +96,23 @@ const Adminoverview = () => {
                     </CardContent>
                 </Card>
 
+                {/* REVENUE */}
                 <Card className="bg-card border-border">
                     <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm text-muted-foreground">Revenue</p>
-                                <p className="text-2xl font-bold text-foreground">₦{(stats.totalRevenue / 1000000).toFixed(1)}M</p>
+
+                                <p className="text-2xl font-bold text-foreground">
+                                    ₦{stats.totalRevenue.toLocaleString()}
+                                </p>
+
+                                {/* optional fancy format */}
+                                {/* ₦{(stats.totalRevenue / 1000000).toFixed(1)}M */}
+
                                 <p className="text-xs text-green-400">+8.2% this month</p>
                             </div>
+
                             <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center">
                                 <DollarSign className="w-6 h-6 text-green-500" />
                             </div>
@@ -76,12 +120,15 @@ const Adminoverview = () => {
                     </CardContent>
                 </Card>
 
+                {/* REPORTS */}
                 <Card className="bg-card border-border">
                     <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm text-muted-foreground">Reports</p>
-                                <p className="text-2xl font-bold text-foreground">{stats.reportedPosts}</p>
+                                <p className="text-2xl font-bold text-foreground">
+                                    {stats.reportedPosts}
+                                </p>
                                 <p className="text-xs text-yellow-400">Needs attention</p>
                             </div>
                             <div className="w-12 h-12 rounded-xl bg-yellow-500/20 flex items-center justify-center">
@@ -90,6 +137,7 @@ const Adminoverview = () => {
                         </div>
                     </CardContent>
                 </Card>
+
             </div>
 
             <div className="grid lg:grid-cols-3 gap-6">
@@ -116,25 +164,68 @@ const Adminoverview = () => {
                     <CardHeader>
                         <CardTitle>Recent Activity</CardTitle>
                     </CardHeader>
+
                     <CardContent className="space-y-4">
                         {recentActivity.map((activity) => (
                             <div key={activity.id} className="flex items-start gap-3">
-                                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${activity.type === 'user' ? 'bg-primary/20' :
-                                    activity.type === 'report' ? 'bg-yellow-500/20' :
-                                        activity.type === 'payment' ? 'bg-green-500/20' :
-                                            activity.type === 'ban' ? 'bg-red-500/20' :
-                                                'bg-accent/20'
-                                    }`}>
-                                    {activity.type === 'user' && <UserCheck className="w-4 h-4 text-primary" />}
-                                    {activity.type === 'report' && <AlertTriangle className="w-4 h-4 text-yellow-500" />}
-                                    {activity.type === 'payment' && <DollarSign className="w-4 h-4 text-green-500" />}
-                                    {activity.type === 'ban' && <Ban className="w-4 h-4 text-red-500" />}
-                                    {activity.type === 'job' && <ShoppingBag className="w-4 h-4 text-accent" />}
+
+                                {/* ICON BACKGROUND */}
+                                <div
+                                    className={`w-8 h-8 rounded-full flex items-center justify-center ${activity.type === "user"
+                                        ? "bg-primary/20"
+                                        : activity.type === "report"
+                                            ? "bg-yellow-500/20"
+                                            : activity.type === "payment"
+                                                ? "bg-green-500/20"
+                                                : activity.type === "ban"
+                                                    ? "bg-red-500/20"
+                                                    : activity.type === "washer"
+                                                        ? "bg-blue-500/20"
+                                                        : "bg-accent/20"
+                                        }`}
+                                >
+                                    {/* ICONS */}
+                                    {activity.type === "user" && (
+                                        <UserCheck className="w-4 h-4 text-primary" />
+                                    )}
+
+                                    {activity.type === "report" && (
+                                        <AlertTriangle className="w-4 h-4 text-yellow-500" />
+                                    )}
+
+                                    {activity.type === "payment" && (
+                                        <DollarSign className="w-4 h-4 text-green-500" />
+                                    )}
+
+                                    {activity.type === "ban" && (
+                                        <Ban className="w-4 h-4 text-red-500" />
+                                    )}
+
+                                    {activity.type === "job" && (
+                                        <ShoppingBag className="w-4 h-4 text-accent" />
+                                    )}
+
+                                    {/* 🧼 NEW: WASHER */}
+                                    {activity.type === "washer" && (
+                                        <UserCheck className="w-4 h-4 text-blue-500" />
+                                    )}
                                 </div>
+
+                                {/* TEXT */}
                                 <div className="flex-1">
-                                    <p className="text-sm text-foreground">{activity.action}</p>
+                                    <p className="text-sm text-foreground">
+                                        {activity.action}
+                                    </p>
+
                                     <p className="text-xs text-muted-foreground">
-                                        {activity.user || activity.amount} • {activity.time}
+                                        {activity.user || activity.amount} •{" "}
+                                        {new Date(activity.time).toLocaleString("en-US", {
+                                            month: "short",
+                                            day: "numeric",
+                                            hour: "numeric",
+                                            minute: "2-digit",
+                                            hour12: true,
+                                        })}
                                     </p>
                                 </div>
                             </div>

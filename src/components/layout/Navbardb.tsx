@@ -99,13 +99,11 @@ const Navbardb = () => {
                                     {link.label}
                                 </Link>
                             ))}
-                            <div className="flex gap-2 mt-4 pt-4 border-t border-border" onClick={LogoutBtn}>
-                                {/* <Link to="/login"> */}
+                            <div className="flex gap-0 mt-4 pt-4 border-t border-border" onClick={LogoutBtn}>
                                     <Button variant="ghost" size="sm">
                                         logout
                                     </Button>
-                                {/* </Link> */}
-                                <MessageCircleReply />
+                                <LogOut />
                             </div>
                         </div>
                     </div>
