@@ -38,13 +38,9 @@ import { useNavigate } from "react-router-dom";
 import Loader from "./Loaderpage/Loader";
 import axios from "axios";
 
-const posterStats = {
-  jobsPosted: 12,
-  pendingJobs: 3,
-  completedJobs: 9,
-  totalSpent: 45000,
-  averageRating: 4.8
-};
+
+
+
 
 // const washerStats = {
 //   jobsAccepted: 24,
@@ -54,6 +50,8 @@ const posterStats = {
 //   averageRating: 4.9,
 //   thisWeekEarnings: 15000
 // };
+
+
 
 
 // const washerJobs = [
@@ -130,46 +128,77 @@ const getStatusColor = (status) => {
 
 
 const Dashboard = () => {
- const [role, setRole] = useState("poster");
+  const [role, setRole] = useState("poster");
 
-const [washerStats, setWasherStats] = useState({
-  jobsAccepted: 0,             // total jobs applied by washer
-  completedJobs: 0,            // completed jobs
-  appliedJobs: 0,              // current active jobs (not completed)
-  currentJobsTotalPrice: 0,    // total price of current applied jobs
-  completedEarnings: 0,        // total earnings from completed jobs
-  jobPrices: [],               // array of { jobId, price, status }
-});
+  const [washerStats, setWasherStats] = useState({
+    jobsAccepted: 0,             // total jobs applied by washer
+    completedJobs: 0,            // completed jobs
+    appliedJobs: 0,              // current active jobs (not completed)
+    currentJobsTotalPrice: 0,    // total price of current applied jobs
+    completedEarnings: 0,        // total earnings from completed jobs
+    jobPrices: [],               // array of { jobId, price, status }
+  });
+  const [posterStats, setPosterStats] = useState({
+    jobsPosted: 0,
+    pendingJobs: 0,
+    completedJobs: 0,
+    totalSpent: 0,
+    averageRating: 0,
+  });
 
-useEffect(() => {
-  if (role !== "washer") return;
+  const fetchPosterStats = async () => {
+    try {
+      const userId = JSON.parse(sessionStorage.getItem("laundryUser")).id;
+      console.log(userId, "userID");
 
-  const user = JSON.parse(sessionStorage.getItem("laundryUser"));
-  if (!user?.token) return;
 
-  console.log("Fetching washer stats for user:", user);
+      const res = await axios.get(
+        `http://localhost:5000/userlaundry/posterstats/${userId}`
+      );
+      console.log(res, "response");
 
-  fetch("http://localhost:5000/userlaundry/washerstats", {
-    headers: {
-      Authorization: `Bearer ${user.token}`,
-    },
-  })
-    .then(res => {
-      if (!res.ok) throw new Error(`HTTP ${res.status} - ${res.statusText}`);
-      return res.json();
+
+      setPosterStats(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchPosterStats();
+  }, []);
+
+  useEffect(() => {
+    if (role !== "washer") return;
+
+    const user = JSON.parse(sessionStorage.getItem("laundryUser"));
+    // console.log(user, "userrrrrr");
+
+    if (!user?.token) return;
+
+    // console.log("Fetching washer stats for user:", user);
+
+    fetch("http://localhost:5000/userlaundry/washerstats", {
+      headers: {
+        Authorization: `Bearer ${user.token}`,
+      },
     })
-    .then(data => {
-      setWasherStats({
-        jobsAccepted: data.jobsAccepted || 0,
-        completedJobs: data.completedJobs || 0,
-        appliedJobs: data.appliedJobs || 0,
-        currentJobsTotalPrice: data.currentJobsTotalPrice || 0,
-        completedEarnings: data.completedEarnings || 0,
-        jobPrices: Array.isArray(data.jobPrices) ? data.jobPrices : [],
-      });
-    })
-    .catch(err => console.error("Failed to fetch washer stats:", err));
-}, [role]);
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status} - ${res.statusText}`);
+        return res.json();
+      })
+      .then(data => {
+        setWasherStats({
+          jobsAccepted: data.jobsAccepted || 0,
+          completedJobs: data.completedJobs || 0,
+          appliedJobs: data.appliedJobs || 0,
+          currentJobsTotalPrice: data.currentJobsTotalPrice || 0,
+          completedEarnings: data.completedEarnings || 0,
+          jobPrices: Array.isArray(data.jobPrices) ? data.jobPrices : [],
+        });
+      })
+      .catch(err => console.error("Failed to fetch washer stats:", err));
+  }, [role]);
 
 
   const navigate = useNavigate();
@@ -212,7 +241,7 @@ useEffect(() => {
           `http://localhost:5000/userlaundry/getWasherJobs/${washerId}`
         );
         const data = await res.json();
-        console.log(data, "dataaaaaaaaaaaaaaaa");
+        // console.log(data, "dataaaaaaaaaaaaaaaa");
 
         setWasherJobs(Array.isArray(data) ? data : data.jobs || []);
       } catch (error) {
@@ -287,9 +316,6 @@ useEffect(() => {
 
   const user = JSON.parse(sessionStorage.getItem("laundryUser"));
   const firstName = user?.fullname?.split(" ")[0] || "User";
-
-
-
 
 
 
@@ -398,7 +424,7 @@ useEffect(() => {
           setLoadingMessages(false);
         });
     }, [job._id]);
-
+    const [sending, setSending] = useState(false);
     const sendMessage = async () => {
       if (!text.trim()) return;
 
@@ -422,6 +448,7 @@ useEffect(() => {
       };
 
       try {
+        setSending(true);
         // Send to server
         const response = await fetch("http://localhost:5000/userlaundry/sendmessages", {
           method: "POST",
@@ -446,8 +473,9 @@ useEffect(() => {
 
         setText(""); // clear input
       } catch (err) {
-        console.error(err);
-        alert("Failed to send message");
+        console.log(err);
+      } finally {
+        setSending(false);
       }
     };
 
@@ -455,54 +483,209 @@ useEffect(() => {
 
 
 
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/50 w-full h-full p-2">
-        <div className="bg-card w-full max-w-md rounded-xl shadow-xl flex flex-col p-4 max-h-[75vh]">
 
-          {/* Header */}
-          <div className="flex justify-between items-center mb-3 border-b border-border pb-2">
-            <span className="font-semibold text-lg">Chat</span>
-            <button
-              onClick={onClose}
-              className="text-muted-foreground hover:text-red-500 transition-colors text-lg"
-            >
-              ✕
-            </button>
+
+
+
+    return (
+      <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm">
+
+        {/* Overlay */}
+        <div
+          onClick={onClose}
+          className="absolute inset-0"
+        />
+
+        {/* CHAT SHEET */}
+        <div
+          className="
+      absolute bottom-0 left-0 right-0
+      w-full h-[82vh]
+      bg-background
+      rounded-t-[28px]
+      border-t border-border
+      shadow-2xl
+      flex flex-col
+      overflow-hidden
+      animate-in slide-in-from-bottom duration-300
+    "
+        >
+
+          {/* TOP BAR */}
+          <div className="flex justify-center py-2">
+            <div className="w-14 h-1.5 rounded-full bg-muted-foreground/30" />
           </div>
 
-          {/* Messages */}
-          <div className="flex-1 overflow-y-auto space-y-2 mb-3 scrollbar-thin scrollbar-thumb-primary/50 scrollbar-track-muted/20 px-1">
+          {/* HEADER */}
+          <div className="px-4 pb-3 border-b border-border bg-background/95 backdrop-blur sticky top-0 z-10">
+            <div className="flex items-center justify-between">
+
+              {/* USER */}
+              <div className="flex items-center gap-3">
+
+                <div className="relative">
+                  <div className="w-12 h-12 rounded-full bg-primary/15 flex items-center justify-center shadow-sm border border-primary/10">
+                    <span className="font-semibold text-primary text-base">
+                      {/* {receiverName?.charAt(0) || "U"} */}
+                    </span>
+                  </div>
+
+                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-background" />
+                </div>
+
+                <div>
+                  <h2 className="font-semibold text-[15px] text-foreground">
+                    {/* {receiverName || "Chat"} */}
+                  </h2>
+
+                  <p className="text-xs text-green-500">
+                    Active now
+                  </p>
+                </div>
+              </div>
+
+              {/* CLOSE */}
+              <button
+                onClick={onClose}
+                className="
+            w-10 h-10 rounded-full
+            flex items-center justify-center
+            hover:bg-red-500/10
+            text-muted-foreground hover:text-red-500
+            transition-all duration-200
+          "
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+
+          {/* MESSAGES */}
+          <div
+            className="
+        flex-1 overflow-y-auto
+        px-3 py-4
+        space-y-3
+        bg-muted/20
+      "
+          >
             {loadingMessages ? (
-              <p className="text-center text-sm text-muted-foreground mt-2">Loading messages...</p>
-            ) : messages.length > 0 ? (
+              <div className="h-full flex items-center justify-center">
+                <div className="flex flex-col items-center gap-2">
+                  <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+                  <p className="text-sm text-muted-foreground">
+                    Loading messages...
+                  </p>
+                </div>
+              </div>
+            ) : messages?.length > 0 ? (
               messages.map((msg) => (
                 <div
                   key={msg._id}
-                  className={`p-2 rounded-lg max-w-[75%] break-words ${msg.sender?._id === user.id ? "ml-auto bg-primary text-white" : "bg-muted text-foreground"
+                  className={`flex ${msg.sender?._id === user.id
+                    ? "justify-end"
+                    : "justify-start"
                     }`}
                 >
-                  <p className="text-sm">{msg.text}</p>
+                  <div
+                    className={`
+                max-w-[82%]
+                px-4 py-3
+                rounded-3xl
+                text-sm
+                shadow-sm
+                break-words
+                animate-in fade-in zoom-in-95 duration-200
+                ${msg.sender?._id === user.id
+                        ? "bg-primary text-white rounded-br-md"
+                        : "bg-background border border-border text-foreground rounded-bl-md"
+                      }
+              `}
+                  >
+                    <p className="leading-relaxed">
+                      {msg.text}
+                    </p>
+
+                    <div
+                      className={`
+                  text-[10px] mt-2 text-right
+                  ${msg.sender?._id === user.id
+                          ? "text-white/70"
+                          : "text-muted-foreground"
+                        }
+                `}
+                    >
+                      {new Date(msg.createdAt).toLocaleTimeString([], {
+                        hour: "numeric",
+                        minute: "2-digit",
+                        hour12: true,
+                      })}
+                    </div>
+                  </div>
                 </div>
               ))
             ) : (
-              <p className="text-center text-sm text-muted-foreground mt-2">
-                No messages yet.
-              </p>
+              <div className="h-full flex flex-col items-center justify-center text-center px-6">
+
+                <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                  <span className="text-3xl">💬</span>
+                </div>
+
+                <h3 className="font-semibold text-foreground text-lg">
+                  No messages yet
+                </h3>
+
+                <p className="text-sm text-muted-foreground mt-1">
+                  Start chatting now
+                </p>
+              </div>
             )}
           </div>
 
-          {/* Input */}
-          <div className="flex gap-2">
-            <textarea
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              rows={2}
-              className="flex-1 border rounded-md px-3 py-2 text-sm resize-none h-[50px]"
-              placeholder="Type a message..."
-            />
-            <Button onClick={sendMessage} className="min-w-[70px]">
-              Send
-            </Button>
+          {/* INPUT AREA */}
+          <div className="border-t border-border bg-background p-3">
+            <div className="flex items-end gap-2">
+
+              <textarea
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                rows={1}
+                placeholder="Type your message..."
+                className="
+            flex-1
+            resize-none
+            rounded-3xl
+            border border-border
+            bg-muted/30
+            px-4 py-3
+            text-sm
+            outline-none
+            focus:ring-2 focus:ring-primary/20
+            min-h-[55px]
+            max-h-[140px]
+            overflow-y-auto
+          "
+              />
+
+              <Button
+                onClick={sendMessage}
+                disabled={sending}
+                className="
+            h-[55px]
+            min-w-[55px]
+            rounded-full
+            shadow-md
+            flex items-center justify-center
+          "
+              >
+                {sending ? (
+                  <div className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                ) : (
+                  "Send"
+                )}
+              </Button>
+
+            </div>
           </div>
         </div>
       </div>
@@ -621,7 +804,7 @@ useEffect(() => {
                       </div>
                       <div>
                         <p className="text-2xl font-bold text-foreground">{posterStats.averageRating}</p>
-                        <p className="text-xs text-muted-foreground">Rating</p>
+                        <p className="text-xs text-muted-foreground">Applied</p>
                       </div>
                     </div>
                   </CardContent>
@@ -644,7 +827,7 @@ useEffect(() => {
                       <div className="px-0 py-2">
                         {loading ? (
                           <Loader />
-                        ) : posterJobs.length === 0 ? (
+                        ) : posterJobs?.length === 0 ? (
                           <p className="text-center text-muted-foreground py-10">
                             No jobs posted yet.
                           </p>
@@ -734,7 +917,8 @@ useEffect(() => {
                                   >
                                     <Eye className="w-3 h-3" /> View Details
                                   </Button>
-                                  {job.status === "Applied" && (
+                                  {/* === "Applied" */}
+                                  {job.status && (
                                     <Button variant="outline" size="sm" className="flex-1 min-w-[100px]" onClick={() => openChat(job)}>
                                       <MessageSquare className="w-3 h-3" /> Message
                                     </Button>
@@ -939,7 +1123,7 @@ useEffect(() => {
                       <div>
                         {/* Applied Jobs: {washerStats.appliedJobs}  */}
                         <p className="text-2xl font-bold text-foreground">
-                           {washerStats.appliedJobs} 
+                          {washerStats.appliedJobs}
                         </p>
                         <p className="text-xs text-muted-foreground">Applied Jobs</p>
                       </div>
@@ -981,7 +1165,7 @@ useEffect(() => {
                           <p>0</p>
                         )} */}
 
-                        <p className="text-2xl font-bold text-foreground">₦{washerStats.currentJobsTotalPrice.toLocaleString()}</p>                        
+                        <p className="text-2xl font-bold text-foreground">₦{washerStats.currentJobsTotalPrice.toLocaleString()}</p>
                         <p className="text-xs text-muted-foreground">Current Jobs Total Price</p>
                       </div>
                     </div>
@@ -993,13 +1177,13 @@ useEffect(() => {
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
                         {/* <DollarSign className="w-5 h-5 text-accent" /> */}
-                        <b  className="w-5 h-5 text-accent text-center">₦</b>
+                        <b className="w-5 h-5 text-accent text-center">₦</b>
                       </div>
                       <div>
 
                         <p className="text-2xl font-bold text-foreground"> ₦{washerStats.completedEarnings.toLocaleString()}</p>
                         {/* <p className="text-2xl font-bold text-foreground">₦{washerStats.totalEarnings.toLocaleString()}</p>  */}
-                        <p className="text-xs text-muted-foreground">Earnings</p>
+                        <p className="text-xs text-muted-foreground">Completed Jobs</p>
                       </div>
                     </div>
                   </CardContent>

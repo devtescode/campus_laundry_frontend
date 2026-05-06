@@ -29,7 +29,7 @@ const Adminoverview = () => {
         fetchActivity();
     }, []);
 
-    
+
     const [stats, setStats] = useState({
         totalUsers: 0,
         totalJobs: 0,
@@ -114,7 +114,11 @@ const Adminoverview = () => {
                             </div>
 
                             <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center">
-                                <DollarSign className="w-6 h-6 text-green-500" />
+
+                                {/* <p className="text-2xl text-green-500 font-bold">₦</p> */}
+                                <div className="w-10 h-10 flex items-center justify-center text-green-500 text-xl font-bold">
+                                    ₦
+                                </div>
                             </div>
                         </div>
                     </CardContent>
