@@ -393,306 +393,328 @@ const Dashboard = () => {
     setChatJob(job);
   };
   const ChatModal = ({ job, onClose }) => {
-    const user = JSON.parse(sessionStorage.getItem("laundryUser"));
-    const [messages, setMessages] = useState([]);
-    const [text, setText] = useState("");
-    const [loadingMessages, setLoadingMessages] = useState(true); // new
-    useEffect(() => {
-      // Lock the body scroll when modal is open
-      document.body.style.overflow = "hidden";
-      return () => {
-        // Restore scroll when modal closes
-        document.body.style.overflow = "auto";
-      };
-    }, []);
+  const user = JSON.parse(sessionStorage.getItem("laundryUser"));
 
+  const [messages, setMessages] = useState([]);
+  const [text, setText] = useState("");
+  const [loadingMessages, setLoadingMessages] = useState(true);
+  const [sending, setSending] = useState(false);
 
-    useEffect(() => {
-      fetch(`http://localhost:5000/userlaundry/getmessages/${job._id}`, {
-        // method: "GET",
-        headers: { Authorization: `Bearer ${user.token}` },
+  // ✅ KEEP YOUR EXISTING LOGIC
+  const senderId = user.id;
+
+  const isPoster =
+    senderId === String(job.userId?._id || job.userId);
+
+  // ✅ GET RECEIVER NAME
+  const receiverName = isPoster
+    ? job?.applicantName ||
+      job?.applicant?.fullname ||
+      "Washer"
+    : job?.userId?.fullname ||
+      "Poster";
+
+  // ✅ GET FIRST LETTER
+  const receiverInitial =
+    receiverName?.charAt(0)?.toUpperCase() || "U";
+
+  useEffect(() => {
+    // Lock body scroll
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, []);
+
+  // ✅ FETCH MESSAGES
+  useEffect(() => {
+    fetch(`http://localhost:5000/userlaundry/getmessages/${job._id}`, {
+      headers: {
+        Authorization: `Bearer ${user.token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setMessages(Array.isArray(data) ? data : []);
+        setLoadingMessages(false);
       })
-        // .then(res => res.json())
-        // .then(setMessages);
-        .then(res => res.json())
-        .then(data => {
-          setMessages(Array.isArray(data) ? data : []);
-          setLoadingMessages(false); // done loading
-        })
-        .catch(err => {
-          console.error(err);
-          setLoadingMessages(false);
-        });
-    }, [job._id]);
-    const [sending, setSending] = useState(false);
-    const sendMessage = async () => {
-      if (!text.trim()) return;
+      .catch((err) => {
+        console.error(err);
+        setLoadingMessages(false);
+      });
+  }, [job._id]);
 
-      const senderId = user.id;
+  // ✅ SEND MESSAGE
+  const sendMessage = async () => {
+    if (!text.trim()) return;
 
-      const receiverId =
-        senderId === String(job.userId?._id || job.userId)
-          ? job.applicant // washer
-          : String(job.userId?._id || job.userId); // poster
+    const receiverId =
+      senderId === String(job.userId?._id || job.userId)
+        ? job.applicant
+        : String(job.userId?._id || job.userId);
 
-      if (!receiverId) {
-        alert("Cannot send message: receiver not defined yet!");
-        return;
-      }
+    if (!receiverId) {
+      alert("Cannot send message: receiver not defined yet!");
+      return;
+    }
 
-      const messageData = {
-        jobId: job._id,
-        senderId,
-        receiverId,
-        text,
-      };
+    const messageData = {
+      jobId: job._id,
+      senderId,
+      receiverId,
+      text,
+    };
 
-      try {
-        setSending(true);
-        // Send to server
-        const response = await fetch("http://localhost:5000/userlaundry/sendmessages", {
+    try {
+      setSending(true);
+
+      const response = await fetch(
+        "http://localhost:5000/userlaundry/sendmessages",
+        {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(messageData),
-        });
+        }
+      );
 
-        if (!response.ok) throw new Error("Failed to send message");
-
-        // Add the new message to the messages array immediately
-        setMessages(prev => [
-          ...prev,
-          {
-            _id: Math.random().toString(36).substring(2), // temporary ID for React key
-            text,
-            sender: { _id: senderId },
-            createdAt: new Date().toISOString(),
-          },
-        ]);
-
-        setText(""); // clear input
-      } catch (err) {
-        console.log(err);
-      } finally {
-        setSending(false);
+      if (!response.ok) {
+        throw new Error("Failed to send message");
       }
-    };
 
+      // ✅ ADD MESSAGE IMMEDIATELY
+      setMessages((prev) => [
+        ...prev,
+        {
+          _id: Math.random().toString(36).substring(2),
+          text,
+          sender: { _id: senderId },
+          createdAt: new Date().toISOString(),
+        },
+      ]);
 
+      setText("");
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setSending(false);
+    }
+  };
 
+  return (
+    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm">
 
+      {/* OVERLAY */}
+      <div
+        onClick={onClose}
+        className="absolute inset-0"
+      />
 
+      {/* CHAT SHEET */}
+      <div
+        className="
+          absolute bottom-0 left-0 right-0
+          w-full h-[85vh] sm:h-[80vh]
+          bg-background
+          rounded-t-[28px]
+          border-t border-border
+          shadow-2xl
+          flex flex-col
+          overflow-hidden
+          animate-in slide-in-from-bottom duration-300
+        "
+      >
 
+        {/* TOP BAR */}
+        <div className="flex justify-center py-2">
+          <div className="w-14 h-1.5 rounded-full bg-muted-foreground/30" />
+        </div>
 
+        {/* HEADER */}
+        <div className="px-4 pb-3 border-b border-border bg-background/95 backdrop-blur sticky top-0 z-10">
+          <div className="flex items-center justify-between">
 
+            {/* USER INFO */}
+            <div className="flex items-center gap-3">
 
-    return (
-      <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm">
-
-        {/* Overlay */}
-        <div
-          onClick={onClose}
-          className="absolute inset-0"
-        />
-
-        {/* CHAT SHEET */}
-        <div
-          className="
-      absolute bottom-0 left-0 right-0
-      w-full h-[82vh]
-      bg-background
-      rounded-t-[28px]
-      border-t border-border
-      shadow-2xl
-      flex flex-col
-      overflow-hidden
-      animate-in slide-in-from-bottom duration-300
-    "
-        >
-
-          {/* TOP BAR */}
-          <div className="flex justify-center py-2">
-            <div className="w-14 h-1.5 rounded-full bg-muted-foreground/30" />
-          </div>
-
-          {/* HEADER */}
-          <div className="px-4 pb-3 border-b border-border bg-background/95 backdrop-blur sticky top-0 z-10">
-            <div className="flex items-center justify-between">
-
-              {/* USER */}
-              <div className="flex items-center gap-3">
-
-                <div className="relative">
-                  <div className="w-12 h-12 rounded-full bg-primary/15 flex items-center justify-center shadow-sm border border-primary/10">
-                    <span className="font-semibold text-primary text-base">
-                      {/* {receiverName?.charAt(0) || "U"} */}
-                    </span>
-                  </div>
-
-                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-background" />
+              {/* AVATAR */}
+              <div className="relative">
+                <div className="w-12 h-12 rounded-full bg-primary/15 flex items-center justify-center shadow-sm border border-primary/10">
+                  <span className="font-semibold text-primary text-base">
+                    {receiverInitial}
+                  </span>
                 </div>
 
-                <div>
-                  <h2 className="font-semibold text-[15px] text-foreground">
-                    {/* {receiverName || "Chat"} */}
-                  </h2>
-
-                  <p className="text-xs text-green-500">
-                    Active now
-                  </p>
-                </div>
+                <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-background" />
               </div>
 
-              {/* CLOSE */}
-              <button
-                onClick={onClose}
-                className="
-            w-10 h-10 rounded-full
-            flex items-center justify-center
-            hover:bg-red-500/10
-            text-muted-foreground hover:text-red-500
-            transition-all duration-200
-          "
-              >
-                ✕
-              </button>
-            </div>
-          </div>
+              {/* NAME */}
+              <div>
+                <h2 className="font-semibold text-[15px] text-foreground">
+                  {receiverName}
+                </h2>
 
-          {/* MESSAGES */}
-          <div
-            className="
-        flex-1 overflow-y-auto
-        px-3 py-4
-        space-y-3
-        bg-muted/20
-      "
-          >
-            {loadingMessages ? (
-              <div className="h-full flex items-center justify-center">
-                <div className="flex flex-col items-center gap-2">
-                  <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-                  <p className="text-sm text-muted-foreground">
-                    Loading messages...
-                  </p>
-                </div>
-              </div>
-            ) : messages?.length > 0 ? (
-              messages.map((msg) => (
-                <div
-                  key={msg._id}
-                  className={`flex ${msg.sender?._id === user.id
-                    ? "justify-end"
-                    : "justify-start"
-                    }`}
-                >
-                  <div
-                    className={`
-                max-w-[82%]
-                px-4 py-3
-                rounded-3xl
-                text-sm
-                shadow-sm
-                break-words
-                animate-in fade-in zoom-in-95 duration-200
-                ${msg.sender?._id === user.id
-                        ? "bg-primary text-white rounded-br-md"
-                        : "bg-background border border-border text-foreground rounded-bl-md"
-                      }
-              `}
-                  >
-                    <p className="leading-relaxed">
-                      {msg.text}
-                    </p>
-
-                    <div
-                      className={`
-                  text-[10px] mt-2 text-right
-                  ${msg.sender?._id === user.id
-                          ? "text-white/70"
-                          : "text-muted-foreground"
-                        }
-                `}
-                    >
-                      {new Date(msg.createdAt).toLocaleTimeString([], {
-                        hour: "numeric",
-                        minute: "2-digit",
-                        hour12: true,
-                      })}
-                    </div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="h-full flex flex-col items-center justify-center text-center px-6">
-
-                <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                  <span className="text-3xl">💬</span>
-                </div>
-
-                <h3 className="font-semibold text-foreground text-lg">
-                  No messages yet
-                </h3>
-
-                <p className="text-sm text-muted-foreground mt-1">
-                  Start chatting now
+                <p className="text-xs text-green-500">
+                  Active now
                 </p>
               </div>
-            )}
-          </div>
-
-          {/* INPUT AREA */}
-          <div className="border-t border-border bg-background p-3">
-            <div className="flex items-end gap-2">
-
-              <textarea
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                rows={1}
-                placeholder="Type your message..."
-                className="
-            flex-1
-            resize-none
-            rounded-3xl
-            border border-border
-            bg-muted/30
-            px-4 py-3
-            text-sm
-            outline-none
-            focus:ring-2 focus:ring-primary/20
-            min-h-[55px]
-            max-h-[140px]
-            overflow-y-auto
-          "
-              />
-
-              <Button
-                onClick={sendMessage}
-                disabled={sending}
-                className="
-            h-[55px]
-            min-w-[55px]
-            rounded-full
-            shadow-md
-            flex items-center justify-center
-          "
-              >
-                {sending ? (
-                  <div className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                ) : (
-                  "Send"
-                )}
-              </Button>
-
             </div>
+
+            {/* CLOSE BUTTON */}
+            <button
+              onClick={onClose}
+              className="
+                w-10 h-10 rounded-full
+                flex items-center justify-center
+                hover:bg-red-500/10
+                text-muted-foreground hover:text-red-500
+                transition-all duration-200
+              "
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+
+        {/* MESSAGES */}
+        <div
+          className="
+            flex-1 overflow-y-auto
+            px-3 py-4
+            space-y-3
+            bg-muted/20
+          "
+        >
+          {loadingMessages ? (
+            <div className="h-full flex items-center justify-center">
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+
+                <p className="text-sm text-muted-foreground">
+                  Loading messages...
+                </p>
+              </div>
+            </div>
+          ) : messages?.length > 0 ? (
+            messages.map((msg) => (
+              <div
+                key={msg._id}
+                className={`flex ${
+                  msg.sender?._id === user.id
+                    ? "justify-end"
+                    : "justify-start"
+                }`}
+              >
+                <div
+                  className={`
+                    max-w-[50%]
+                    px-4 py-3
+                    rounded-3xl
+                    text-sm
+                    shadow-sm
+                    break-words
+                    animate-in fade-in zoom-in-95 duration-200
+                    ${
+                      msg.sender?._id === user.id
+                        ? "bg-primary text-white rounded-br-md"
+                        : "bg-background border border-border text-foreground rounded-bl-md"
+                    }
+                  `}
+                >
+                  <p className="leading-relaxed">
+                    {msg.text} wowwww
+                  </p>
+
+                  {/* TIME */}
+                  <div
+                    className={`
+                      text-[10px] mt-2 text-right
+                      ${
+                        msg.sender?._id === user.id
+                          ? "text-white/70"
+                          : "text-muted-foreground"
+                      }
+                    `}
+                  >
+                    {new Date(msg.createdAt).toLocaleTimeString([], {
+                      hour: "numeric",
+                      minute: "2-digit",
+                      hour12: true,
+                    })}
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="h-full flex flex-col items-center justify-center text-center px-6">
+
+              <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                <span className="text-3xl">💬</span>
+              </div>
+
+              <h3 className="font-semibold text-foreground text-lg">
+                No messages yet
+              </h3>
+
+              <p className="text-sm text-muted-foreground mt-1">
+                Start chatting now
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* INPUT AREA */}
+        <div className="border-t border-border bg-background p-3">
+          <div className="flex items-end gap-2">
+
+            <textarea
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              rows={1}
+              placeholder="Type your message..."
+              className="
+                flex-1
+                resize-none
+                rounded-3xl
+                border border-border
+                bg-muted/30
+                px-4 py-3
+                text-sm
+                outline-none
+                focus:ring-2 focus:ring-primary/20
+                min-h-[55px]
+                max-h-[140px]
+                overflow-y-auto
+              "
+            />
+
+            {/* SEND BUTTON */}
+            <Button
+              onClick={sendMessage}
+              disabled={sending}
+              className="
+                h-[55px]
+                min-w-[55px]
+                rounded-full
+                shadow-md
+                flex items-center justify-center
+              "
+            >
+              {sending ? (
+                <div className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+              ) : (
+                "Send"
+              )}
+            </Button>
+
           </div>
         </div>
       </div>
-    );
-
-  };
-
+    </div>
+  );
+};
 
 
 
