@@ -48,14 +48,14 @@ const PostJob = () => {
   const handleSubmit = async () => {
     try {
       const user = JSON.parse(sessionStorage.getItem("laundryUser"));
-      
+
 
       const payload = {
         userId: user?.id,
         ...formData,
       };
       // console.log(payload.userId, "sdd");
-      
+
 
       const res = await fetch("http://localhost:5000/userlaundry/createpost", {
         method: "POST",
@@ -63,11 +63,11 @@ const PostJob = () => {
         body: JSON.stringify(payload),
       });
       console.log(res, "responsive");
-      
+
 
       const data = await res.json();
       console.log(data, "data");
-      
+
       if (res.ok) {
         toast({
           title: "Job Posted Successfully! 🎉",
@@ -105,9 +105,9 @@ const PostJob = () => {
     if (step === 3) {
       return Boolean(
         formData.pickupDate &&
-          formData.pickupTime &&
-          formData.deliveryDate &&
-          formData.deliveryTime,
+        formData.pickupTime &&
+        formData.deliveryDate &&
+        formData.deliveryTime,
       );
     }
     return true;
@@ -147,8 +147,8 @@ const PostJob = () => {
               {[1, 2, 3, 4].map((s) => (
                 <div key={s} className="flex items-center">
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center font-medium transition-all ${step >= s
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted text-muted-foreground"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground"
                     }`}>
                     {step > s ? <CheckCircle className="w-5 h-5" /> : s}
                   </div>
@@ -182,8 +182,8 @@ const PostJob = () => {
                       htmlFor={type.id}
                       onClick={() => setFormData({ ...formData, type: type.id })}
                       className={`flex flex-col items-center p-6 rounded-xl border-2 cursor-pointer transition-all ${formData.type === type.id
-                          ? "border-primary bg-primary/10"
-                          : "border-border hover:border-primary/50"
+                        ? "border-primary bg-primary/10"
+                        : "border-border hover:border-primary/50"
                         }`}
                     >
                       <RadioGroupItem value={type.id} id={type.id} className="sr-only" />
@@ -244,25 +244,80 @@ const PostJob = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="hostel">Hostel / Hall</Label>
-                  <Input
-                    id="hostel"
-                    placeholder="e.g., Jaja Hall"
-                    value={formData.hostel}
-                    onChange={(e) => setFormData({ ...formData, hostel: e.target.value })}
-                    className="mt-2"
-                  />
+                  {/* <Label htmlFor="hostel">Hostel / Hall</Label> */}
+                  <div>
+                    <Label htmlFor="hostel">Hostel</Label>
+
+                    <select
+                      id="hostel"
+                      value={formData.hostel}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          hostel: e.target.value,
+                        })
+                      }
+                      className="
+      mt-2 w-full h-11
+      rounded-md border border-input
+      bg-background px-3 py-2
+      text-sm text-foreground
+      outline-none
+      focus:ring-2 focus:ring-primary/20
+    "
+                    >
+                      <option value="">Select Hostel</option>
+
+                      <option value="Male Hostel 1">
+                        Male Hostel 1
+                      </option>
+
+                      <option value="Male Hostel 2">
+                        Male Hostel 2
+                      </option>
+
+                      <option value="Female Hostel 1">
+                        Female Hostel 1
+                      </option>
+
+                      <option value="Female Hostel 2">
+                        Female Hostel 2
+                      </option>
+
+                      <option value="Female Hostel 3">
+                        Female Hostel 3
+                      </option>
+                    </select>
+                  </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="block">Block</Label>
-                    <Input
+                    <Label htmlFor="block">Hostel Type</Label>
+
+                    <select
                       id="block"
-                      placeholder="e.g., Block A"
                       value={formData.block}
-                      onChange={(e) => setFormData({ ...formData, block: e.target.value })}
-                      className="mt-2"
-                    />
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          block: e.target.value,
+                        })
+                      }
+                      className="
+      mt-2 w-full h-11
+      rounded-md border border-input
+      bg-background px-3 py-2
+      text-sm text-foreground
+      outline-none
+      focus:ring-2 focus:ring-primary/20
+    "
+                    >
+                      <option value="">Select Hostel Type</option>
+
+                      <option value="Old Hostel">Old Hostel</option>
+
+                      <option value="New Hostel">New Hostel</option>
+                    </select>
                   </div>
                   <div>
                     <Label htmlFor="room">Room Number</Label>
