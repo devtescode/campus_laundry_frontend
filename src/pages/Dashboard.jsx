@@ -627,7 +627,6 @@ const Dashboard = () => {
                     {msg.text}
                   </p>
 
-                  {/* TIME */}
                   <div
                     className={`
                       text-[10px] mt-2 text-right
