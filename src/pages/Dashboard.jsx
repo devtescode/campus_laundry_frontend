@@ -624,7 +624,7 @@ const Dashboard = () => {
                   `}
                 >
                   <p className="leading-relaxed">
-                    {msg.text} wowwww
+                    {msg.text}
                   </p>
 
                   {/* TIME */}
