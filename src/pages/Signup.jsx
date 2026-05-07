@@ -16,6 +16,7 @@ const Signup = () => {
     email: "",
     phonenumber: "",
     password: "",
+    gender: "",
     // university: "",
     // hostel: ""
   });
@@ -44,6 +45,7 @@ const Signup = () => {
           email: formData.email,
           phonenumber: formData.phonenumber,
           password: formData.password,
+          gender: formData.gender,
         })
       });
 
@@ -106,7 +108,7 @@ const Signup = () => {
         variant: "destructive",
       });
     }
-     finally {
+    finally {
       setLoading(false); // hide loader
     }
   };
@@ -217,6 +219,105 @@ const Signup = () => {
                     </div>
                   </div>
 
+                  {/* GENDER SELECTION */}
+                  <div className="space-y-3">
+                    <Label>Select Gender</Label>
+
+                    <div className="grid grid-cols-2 gap-3">
+
+                      {/* MALE */}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setFormData({ ...formData, gender: "Male" })
+                        }
+                        className={`
+        relative overflow-hidden
+        rounded-2xl border transition-all duration-300
+        px-4 py-4
+        flex items-center gap-3
+        hover:scale-[1.02]
+        ${formData.gender === "Male"
+                            ? "border-primary bg-primary/10 shadow-lg shadow-primary/10"
+                            : "border-border bg-card hover:border-primary/40"
+                          }
+      `}
+                      >
+                        {/* ACTIVE DOT */}
+                        <div
+                          className={`
+          w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all
+          ${formData.gender === "Male"
+                              ? "border-primary"
+                              : "border-muted-foreground"
+                            }
+        `}
+                        >
+                          {formData.gender === "Male" && (
+                            <div className="w-2.5 h-2.5 rounded-full bg-primary" />
+                          )}
+                        </div>
+
+                        {/* ICON + TEXT */}
+                        <div className="flex flex-col items-start">
+                          <span className="font-medium text-sm text-foreground">
+                            Male
+                          </span>
+
+                          <span className="text-xs text-muted-foreground">
+                            Select male gender
+                          </span>
+                        </div>
+                      </button>
+
+                      {/* FEMALE */}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setFormData({ ...formData, gender: "Female" })
+                        }
+                        className={`
+        relative overflow-hidden
+        rounded-2xl border transition-all duration-300
+        px-4 py-4
+        flex items-center gap-3
+        hover:scale-[1.02]
+        ${formData.gender === "Female"
+                            ? "border-pink-500 bg-pink-500/10 shadow-lg shadow-pink-500/10"
+                            : "border-border bg-card hover:border-pink-400/40"
+                          }
+      `}
+                      >
+                        {/* ACTIVE DOT */}
+                        <div
+                          className={`
+          w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all
+          ${formData.gender === "Female"
+                              ? "border-pink-500"
+                              : "border-muted-foreground"
+                            }
+        `}
+                        >
+                          {formData.gender === "Female" && (
+                            <div className="w-2.5 h-2.5 rounded-full bg-pink-500" />
+                          )}
+                        </div>
+
+                        {/* ICON + TEXT */}
+                        <div className="flex flex-col items-start">
+                          <span className="font-medium text-sm text-foreground">
+                            Female
+                          </span>
+
+                          <span className="text-xs text-muted-foreground">
+                            Select female gender
+                          </span>
+                        </div>
+                      </button>
+
+                    </div>
+                  </div>
+
                   <Button
                     onClick={handleSignup}
                     type="button"
@@ -226,6 +327,7 @@ const Signup = () => {
                       !formData.email ||
                       !formData.phonenumber ||
                       !formData.password ||
+                      !formData.gender ||
                       loading
                     }
                   >
@@ -316,8 +418,8 @@ const Signup = () => {
                       </svg>
                     ) : (
                       <>
-                      Resend Verification Email<ArrowRight className="w-4 h-4" />
-                       
+                        Resend Verification Email<ArrowRight className="w-4 h-4" />
+
                       </>
                     )}
                   </Button>
