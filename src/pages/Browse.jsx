@@ -21,6 +21,8 @@ const Browse = () => {
         const res = await fetch("http://localhost:5000/userlaundry/getcreatepost");
         const data = await res.json();
         setJobs(data);
+        console.log(data);
+
       } catch (err) {
         console.error(err);
       } finally {
@@ -48,40 +50,85 @@ const Browse = () => {
 
   // Apply for job
   const handleApplyJob = async (jobId) => {
-    
-const currentUser = JSON.parse(sessionStorage.getItem("laundryUser"));
 
-  const result = await Swal.fire({
-    title: "Apply for this job?",
-    text: "Are you sure you want to apply?",
-    icon: "question",
-    showCancelButton: true,
-    confirmButtonText: "Yes, Apply",
-    cancelButtonText: "No",
-  });
+    const currentUser = JSON.parse(sessionStorage.getItem("laundryUser"));
 
-  if (result.isConfirmed) {
-    try {
-      const res = await fetch("http://localhost:5000/userlaundry/userapplyjob", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jobId, userId: currentUser.id }), // send userId
-      });
+    const result = await Swal.fire({
+      title: "Apply for this job?",
+      text: "Are you sure you want to apply?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Apply",
+      cancelButtonText: "No",
+      confirmButtonColor: "#ef4444",
+    });
 
-      const data = await res.json();
+    if (result.isConfirmed) {
 
-      if (res.ok) {
-        Swal.fire("Applied!", data.message || "You have applied successfully.", "success");
-        // Optionally, update UI state here to reflect status change
-      } else {
-        Swal.fire("Failed!", data.message || "Could not apply.", "error");
+      try {
+
+        const res = await fetch(
+          "http://localhost:5000/userlaundry/userapplyjob",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              jobId,
+              userId: currentUser.id,
+            }),
+          }
+        );
+
+        const data = await res.json();
+
+        if (res.ok) {
+
+          // ✅ UPDATE UI IMMEDIATELY WITHOUT REFRESH
+          setJobs((prevJobs) =>
+            prevJobs.map((job) =>
+              job._id === jobId
+                ? {
+                  ...job,
+                  status: "Applied",
+                  applicant: currentUser.id,
+                }
+                : job
+            )
+          );
+
+          Swal.fire({
+            title: "Applied!",
+            text: data.message || "You have applied successfully.",
+            icon: "success",
+            timer: 1800,
+            showConfirmButton: false,
+          });
+
+        } else {
+
+          Swal.fire({
+            title: "Failed!",
+            text: data.message || "Could not apply.",
+            icon: "error",
+          });
+
+        }
+
+      } catch (err) {
+
+        console.error(err);
+
+        Swal.fire({
+          title: "Error!",
+          text: "Something went wrong. Try again.",
+          icon: "error",
+        });
+
       }
-    } catch (err) {
-      console.error(err);
-      Swal.fire("Error!", "Something went wrong. Try again.", "error");
     }
-  }
-};
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -175,6 +222,9 @@ const currentUser = JSON.parse(sessionStorage.getItem("laundryUser"));
                   <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
                     Description: {job.description || "No description"}
                   </p>
+                  {/* <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
+                    Gender: {job.userId?.gender || "No Gender Specified"}
+                  </p> */}
 
                   {/* Location & Due */}
                   <div className="space-y-2 mb-4">
@@ -201,8 +251,8 @@ const currentUser = JSON.parse(sessionStorage.getItem("laundryUser"));
                           {job.userId?.fullname || "Unknown User"}
                         </p>
                         <div className="flex items-center gap-1">
-                          <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
-                          <span className="text-xs text-muted-foreground">4.8</span>
+                          {/* <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" /> */}
+                          <span className="text-xs text-muted-foreground font-medium">{job.userId?.gender || "No Gender Specified"}</span>
                         </div>
                       </div>
                     </div>
@@ -231,10 +281,17 @@ const currentUser = JSON.parse(sessionStorage.getItem("laundryUser"));
                     {/* Apply Outline in Red */}
                     <Button
                       variant="outline"
-                      className="flex-1 border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
+                      disabled={job.status === "Applied"}
+                      className={`
+    flex-1 border transition-colors
+    ${job.status === "Applied"
+                          ? "border-gray-400 text-gray-400 cursor-not-allowed bg-gray-100"
+                          : "border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
+                        }
+  `}
                       onClick={() => handleApplyJob(job._id)}
                     >
-                      Apply
+                      {job.status === "Applied" ? "Already Applied" : "Apply"}
                     </Button>
                   </div>
 

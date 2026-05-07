@@ -854,7 +854,7 @@ const Dashboard = () => {
                           </p>
                         ) : (
                           <div className="flex flex-col gap-3">
-                            {posterJobs.map((job) => (
+                            {posterJobs?.map((job) => (
                               <div
                                 key={job._id}
                                 className="p-5 rounded-md border border-border hover:border-primary/30 transition-all w-full"
