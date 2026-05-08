@@ -130,6 +130,28 @@ const Browse = () => {
     }
   };
 
+  const formatDate = (date) => {
+    if (!date) return "";
+    return new Date(date).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
+  const formatTime = (time) => {
+    if (!time) return "";
+
+    // expects "14:30" or "14:30:00"
+    const [hour, minute] = time.split(":");
+
+    const h = parseInt(hour, 10);
+    const ampm = h >= 12 ? "PM" : "AM";
+    const formattedHour = h % 12 || 12;
+
+    return `${formattedHour}:${minute} ${ampm}`;
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -230,11 +252,11 @@ const Browse = () => {
                   <div className="space-y-2 mb-4">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <MapPin className="w-4 h-4" />
-                      <span>Location: {job.hostel} {job.block} {job.room}</span>
+                      <span>Location: {job.hostel}, {job.block}, {job.room}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Clock className="w-4 h-4" />
-                      <span>Due Time: {job.deliveryDate} {job.deliveryTime}</span>
+                      <span>Due Time: {formatDate(job.deliveryDate)} • {formatTime(job.deliveryTime)}</span>
                     </div>
                   </div>
 
