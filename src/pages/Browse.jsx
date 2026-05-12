@@ -42,10 +42,10 @@ const Browse = () => {
     const matchesType =
       selectedType === "all" || job.type?.toLowerCase() === selectedType.toLowerCase();
 
-    const matchesLocation =
-      selectedLocation === "all" || job.hostel?.toLowerCase() === selectedLocation.toLowerCase();
-
-    return matchesSearch && matchesType && matchesLocation;
+    // const matchesLocation =
+    //   selectedLocation === "all" ||
+    //   job.hostel?.toLowerCase() === selectedLocation.toLowerCase();
+    const matchesLocation = selectedLocation === "all" || job.hostel?.toLowerCase() === selectedLocation.toLowerCase(); return matchesSearch && matchesType && matchesLocation;
   });
 
   // Apply for job
@@ -198,9 +198,13 @@ const Browse = () => {
                 onChange={(e) => setSelectedLocation(e.target.value)}
               >
                 <option value="all">All Locations</option>
-                <option value="jaja">Jaja Hall</option>
-                <option value="moremi">Moremi Hall</option>
-                <option value="fagunwa">Fagunwa Hall</option>
+
+                <option value="Male Hostel 1">Male Hostel 1</option>
+                <option value="Male Hostel 2">Male Hostel 2</option>
+
+                <option value="Female Hostel 1">Female Hostel 1</option>
+                <option value="Female Hostel 2">Female Hostel 2</option>
+                <option value="Female Hostel 3">Female Hostel 3</option>
               </select>
 
               <Button variant="outline" className="h-12 px-4">
