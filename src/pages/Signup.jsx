@@ -27,7 +27,7 @@ const Signup = () => {
   //   e.preventDefault();
   //   toast({
   //     title: "Account created! 🎉",
-  //     description: "Welcome to LaundryHub. Let's get started!",
+  //     description: "Welcome to ClinqHub. Let's get started!",
   //   });
   //   navigate("/dashboard");
   // };
@@ -134,7 +134,7 @@ const Signup = () => {
             </div>
             <CardTitle className="text-2xl">Create your account</CardTitle>
             <CardDescription>
-              Join thousands of students already using LaundryHub
+              Join thousands of students already using ClinqHub
             </CardDescription>
           </CardHeader>
           <CardContent>

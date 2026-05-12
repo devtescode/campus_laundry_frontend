@@ -33,7 +33,7 @@ const TestimonialsSection = () => {
             What Students Say
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Join hundreds of students already using LaundryHub on campus.
+            Join hundreds of students already using ClinqHub on campus.
           </p>
         </div>
 

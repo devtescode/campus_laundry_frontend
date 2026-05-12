@@ -217,7 +217,7 @@ const AdminDashboard = () => {
                   {/* {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} */}
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                  {/* Manage your LaundryHub platform */}
+                  {/* Manage your ClinqHub platform */}
                 </p>
               </div>
             </div>
