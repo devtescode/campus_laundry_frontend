@@ -1,15 +1,25 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-// import Swal from "sweetalert2";
 
 const ResetPassword = () => {
   const { token } = useParams();
   const navigate = useNavigate();
 
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleReset = async () => {
+
+    // CHECK PASSWORD MATCH
+    if (password !== confirmPassword) {
+      return Swal.fire({
+        icon: "warning",
+        title: "Password Mismatch",
+        text: "Passwords do not match",
+      });
+    }
+
     try {
       const res = await axios.post(
         `http://localhost:5000/userlaundry/resetpassword/${token}`,
@@ -25,38 +35,79 @@ const ResetPassword = () => {
       navigate("/login");
 
     } catch (err) {
+
       Swal.fire({
         icon: "error",
         title: "Error",
         text: err.response?.data?.message || "Invalid token",
       });
+
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="w-full max-w-md p-6 rounded-2xl border">
-        <h1 className="text-2xl font-bold mb-4">
+    <div className="min-h-screen flex items-center justify-center bg-background px-2">
+
+      <div className="w-full max-w-md p-6 rounded-md border-none border-border bg-card shadow-md">
+
+        <h1 className="text-3xl font-bold mb-2 text-center text-foreground">
           Reset Password
         </h1>
 
-        <input
-          type="password"
-          placeholder="Enter new password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full border rounded-xl px-4 py-3"
-        />
+        <p className="text-sm text-muted-foreground text-center mb-6">
+          Create your new password below
+        </p>
 
-        <button
-          onClick={handleReset}
-          className="w-full bg-black text-white rounded-xl py-3 mt-4"
-        >
-          Reset Password
-        </button>
+        <div className="space-y-4">
+
+          {/* PASSWORD */}
+          <input
+            type="password"
+            placeholder="Enter new password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="
+              w-full border border-border
+              rounded-2xl px-4 py-3
+              bg-background
+              outline-none
+              focus:ring-2 focus:ring-primary/20
+            "
+          />
+
+          {/* CONFIRM PASSWORD */}
+          <input
+            type="password"
+            placeholder="Confirm new password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className="
+              w-full border border-border
+              rounded-2xl px-4 py-3
+              bg-background
+              outline-none
+              focus:ring-2 focus:ring-primary/20
+            "
+          />
+
+          {/* BUTTON */}
+          <button
+            onClick={handleReset}
+            disabled={!password || !confirmPassword}
+            className="
+              w-full bg-primary text-primary-foreground
+              rounded-2xl py-3 font-medium
+              hover:opacity-90 transition-all
+              disabled:opacity-50
+            "
+          >
+            Reset Password
+          </button>
+
+        </div>
       </div>
     </div>
   );
 };
 
-export default ResetPassword;   
+export default ResetPassword;

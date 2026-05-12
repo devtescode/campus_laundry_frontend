@@ -56,8 +56,8 @@ const Forgettenpassword = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <Card className="w-full max-w-md border-border shadow-xl rounded-3xl overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-background px-2">
+      <Card className="w-full max-w-md border-none shadow-md rounded-md overflow-hidden">
         <CardContent className="p-8">
 
           <div className="mb-6 text-center">
