@@ -16,6 +16,8 @@ import Userprotected from "./pages/Userprotected/Userprotected";
 import Washerhistory from "./pages/Washerhistory";
 import AdminAuth from "./pages/AdminAuth";
 import Adminprotected from "./pages/Adminprotected/Adminprotected";
+import Forgettenpassword from "./pages/Forgettenpassword";
+import ResetPassword from "./pages/ResetPassword";
 
 const queryClient = new QueryClient();
 
@@ -38,22 +40,24 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/browse" element={<Browse />} />
             <Route path="/post-job" element={<PostJob />} />
-            <Route path="/get-history" element={<Washerhistory/>}/>
+            <Route path="/get-history" element={<Washerhistory />} />
           </Route>
+          <Route path="/forgot-password" element={<Forgettenpassword />} />
+          <Route path="/resetpassword/:token" element={<ResetPassword />} />
 
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/verify-email/:token" element={<Emailverify />} />
           <Route
-          element={
-            <Adminprotected>
-              <></>
-            </Adminprotected>
-          }
+            element={
+              <Adminprotected>
+                <></>
+              </Adminprotected>
+            }
           >
-          <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin" element={<AdminDashboard />} />
           </Route>
-          <Route path="/adminauth" element={<AdminAuth/>}/>
+          <Route path="/adminauth" element={<AdminAuth />} />
 
 
           <Route path="*" element={<NotFound />} />

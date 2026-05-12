@@ -90,11 +90,11 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-border mt-8 pt-8 text-center">
+        {/* <div className="border-t border-border mt-8 pt-8 text-center">
           <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} LaundryHub. Made with 💙 for students.
           </p>
-        </div>
+        </div> */}
       </div>
     </footer>
   );
