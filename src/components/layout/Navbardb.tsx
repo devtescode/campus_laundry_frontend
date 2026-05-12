@@ -35,7 +35,7 @@ const Navbardb = () => {
                                 <Sparkles className="w-5 h-5 text-primary-foreground" />
                             </div>
                             <span className="text-xl font-bold text-foreground">
-                                Laundry<span className="text-gradient">Hub</span>
+                                Clinq<span className="text-gradient">Hub</span>
                             </span>
                         </div>
                     </Link>

@@ -731,7 +731,7 @@ const Dashboard = () => {
               </h2>
 
               <p className="text-muted-foreground">
-                Here's what's happening with your laundry today
+                Here’s what’s going on with your service today
               </p>
             </div>
             <div className="flex items-center gap-3 bg-card border border-border rounded-xl p-1">
