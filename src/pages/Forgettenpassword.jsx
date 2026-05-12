@@ -66,7 +66,7 @@ const Forgettenpassword = () => {
             </h1>
 
             <p className="text-sm text-muted-foreground mt-2">
-              Enter your email and we will send you a reset link.
+              Enter your registered email address to receive a password reset link.
             </p>
           </div>
 
