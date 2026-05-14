@@ -20,7 +20,7 @@ const CTASection = () => {
             </div>
 
             <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4">
-              Ready to Turn Laundry Into Cash?
+              Ready to Turn Clinq Into Cash?
             </h2>
             <p className="text-lg text-primary-foreground/80 mb-8">
               Join thousands of students earning extra income on campus. It's free to sign up and easy to get started.
@@ -30,7 +30,7 @@ const CTASection = () => {
               <Link to="/signup">
                 <Button 
                   size="xl" 
-                  className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 shadow-lg"
+                  className="bg-primary-foreground text-white hover:bg-primary-foreground/90 shadow-lg"
                 >
                   Create Free Account
                   <ArrowRight className="w-5 h-5" />

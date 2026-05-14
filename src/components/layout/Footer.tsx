@@ -13,11 +13,11 @@ const Footer = () => {
                 <Sparkles className="w-5 h-5 text-primary-foreground" />
               </div>
               <span className="text-xl font-bold text-foreground">
-                Laundry<span className="text-gradient">Hub</span>
+                Clinq<span className="text-gradient">Hub</span>
               </span>
             </Link>
             <p className="text-muted-foreground text-sm max-w-md mb-4">
-              The student marketplace for laundry services. Earn money washing clothes or get your laundry done by fellow students.
+              The student marketplace for Clinq services. Earn money washing clothes or get your Clinq done.
             </p>
             <div className="flex gap-3">
               <a href="#" className="w-9 h-9 rounded-lg bg-secondary flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary-light transition-all duration-200">

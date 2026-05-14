@@ -3,21 +3,21 @@ import { Star, Quote } from "lucide-react";
 const testimonials = [
   {
     name: "Chioma A.",
-    role: "200 Level, UNILAG",
+    role: "200 Level, Elizade University",
     content: "I make ₦15,000 weekly just doing laundry in my hostel. It's the perfect side hustle between classes!",
     rating: 5,
     type: "washer",
   },
   {
     name: "Emeka O.",
-    role: "300 Level, OAU",
+    role: "300 Level, Elizade University",
     content: "As someone with a busy engineering schedule, finding someone to handle my laundry has been a lifesaver. Fast and reliable!",
     rating: 5,
     type: "poster",
   },
   {
     name: "Adaeze N.",
-    role: "400 Level, UNIBEN",
+    role: "400 Level, Elizade University",
     content: "The rating system helps me find trustworthy students. My clothes always come back clean and well-ironed.",
     rating: 5,
     type: "poster",

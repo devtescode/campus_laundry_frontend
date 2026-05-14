@@ -20,28 +20,29 @@ const HeroSection = () => {
           <div className="text-center lg:text-left">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-light text-primary text-sm font-medium mb-6 animate-fade-in">
               <Sparkles className="w-4 h-4" />
-              <span>Student Laundry Marketplace</span>
+              <span>Clinq Campus Hub</span>
             </div>
             
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight animate-slide-up">
-              Turn Laundry Into
-              <span className="text-gradient block">Extra Cash</span>
+              Turn Clinq Into
+              <span className="text-gradient block">Extra Income</span>
             </h1>
             
             <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto lg:mx-0 animate-slide-up" style={{ animationDelay: '0.1s' }}>
-              Connect with fellow students to get your laundry done or earn money doing laundry for others. Simple, safe, and student-friendly.
+              {/* Connect with fellow students to get your laundry done or earn money doing laundry for others. Simple, safe, and student-friendly. */}
+              A secure student platform for connecting students to post requests or earn income by completing them. Simple, safe, and student-friendly.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-slide-up" style={{ animationDelay: '0.2s' }}>
               <Link to="/browse">
                 <Button variant="hero" size="xl">
-                  Find Laundry Jobs
+                  Find Clinq Jobs
                   <ArrowRight className="w-5 h-5" />
                 </Button>
               </Link>
               <Link to="/post-job">
                 <Button variant="hero-outline" size="xl">
-                  Post Your Laundry
+                  Post Your Clinq
                 </Button>
               </Link>
             </div>
@@ -73,7 +74,7 @@ const HeroSection = () => {
                     <Shirt className="w-6 h-6 text-primary-foreground" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-foreground">New Laundry Job</h3>
+                    <h3 className="font-semibold text-foreground">New Clinq Job</h3>
                     <p className="text-sm text-muted-foreground">Posted 2 min ago</p>
                   </div>
                 </div>
@@ -88,7 +89,7 @@ const HeroSection = () => {
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Location</span>
-                    <span className="text-foreground font-medium">Block A, Room 204</span>
+                    <span className="text-foreground font-medium">Room 204</span>
                   </div>
                 </div>
                 <div className="flex items-center justify-between pt-4 border-t border-border">
