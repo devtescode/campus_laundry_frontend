@@ -28,4 +28,5 @@ export const API_URLS = {
     verifyemail: (token) => `${baseURL}/userlaundry/verify-email/${token}`,
     forgotpassword: `${baseURL}/userlaundry/forgotpassword`,
     createpost: `${baseURL}/userlaundry/createpost`,
+    resetpassword: (token) => `${baseURL}/userlaundry/resetpassword/${token}`,
 };
