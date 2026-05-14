@@ -26,4 +26,6 @@ export const API_URLS = {
     recentactivity: `${baseURL}/admin/recentactivity`,
     dashboardstats: `${baseURL}/admin/dashboardstats`,
     verifyemail: (token) => `${baseURL}/userlaundry/verify-email/${token}`,
+    forgotpassword: `${baseURL}/userlaundry/forgotpassword`,
+    createpost: `${baseURL}/userlaundry/createpost`,
 };

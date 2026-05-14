@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 
 import { Mail, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
+import { API_URLS } from "../components/utils/apiConfig";
 
 const Forgettenpassword = () => {
   const [email, setEmail] = useState("");
@@ -27,7 +28,7 @@ const Forgettenpassword = () => {
       setLoading(true);
 
       const res = await axios.post(
-        "http://localhost:5000/userlaundry/forgotpassword",
+        API_URLS.forgotpassword,
         { email }
       );
 

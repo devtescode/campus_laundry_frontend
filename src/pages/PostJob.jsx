@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { API_URLS } from "../components/utils/apiConfig";
 
 const laundryTypes = [
   { id: "washing", label: "Washing Only", icon: "🧺", description: "Just washing and drying" },
@@ -57,7 +58,7 @@ const PostJob = () => {
       // console.log(payload.userId, "sdd");
 
 
-      const res = await fetch("http://localhost:5000/userlaundry/createpost", {
+      const res = await fetch(API_URLS.createpost, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
