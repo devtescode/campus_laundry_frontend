@@ -5,7 +5,7 @@ import { baseURL } from '../Config/config';
 export const API_URLS = {
     userlogin: `${baseURL}/userlaundry/login`,
     resendverification : `${baseURL}/userlaundry/resend-verification`,
-    signup: `${baseURL}/userlaundry/signup`,
+    usersignup: `${baseURL}/userlaundry/signup`,
     userapplyjob: `${baseURL}/userlaundry/userapplyjob`,
     getcreatepost: `${baseURL}/userlaundry/getcreatepost`,
     getallusers: `${baseURL}/admin/getallusers`,

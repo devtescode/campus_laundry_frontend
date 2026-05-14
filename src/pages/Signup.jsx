@@ -38,7 +38,7 @@ const Signup = () => {
   const handleSignup = async () => {
     setLoading(true); // show loader
     try {
-      const res = await fetch(API_URLS.signup, {
+      const res = await fetch(API_URLS.usersignup, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
