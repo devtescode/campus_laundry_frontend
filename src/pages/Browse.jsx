@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Search, MapPin, Clock, Star, SlidersHorizontal } from "lucide-react";
 import Loader from "./Loaderpage/Loader";
 import { API_URLS } from "../components/utils/apiConfig";
+import Swal from "sweetalert2";
 
 const Browse = () => {
   const [searchQuery, setSearchQuery] = useState("");

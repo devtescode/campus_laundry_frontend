@@ -3,7 +3,7 @@ console.log('Base URL:', baseURL)
 
 
 export const API_URLS = {
-    login: `${baseURL}/userlaundry/login`,
+    userlogin: `${baseURL}/userlaundry/login`,
     resendverification : `${baseURL}/userlaundry/resend-verification`,
     signup: `${baseURL}/userlaundry/signup`,
     userapplyjob: `${baseURL}/userlaundry/userapplyjob`,
@@ -11,7 +11,7 @@ export const API_URLS = {
     getallusers: `${baseURL}/admin/getallusers`,
     posterstats: (userId)=>`${baseURL}/userlaundry/posterstats/${userId}`,
     washerstats: `${baseURL}/userlaundry/washerstats`,
-    getuserposts: (userId) => `${baseURL}/userlaundry/getuserposts/${userId}`,
+    getuserpost: (userId) => `${baseURL}/userlaundry/getuserpost/${userId}`,
     getWasherJobs: (washerId) => `${baseURL}/userlaundry/getWasherJobs/${washerId}`,
     deleteuserpost: (jobId) => `${baseURL}/userlaundry/deleteuserpost/${jobId}`,
     notifications: (userId) => `${baseURL}/userlaundry/notifications/${userId}`,
@@ -29,4 +29,5 @@ export const API_URLS = {
     forgotpassword: `${baseURL}/userlaundry/forgotpassword`,
     createpost: `${baseURL}/userlaundry/createpost`,
     resetpassword: (token) => `${baseURL}/userlaundry/resetpassword/${token}`,
+    getWasherHistory: (washerId) => `${baseURL}/userlaundry/getWasherHistory/${washerId}`,
 };

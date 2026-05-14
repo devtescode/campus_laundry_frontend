@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 import Navbar from "@/components/layout/Navbardb";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +13,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { DialogFooter } from "@/components/ui/dialog";
+
 
 import {
   Briefcase,
@@ -213,7 +215,7 @@ const Dashboard = () => {
 
     const fetchUserJobs = async () => {
       try {
-        const res = await fetch(API_URLS.getuserposts(userId));
+        const res = await fetch(API_URLS.getuserpost(userId));
         const data = await res.json();
         setPosterJobs(data.jobs);
         console.log(data.jobs, "Fetched Jobs");
@@ -730,7 +732,7 @@ const Dashboard = () => {
                 Here’s what’s going on with your service today
               </p>
             </div>
-            <div className="flex items-center gap-3 bg-card border border-border rounded-xl p-1">
+            <div className="flex items-center gap-2 bg-card border border-border rounded-xl p-1 w-full sm:w-auto justify-between sm:justify-normal">
               <Button
                 variant={role === "poster" ? "default" : "ghost"}
                 size="sm"
@@ -756,7 +758,7 @@ const Dashboard = () => {
           {role === "poster" && (
             <div className="space-y-8 animate-fade-in">
               {/* Stats Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4">
                 <Card className="bg-card border-border">
                   <CardContent className="p-4">
                     <div className="flex items-center gap-3">
@@ -829,7 +831,7 @@ const Dashboard = () => {
               </div>
 
               {/* Main Content */}
-              <div className="grid lg:grid-cols-3 gap-1">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-1">
                 {/* Jobs List */}
                 <div className="lg:col-span-2">
                   <Card className="bg-card border-border border-none">
@@ -856,7 +858,7 @@ const Dashboard = () => {
                                 className="p-5 rounded-md border border-border hover:border-primary/30 transition-all w-full"
                               >
                                 {/* JOB HEADER */}
-                                <div className="flex flex-wrap items-start justify-between mb-3 w-full gap-2">
+                                <div className="flex flex-col sm:flex-row flex-wrap items-start justify-between mb-3 w-full gap-2">
                                   <div className="flex-1 min-w-[120px]">
                                     <h3 className="font-semibold text-foreground truncate">{job.type}</h3>
                                     <p className="text-sm text-muted-foreground truncate">
@@ -869,7 +871,7 @@ const Dashboard = () => {
                                 </div>
 
                                 {/* META INFO */}
-                                <div className="flex flex-wrap gap-0 text-sm text-muted-foreground mb-3">
+                                <div className="flex flex-col sm:flex-row flex-wrap gap-0 text-sm text-muted-foreground mb-3">
                                   <span className="flex items-center gap-1 min-w-[50px]">
                                     <MapPin className="w-3 h-3" />
                                     {job.hostel || "No location"}
@@ -890,7 +892,7 @@ const Dashboard = () => {
                                   </span>
                                 </div>
 
-                                <div className="flex flex-wrap items-center justify-between gap-2 w-full">
+                                <div className="flex flex-col sm:flex-row flex-wrap items-center justify-between gap-2 w-full">
                                   <div className="flex items-center gap-2 flex-wrap min-w-[120px]">
                                     {job.applicantName ? (
                                       <>
@@ -925,7 +927,7 @@ const Dashboard = () => {
                                       {job.washerRating || "0.0"}
                                     </span> */}
                                 {/* BUTTONS */}
-                                <div className="flex flex-wrap gap-2 mt-3 w-full">
+                                <div className="flex flex-col sm:flex-row flex-wrap gap-2 mt-3 w-full">
                                   <Button
                                     variant="outline"
                                     size="sm"
@@ -976,7 +978,7 @@ const Dashboard = () => {
 
                 {selectedJob && (
                   <Dialog open={openModal} onOpenChange={setOpenModal}>
-                    <DialogContent className="w-[95%] sm:max-w-lg rounded-xl p-4 max-h-[90vh] overflow-y-auto">
+                    <DialogContent className="w-[98vw] max-w-[98vw] sm:max-w-lg rounded-xl p-2 sm:p-4 max-h-[90vh] overflow-y-auto">
                       <DialogHeader>
                         <DialogTitle className="text-xl font-bold text-center">
                           Job Details
@@ -1130,7 +1132,7 @@ const Dashboard = () => {
           {role === "washer" && (
             <div className="space-y-8 animate-fade-in">
               {/* Stats Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 sm:gap-4">
                 <Card className="bg-card border-border">
                   <CardContent className="p-4">
                     <div className="flex items-center gap-3">
@@ -1236,7 +1238,7 @@ const Dashboard = () => {
               </div>
 
               {/* Main Content */}
-              <div className="grid lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
                 {/* Jobs List */}
                 <div className="lg:col-span-2">
                   <Card className="bg-card border-border">
@@ -1261,9 +1263,9 @@ const Dashboard = () => {
                         washerJobs.map((job) => (
                           <div
                             key={job._id}
-                            className="p-4 rounded-xl bg-background border border-border hover:border-primary/30 transition-all"
+                            className="p-4 rounded-xl bg-background border border-border hover:border-primary/30 transition-all w-full"
                           >
-                            <div className="flex items-start justify-between mb-3">
+                            <div className="flex flex-col sm:flex-row items-start justify-between mb-3 gap-2">
                               <div>
                                 <h3 className="font-semibold text-foreground">{job.type}</h3>
                                 <p className="text-sm text-muted-foreground">
@@ -1275,7 +1277,7 @@ const Dashboard = () => {
                               </Badge>
                             </div>
 
-                            <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-3">
+                            <div className="flex flex-col sm:flex-row flex-wrap items-center gap-2 text-sm text-muted-foreground mb-3">
                               <span className="flex items-center gap-1">
                                 <MapPin className="w-3 h-3" />
                                 {job.hostel}, {job.block} {job.room}
@@ -1286,7 +1288,7 @@ const Dashboard = () => {
                               </span>
                             </div>
 
-                            <div className="flex items-center justify-between">
+                            <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
                               <div className="flex items-center gap-2">
                                 <div className="w-6 h-6 rounded-full bg-accent/20 flex items-center justify-center">
                                   <span className="text-xs font-medium text-accent">
@@ -1302,7 +1304,7 @@ const Dashboard = () => {
                               </span>
                             </div>
 
-                            <div className="flex gap-2 mt-3">
+                            <div className="flex flex-col sm:flex-row gap-2 mt-3 w-full">
                               <Button variant="outline" size="sm" className="flex-1" onClick={() => openChat(job)}>
                                 <MessageSquare className="w-3 h-3 mr-1" />
                                 Message

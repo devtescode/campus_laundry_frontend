@@ -34,7 +34,7 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const res = await fetch(API_URLS.login, {
+      const res = await fetch(API_URLS.userlogin, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

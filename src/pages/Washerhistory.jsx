@@ -3,6 +3,7 @@ import Navbar from "@/components/layout/Navbardb";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Clock, MapPin, CheckCircle } from "lucide-react";
+import { API_URLS } from "../components/utils/apiConfig";
 
 const Washerhistory = () => {
   const [jobs, setJobs] = useState([]);
@@ -15,7 +16,7 @@ const Washerhistory = () => {
         if (!washer?.id) return;
 
         const res = await fetch(
-          `http://localhost:5000/userlaundry/getWasherHistory/${washer.id}`
+          API_URLS.getWasherHistory(washer.id)
         );
 
         const data = await res.json();
@@ -54,7 +55,7 @@ const Washerhistory = () => {
         <div className="container mx-auto px-4">
 
           {/* HEADER */}
-          <div className="text-center mb-14">
+          <div className="text-center mb-10">
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
               Washer <span className="text-primary">History</span>
             </h1>
@@ -64,7 +65,7 @@ const Washerhistory = () => {
           </div>
 
           {/* EARNINGS SUMMARY */}
-          <div className="grid md:grid-cols-3 gap-6 mb-14">
+          <div className="grid md:grid-cols-3 gap-1 mb-4">
             <div className="md:col-span-2 bg-card/80 backdrop-blur border border-border rounded-2xl p-8 shadow-lg">
               <p className="text-sm text-muted-foreground mb-2">
                 Total Earnings
