@@ -4,7 +4,7 @@ const steps = [
   {
     icon: Search,
     title: "Browse or Post",
-    description: "Find laundry jobs near you or post your own laundry request with details and pricing.",
+    description: "Find Clinq jobs near you or post your own Clinq request with details and pricing.",
     color: "primary",
   },
   {
@@ -16,7 +16,7 @@ const steps = [
   {
     icon: Sparkles,
     title: "Get It Done",
-    description: "Complete the laundry service with care. Quality work means better ratings and more jobs.",
+    description: "Complete the Clinq service with care. Quality work means better ratings and more jobs.",
     color: "success",
   },
   {

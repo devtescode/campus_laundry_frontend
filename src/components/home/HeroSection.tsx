@@ -30,7 +30,7 @@ const HeroSection = () => {
             
             <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto lg:mx-0 animate-slide-up" style={{ animationDelay: '0.1s' }}>
               {/* Connect with fellow students to get your laundry done or earn money doing laundry for others. Simple, safe, and student-friendly. */}
-              A secure student platform for connecting students to post requests or earn income by completing them. Simple, safe, and student-friendly.
+              A secure student platform for connecting students to post requests or earn income by completing them. Simple, safe, and student friendly.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-slide-up" style={{ animationDelay: '0.2s' }}>
