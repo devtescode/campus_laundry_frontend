@@ -25,4 +25,5 @@ export const API_URLS = {
     getallchats: `${baseURL}/admin/getallchats`,
     recentactivity: `${baseURL}/admin/recentactivity`,
     dashboardstats: `${baseURL}/admin/dashboardstats`,
+    verifyemail: (token) => `${baseURL}/userlaundry/verify-email/${token}`,
 };

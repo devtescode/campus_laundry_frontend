@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { CheckCircle } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
+import { API_URLS } from "../components/utils/apiConfig";
 
 const Emailverify = () => {
   const [status, setStatus] = useState("verifying"); // verifying | success | error
@@ -16,7 +17,7 @@ const Emailverify = () => {
 
       try {
         const res = await fetch(
-          `http://localhost:5000/userlaundry/verify-email/${token}`,
+          API_URLS.verifyemail(token),
           { method: "GET" }
         );
 

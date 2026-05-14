@@ -154,7 +154,6 @@ const Dashboard = () => {
 
 
       const res = await axios.get(
-        // `http://localhost:5000/userlaundry/posterstats/${userId}`
         API_URLS.posterstats(userId)
       );
       console.log(res, "response");
@@ -214,7 +213,6 @@ const Dashboard = () => {
 
     const fetchUserJobs = async () => {
       try {
-        // const res = await fetch(`http://localhost:5000/userlaundry/getuserpost/${userId}`);
         const res = await fetch(API_URLS.getuserposts(userId));
         const data = await res.json();
         setPosterJobs(data.jobs);
@@ -244,7 +242,6 @@ const Dashboard = () => {
           API_URLS.getWasherJobs(washerId)
         );
         const data = await res.json();
-        // console.log(data, "dataaaaaaaaaaaaaaaa");
 
         setWasherJobs(Array.isArray(data) ? data : data.jobs || []);
       } catch (error) {
@@ -262,14 +259,12 @@ const Dashboard = () => {
   const [openModal, setOpenModal] = useState(false);
 
 
-  // Function to handle opening the modal
   const handleViewDetails = (job) => {
     setSelectedJob(job);
     setOpenModal(true);
   };
 
-  // Function to handle deleting a job
-  // import Swal from "sweetalert2";
+  
 
   const handleDeleteJob = async (jobId) => {
     const result = await Swal.fire({
@@ -298,9 +293,7 @@ const Dashboard = () => {
     }
   };
 
-  // const [notifications, setNotifications] = useState([]);
 
-  // `http://localhost:5000/userlaundry/notifications/${user.id}`
   const [notifications, setNotifications] = useState([]);
 
   const userId = JSON.parse(sessionStorage.getItem("laundryUser")).id;
