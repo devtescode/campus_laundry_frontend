@@ -1,0 +1,28 @@
+import { baseURL } from '../Config/config';
+console.log('Base URL:', baseURL)
+
+
+export const API_URLS = {
+    login: `${baseURL}/userlaundry/login`,
+    resendverification : `${baseURL}/userlaundry/resend-verification`,
+    signup: `${baseURL}/userlaundry/signup`,
+    userapplyjob: `${baseURL}/userlaundry/userapplyjob`,
+    getcreatepost: `${baseURL}/userlaundry/getcreatepost`,
+    getallusers: `${baseURL}/admin/getallusers`,
+    posterstats: (userId)=>`${baseURL}/userlaundry/posterstats/${userId}`,
+    washerstats: `${baseURL}/userlaundry/washerstats`,
+    getuserposts: (userId) => `${baseURL}/userlaundry/getuserposts/${userId}`,
+    getWasherJobs: (washerId) => `${baseURL}/userlaundry/getWasherJobs/${washerId}`,
+    deleteuserpost: (jobId) => `${baseURL}/userlaundry/deleteuserpost/${jobId}`,
+    notifications: (userId) => `${baseURL}/userlaundry/notifications/${userId}`,
+    completejob: (jobId) => `${baseURL}/userlaundry/completejob/${jobId}`,
+    getmessages: (jobId) => `${baseURL}/userlaundry/getmessages/${jobId}`,
+    sendmessages: `${baseURL}/userlaundry/sendmessages`,
+    getalljobsdetails: `${baseURL}/admin/getalljobsdetails`,
+    exists: `${baseURL}/admin/exists`,
+    login: `${baseURL}/admin/login`,
+    signup: `${baseURL}/admin/signup`,
+    getallchats: `${baseURL}/admin/getallchats`,
+    recentactivity: `${baseURL}/admin/recentactivity`,
+    dashboardstats: `${baseURL}/admin/dashboardstats`,
+};

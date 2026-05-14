@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Eye, EyeOff, Mail, Lock, User, Loader2, Shield, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { API_URLS } from "../components/utils/apiConfig";
 
 export default function AdminAuth() {
     const navigate = useNavigate();
@@ -20,7 +21,7 @@ export default function AdminAuth() {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        fetch("http://localhost:5000/admin/exists")
+        fetch(API_URLS.exists)
             .then(res => res.json())
             .then(data => setAdminExists(data.adminExists))
             .catch(() => setAdminExists(true));
@@ -35,8 +36,8 @@ export default function AdminAuth() {
         setLoading(true);
 
         const url = adminExists
-            ? "http://localhost:5000/admin/login"
-            : "http://localhost:5000/admin/signup";
+            ? API_URLS.login
+            : API_URLS.signup;
 
         const body = adminExists
             ? { email: form.email, password: form.password }

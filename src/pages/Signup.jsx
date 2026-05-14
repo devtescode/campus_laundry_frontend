@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { Eye, EyeOff, Mail, Lock, User, Phone, Building, ArrowLeft, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { API_URLS } from "../components/utils/apiConfig";
 
 const Signup = () => {
   const [step, setStep] = useState(1);
@@ -37,7 +38,7 @@ const Signup = () => {
   const handleSignup = async () => {
     setLoading(true); // show loader
     try {
-      const res = await fetch("http://localhost:5000/userlaundry/signup", {
+      const res = await fetch(API_URLS.signup, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -78,7 +79,7 @@ const Signup = () => {
   const resendVerificationEmail = async (email) => {
     setLoading(true); // show loader
     try {
-      const res = await fetch("http://localhost:5000/userlaundry/resend-verification", {
+      const res = await fetch(API_URLS.resendverification, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search, MapPin, Clock, Star, SlidersHorizontal } from "lucide-react";
 import Loader from "./Loaderpage/Loader";
+import { API_URLS } from "../components/utils/apiConfig";
 
 const Browse = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -18,7 +19,7 @@ const Browse = () => {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const res = await fetch("http://localhost:5000/userlaundry/getcreatepost");
+        const res = await fetch(API_URLS.getcreatepost);
         const data = await res.json();
         setJobs(data);
         console.log(data);
@@ -68,7 +69,7 @@ const Browse = () => {
       try {
 
         const res = await fetch(
-          "http://localhost:5000/userlaundry/userapplyjob",
+          API_URLS.userapplyjob,
           {
             method: "POST",
             headers: {

@@ -4,6 +4,7 @@ import axios from "axios";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { API_URLS } from "../components/utils/apiConfig";
 
 const Adminchat = () => {
     const [chats, setChats] = useState([]);
@@ -14,7 +15,7 @@ const Adminchat = () => {
     const fetchChats = async () => {
         setLoading(true);
         try {
-            const res = await axios.get("http://localhost:5000/admin/getallchats");
+            const res = await axios.get(API_URLS.getallchats);
             const loadedChats = res.data.chats || [];
             setChats(loadedChats);
             if (!selectedChat && loadedChats.length > 0) {

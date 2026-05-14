@@ -178,6 +178,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
+import { API_URLS } from "../components/utils/apiConfig";
 
 const Adminjobdisplay = () => {
     const [jobs, setJobs] = useState([]);
@@ -186,7 +187,7 @@ const Adminjobdisplay = () => {
     const fetchJobs = async () => {
         try {
             const res = await axios.get(
-                "http://localhost:5000/admin/getalljobsdetails"
+                API_URLS.getalljobsdetails
             );
             setJobs(res.data.jobs || []);
         } catch (err) {

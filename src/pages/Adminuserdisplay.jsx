@@ -26,6 +26,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import Loader from "./Loaderpage/Loader";
+import { API_URLS } from "../components/utils/apiConfig";
 
 const Adminuserdisplay = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -37,7 +38,7 @@ const Adminuserdisplay = () => {
   // ✅ Fetch users from backend
   const fetchUsers = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/admin/getallusers");
+      const res = await axios.get(API_URLS.getallusers);
       console.log(res.data);
 
       // adjust depending on backend response

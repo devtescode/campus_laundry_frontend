@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { Eye, EyeOff, Mail, Lock, ArrowLeft, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { API_URLS } from "../components/utils/apiConfig";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -33,7 +34,7 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:5000/userlaundry/login", {
+      const res = await fetch(API_URLS.login, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

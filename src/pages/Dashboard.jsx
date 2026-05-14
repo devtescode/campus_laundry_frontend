@@ -37,6 +37,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import Loader from "./Loaderpage/Loader";
 import axios from "axios";
+import { API_URLS } from "../components/utils/apiConfig";
 
 
 
@@ -153,7 +154,8 @@ const Dashboard = () => {
 
 
       const res = await axios.get(
-        `http://localhost:5000/userlaundry/posterstats/${userId}`
+        // `http://localhost:5000/userlaundry/posterstats/${userId}`
+        API_URLS.posterstats(userId)
       );
       console.log(res, "response");
 
@@ -178,7 +180,7 @@ const Dashboard = () => {
 
     // console.log("Fetching washer stats for user:", user);
 
-    fetch("http://localhost:5000/userlaundry/washerstats", {
+    fetch(API_URLS.washerstats, {
       headers: {
         Authorization: `Bearer ${user.token}`,
       },
@@ -212,7 +214,8 @@ const Dashboard = () => {
 
     const fetchUserJobs = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/userlaundry/getuserpost/${userId}`);
+        // const res = await fetch(`http://localhost:5000/userlaundry/getuserpost/${userId}`);
+        const res = await fetch(API_URLS.getuserposts(userId));
         const data = await res.json();
         setPosterJobs(data.jobs);
         console.log(data.jobs, "Fetched Jobs");
@@ -238,7 +241,7 @@ const Dashboard = () => {
       try {
         const washerId = JSON.parse(sessionStorage.getItem("laundryUser")).id;
         const res = await fetch(
-          `http://localhost:5000/userlaundry/getWasherJobs/${washerId}`
+          API_URLS.getWasherJobs(washerId)
         );
         const data = await res.json();
         // console.log(data, "dataaaaaaaaaaaaaaaa");
@@ -282,7 +285,7 @@ const Dashboard = () => {
 
     if (result.isConfirmed) {
       try {
-        await fetch(`http://localhost:5000/userlaundry/delectuserpost/${jobId}`, {
+        await fetch(API_URLS.deleteuserpost(jobId), {
           method: "DELETE",
         });
 
@@ -303,7 +306,7 @@ const Dashboard = () => {
   const userId = JSON.parse(sessionStorage.getItem("laundryUser")).id;
 
   useEffect(() => {
-    axios.get(`http://localhost:5000/userlaundry/notifications/${userId}`)
+    axios.get(API_URLS.notifications(userId))
       .then((res) => {
         console.log(res.data);
         setNotifications(res.data);
@@ -338,7 +341,7 @@ const Dashboard = () => {
     if (!result.isConfirmed) return;
 
     const res = await fetch(
-      `http://localhost:5000/userlaundry/completejob/${jobId}`,
+      API_URLS.completejob(jobId),
       {
         method: "PATCH",
         headers: {
@@ -429,7 +432,7 @@ const Dashboard = () => {
 
   // ✅ FETCH MESSAGES
   useEffect(() => {
-    fetch(`http://localhost:5000/userlaundry/getmessages/${job._id}`, {
+    fetch(API_URLS.getmessages(job._id), {
       headers: {
         Authorization: `Bearer ${user.token}`,
       },
@@ -470,7 +473,7 @@ const Dashboard = () => {
       setSending(true);
 
       const response = await fetch(
-        "http://localhost:5000/userlaundry/sendmessages",
+        API_URLS.sendmessages,
         {
           method: "POST",
           headers: {

@@ -10,6 +10,7 @@ import {
     ShoppingBag,
 } from "lucide-react";
 import axios from 'axios';
+import { API_URLS } from '../components/utils/apiConfig';
 const Adminoverview = () => {
 
 
@@ -18,7 +19,7 @@ const Adminoverview = () => {
 
     const fetchActivity = async () => {
         try {
-            const res = await axios.get("http://localhost:5000/admin/recentactivity");
+            const res = await axios.get(API_URLS.recentactivity);
             setRecentActivity(res.data.activity || []);
         } catch (err) {
             console.error(err);
@@ -42,7 +43,7 @@ const Adminoverview = () => {
 
     const fetchStats = async () => {
         try {
-            const res = await axios.get("http://localhost:5000/admin/dashboardstats");
+            const res = await axios.get(API_URLS.dashboardstats);
             setStats(res.data);
         } catch (err) {
             console.error(err);
