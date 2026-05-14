@@ -317,9 +317,6 @@ const Dashboard = () => {
 
 
 
-
-
-
   const handleCompleteJob = async (jobId) => {
     const washerId = JSON.parse(sessionStorage.getItem("laundryUser")).id;
 
