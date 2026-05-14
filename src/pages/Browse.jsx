@@ -163,10 +163,10 @@ const Browse = () => {
           {/* Header */}
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Browse Laundry <span className="text-gradient">Jobs</span>
+              Browse Clinq <span className="text-gradient">Jobs</span>
             </h1>
             <p className="text-lg text-muted-foreground">
-              Find laundry jobs near you and start earning today.
+              Find Clinq jobs near you and start earning today.
             </p>
           </div>
 

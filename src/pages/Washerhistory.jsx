@@ -60,7 +60,7 @@ const Washerhistory = () => {
               Washer <span className="text-primary">History</span>
             </h1>
             <p className="text-muted-foreground mt-3 max-w-xl mx-auto">
-              A complete record of all laundry jobs you’ve successfully completed.
+              A complete record of all Clinq jobs you’ve successfully completed.
             </p>
           </div>
 
