@@ -36,7 +36,7 @@ const HowItWorks = () => {
             How It Works
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Getting started is easy. Whether you want to earn or get your laundry done, we've made it simple.
+            Getting started is easy. Whether you want to earn or get your Clinq done, we've made it simple.
           </p>
         </div>
 

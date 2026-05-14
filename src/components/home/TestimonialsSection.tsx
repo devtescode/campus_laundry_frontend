@@ -4,14 +4,14 @@ const testimonials = [
   {
     name: "Chioma A.",
     role: "200 Level, Elizade University",
-    content: "I make ₦15,000 weekly just doing laundry in my hostel. It's the perfect side hustle between classes!",
+    content: "I make ₦15,000 weekly just doing Clinq in my hostel. It's the perfect side hustle between classes!",
     rating: 5,
     type: "washer",
   },
   {
     name: "Emeka O.",
     role: "300 Level, Elizade University",
-    content: "As someone with a busy engineering schedule, finding someone to handle my laundry has been a lifesaver. Fast and reliable!",
+    content: "As someone with a busy engineering schedule, finding someone to handle my Clinq has been a lifesaver. Fast and reliable!",
     rating: 5,
     type: "poster",
   },
