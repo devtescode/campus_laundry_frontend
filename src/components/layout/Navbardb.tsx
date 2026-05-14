@@ -59,10 +59,10 @@ const Navbardb = () => {
 
                     {/* <Link to="/login"> */}
                     <div className="hidden md:flex items-center gap-1" onClick={LogoutBtn}>
-                        <p >
+                        <p>
                             logout
                         </p>
-                        <LogInIcon />
+                        <LogOut />
 
                     </div>
                     {/* </Link> */}
