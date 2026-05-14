@@ -4,7 +4,7 @@ import { ArrowRight, Shirt, Sparkles, DollarSign } from "lucide-react";
 
 const HeroSection = () => {
   return (
-    <section className="relative min-h-[90vh] flex items-center gradient-hero overflow-hidden">
+    <section className="relative min-h-[85vh] flex items-center gradient-hero overflow-hidden py-4">
       {/* Decorative Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-64 h-64 rounded-full bg-primary/5 blur-3xl animate-float" />
@@ -18,7 +18,7 @@ const HeroSection = () => {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Content */}
           <div className="text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-light text-primary text-sm font-medium mb-6 animate-fade-in">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-light text-primary text-sm font-medium mb-4 animate-fade-in">
               <Sparkles className="w-4 h-4" />
               <span>Clinq Campus Hub</span>
             </div>
