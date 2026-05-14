@@ -58,13 +58,13 @@ const Navbardb = () => {
                     </div>
 
                     {/* <Link to="/login"> */}
-                        <div className="hidden md:flex items-center gap-1" onClick={LogoutBtn}>
-                            <p >
-                                logout
-                            </p>
-                            <LogInIcon />
+                    <div className="hidden md:flex items-center gap-1" onClick={LogoutBtn}>
+                        <p >
+                            logout
+                        </p>
+                        <LogInIcon />
 
-                        </div>
+                    </div>
                     {/* </Link> */}
 
                     {/* Mobile Menu Button */}
@@ -99,11 +99,11 @@ const Navbardb = () => {
                                     {link.label}
                                 </Link>
                             ))}
-                            <div className="flex gap-0 mt-4 pt-4 border-t border-border" onClick={LogoutBtn}>
-                                    <Button variant="ghost" size="sm">
-                                        logout
-                                    </Button>
-                                <LogOut />
+                            <div className="mt-4 pt-4 border-t border-border" onClick={LogoutBtn}>
+                                <Button variant="ghost" size="sm" className="flex items-center gap-1">
+                                    <span>logout</span>
+                                    <LogOut className="w-4 h-4" />
+                                </Button>
                             </div>
                         </div>
                     </div>
