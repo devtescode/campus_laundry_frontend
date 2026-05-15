@@ -151,17 +151,38 @@ const Adminoverview = () => {
                         <CardTitle>Platform Activity</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="h-64 flex items-end justify-between gap-2">
-                            {["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"].map((month, index) => (
-                                <div key={month} className="flex flex-col items-center gap-2 flex-1">
-                                    <div
-                                        className="w-full bg-primary/20 rounded-t-lg hover:bg-primary/30 transition-colors"
-                                        style={{ height: `${Math.random() * 80 + 20}%` }}
-                                    />
-                                    <span className="text-xs text-muted-foreground">{month}</span>
-                                </div>
-                            ))}
-                        </div>
+                        <div className="h-64 flex flex-wrap sm:flex-nowrap items-end gap-2">
+  {[
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ].map((month) => (
+    <div
+      key={month}
+      className="flex flex-col items-center gap-2 w-8 sm:flex-1"
+    >
+      <div
+        className="w-full bg-primary/20 rounded-t-lg hover:bg-primary/30 transition-colors"
+        style={{
+          height: `${Math.floor(Math.random() * 80 + 20)}%`,
+        }}
+      />
+
+      <span className="text-[10px] sm:text-xs text-muted-foreground">
+        {month}
+      </span>
+    </div>
+  ))}
+</div>
                     </CardContent>
                 </Card>
 
