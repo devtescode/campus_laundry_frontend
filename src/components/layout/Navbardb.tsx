@@ -26,6 +26,15 @@ const Navbardb = () => {
     const isActive = (path: string) => location.pathname === path;
 
     return (
+        <>
+        {/* Blur overlay for mobile menu */}
+        {isOpen && (
+            <div
+                className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm transition-all duration-300 md:hidden"
+                onClick={() => setIsOpen(false)}
+                aria-label="Close mobile menu overlay"
+            />
+        )}
         <nav className="fixed top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-lg border-b border-border">
             <div className="container mx-auto px-4">
                 <div className="flex items-center justify-between h-16">
@@ -82,7 +91,7 @@ const Navbardb = () => {
 
                 {/* Mobile Navigation */}
                 {isOpen && (
-                    <div className="md:hidden py-4 border-t border-border animate-slide-up">
+                    <div className="md:hidden py-4 border-t border-border animate-slide-up fixed top-16 left-0 right-0 z-50 bg-card">
                         <div className="flex flex-col gap-2">
                             {navLinks.map((link) => (
                                 <Link
@@ -110,6 +119,7 @@ const Navbardb = () => {
                 )}
             </div>
         </nav>
+        </>
     );
 };
 
