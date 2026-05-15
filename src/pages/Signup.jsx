@@ -390,7 +390,7 @@ const Signup = () => {
                     Resend Verification Email
                   </Button> */}
 
-                  <Button
+                  <Button 
                     type="button"        // <-- important
                     // variant="outline"
                     className="w-full"
