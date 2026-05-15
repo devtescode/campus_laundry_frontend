@@ -110,8 +110,8 @@ const Adminuserdisplay = () => {
       .toLowerCase()
       .includes(searchQuery.toLowerCase())
   );
-  
-  
+
+
 
   // ✅ Handle view user details
   const handleViewUser = (user) => {
@@ -169,7 +169,7 @@ const Adminuserdisplay = () => {
             <TableHeader>
               <TableRow className="border-border">
                 <TableHead>User</TableHead>
-                {/* <TableHead>University</TableHead> */}
+                <TableHead>isVerified</TableHead>
                 <TableHead>Role</TableHead>
                 <TableHead>Post</TableHead>
                 <TableHead>Job</TableHead>
@@ -203,9 +203,18 @@ const Adminuserdisplay = () => {
                     </div>
                   </TableCell>
 
-                  {/* <TableCell className="text-muted-foreground">
-                    {user.university || "-"}
-                  </TableCell> */}
+                  <TableCell className="text-muted-foreground">
+                    {/* {user.university || "-"} */}
+                    {user.isVerified ? (
+                      <span className="px-2 py-1 text-xs text-green-700 bg-green-100 rounded-full">
+                        Verified
+                      </span>
+                    ) : (
+                      <span className="px-2 py-1 text-xs text-red-700 bg-red-100 rounded-full">
+                        Unverified
+                      </span>
+                    )}
+                  </TableCell>
 
                   <TableCell>
                     <Badge variant="outline" className="text-xs">
@@ -219,7 +228,7 @@ const Adminuserdisplay = () => {
 
                   <TableCell>
                     <span className="flex items-center gap-1 text-black-500">
-                      {user.jobsWashed  || "-"}
+                      {user.jobsWashed || "-"}
                     </span>
                   </TableCell>
 
@@ -237,8 +246,8 @@ const Adminuserdisplay = () => {
 
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <Button 
-                        variant="ghost" 
+                      <Button
+                        variant="ghost"
                         size="icon"
                         onClick={() => handleViewUser(user)}
                       >
@@ -344,20 +353,34 @@ const Adminuserdisplay = () => {
                   <label className="text-sm font-medium text-muted-foreground">Role</label>
                   <p className="text-sm">{selectedUser.role || "Not specified"}</p>
                 </div>
-                {/* <div>
+                <div>
                   <label className="text-sm font-medium text-muted-foreground">Status</label>
                   <Badge className={getStatusBadge(selectedUser.status)}>
-                    {selectedUser.status || "Active"}
+                    {selectedUser.status || "Actie"}
                   </Badge>
-                </div> */}
+                </div>
+
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Post</label>
                   <p className="text-sm">{selectedUser.jobs || "-"}</p>
                 </div>
+
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Verified</label>
+                  <p className="text-sm">{selectedUser.isVerified ? "Verified ✅" : "Not Verified ❌"}</p>
+                </div>
+
+                
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Job</label>
                   <p className="text-sm flex items-center gap-1">
-                    <span className="text-yellow-500"></span> {selectedUser.jobsWashed  || "-"}
+                    <span className="text-yellow-500"></span> {selectedUser.jobsWashed || "-"}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Gender</label>
+                  <p className="text-sm flex items-center gap-1">
+                    <span className="text-yellow-500"></span> {selectedUser.gender || "-"}
                   </p>
                 </div>
               </div>
@@ -367,10 +390,10 @@ const Adminuserdisplay = () => {
                 <p className="text-sm">
                   {selectedUser.createdAt
                     ? new Date(selectedUser.createdAt).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })
                     : "Not available"}
                 </p>
               </div>
