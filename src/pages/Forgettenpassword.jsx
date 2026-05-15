@@ -27,14 +27,13 @@ const Forgettenpassword = () => {
     try {
       setLoading(true);
 
-      const res = await axios.post(
-        API_URLS.forgotpassword,
-        { email }
-      );
+      const res = await axios.post(API_URLS.forgotpassword, {
+        email: email.trim().toLowerCase(),
+      });
 
       Swal.fire({
         icon: "success",
-        title: "Reset Link Sent",
+        title: "Check Your Email 📩",
         text: res.data.message,
       });
 
@@ -43,13 +42,30 @@ const Forgettenpassword = () => {
     } catch (err) {
       console.log(err);
 
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text:
-          err.response?.data?.message ||
-          "Something went wrong",
-      });
+      const message =
+        err.response?.data?.message ||
+        "Something went wrong. Please try again.";
+
+      // 👇 better handling for specific backend responses
+      if (message.toLowerCase().includes("verify")) {
+        Swal.fire({
+          icon: "info",
+          title: "Email Not Verified",
+          text: message,
+        });
+      } else if (message.toLowerCase().includes("not found")) {
+        Swal.fire({
+          icon: "error",
+          title: "User Not Found",
+          text: message,
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: message,
+        });
+      }
 
     } finally {
       setLoading(false);
