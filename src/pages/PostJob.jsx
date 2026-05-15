@@ -43,38 +43,30 @@ const PostJob = () => {
     description: "",
     image: null
   });
+
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
+    setLoading(true);
     try {
       const user = JSON.parse(sessionStorage.getItem("laundryUser"));
-
-
       const payload = {
         userId: user?.id,
         ...formData,
       };
-      // console.log(payload.userId, "sdd");
-
-
       const res = await fetch(API_URLS.createpost, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      console.log(res, "responsive");
-
-
       const data = await res.json();
-      console.log(data, "data");
-
       if (res.ok) {
         toast({
           title: "Job Posted Successfully! 🎉",
           description: "Your laundry request is now visible to washers nearby.",
         });
-
         navigate("/dashboard");
       } else {
         toast({
@@ -89,6 +81,8 @@ const PostJob = () => {
         description: "Could not connect to the server.",
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -475,11 +469,23 @@ const PostJob = () => {
                 </div>
 
                 <div className="flex gap-4">
-                  <Button variant="outline" className="flex-1" onClick={prevStep}>
+                  <Button variant="outline" className="flex-1" onClick={prevStep} disabled={loading}>
                     <ArrowLeft className="w-4 h-4 mr-2" /> Back
                   </Button>
-                  <Button className="flex-1" onClick={handleSubmit}>
-                    Post Job <CheckCircle className="w-4 h-4 ml-2" />
+                  <Button className="flex-1 flex items-center justify-center" onClick={handleSubmit} disabled={loading}>
+                    {loading ? (
+                      <span className="flex items-center gap-2">
+                        <svg className="animate-spin h-5 w-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                        </svg>
+                        Posting...
+                      </span>
+                    ) : (
+                      <span className="flex items-center">
+                        Post Job <CheckCircle className="w-4 h-4 ml-2" />
+                      </span>
+                    )}
                   </Button>
                 </div>
               </CardContent>
