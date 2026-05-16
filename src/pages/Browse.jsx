@@ -1,4 +1,14 @@
 import { useState, useEffect } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import Navbar from "@/components/layout/Navbardb";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,6 +25,13 @@ const Browse = () => {
   const [selectedLocation, setSelectedLocation] = useState("all");
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  // View Details Modal logic
+  const handleViewDetails = (job) => {
+    setSelectedJob(job);
+    setIsModalOpen(true);
+  };
 
   // Fetch jobs from backend
   useEffect(() => {
@@ -299,7 +316,6 @@ const Browse = () => {
                     {/* View Details Outline */}
                     <Button
                       variant="outline"
-                      // className="flex-1 border border-gray-400 text-gray-700 hover:border-primary hover:text-primary transition-colors"
                       className="flex-1 border border-gray-500 text-gray-500 hover:bg-gray-500 hover:text-white transition-colors"
                       onClick={() => handleViewDetails(job)}
                     >
@@ -329,6 +345,99 @@ const Browse = () => {
           </div>
         </div>
       </main>
+      {/* Details Modal */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="max-w-2xl bg-gradient-to-br from-background to-primary/10 border-none shadow-2xl animate-fade-in fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-3xl font-bold text-primary flex items-center gap-2">
+              <span>Job & User Details</span>
+            </DialogTitle>
+            <DialogDescription className="text-base text-muted-foreground">
+              Explore all information about this job and the user who posted it.
+            </DialogDescription>
+          </DialogHeader>
+          {selectedJob && (
+            <div className="space-y-6">
+              {/* Job Info */}
+              <div className="bg-card/80 rounded-xl p-5 shadow-md border border-primary/10">
+                <h3 className="text-lg font-semibold mb-2 text-primary flex items-center gap-2">🧺 Job Information</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <span className="block text-xs text-muted-foreground">Service Type</span>
+                    <span className="font-semibold text-foreground">{selectedJob.type}</span>
+                  </div>
+                  <div>
+                    <span className="block text-xs text-muted-foreground">Price</span>
+                    <span className="font-semibold text-primary">₦{Number(selectedJob.price).toLocaleString()}</span>
+                  </div>
+                  <div>
+                    <span className="block text-xs text-muted-foreground">Status</span>
+                    <Badge className="w-fit">{selectedJob.status || "Open"}</Badge>
+                  </div>
+                  <div>
+                    <span className="block text-xs text-muted-foreground">Quantity</span>
+                    <span className="font-semibold">{selectedJob.quantity || "—"}</span>
+                  </div>
+                  <div className="col-span-2">
+                    <span className="block text-xs text-muted-foreground">Description</span>
+                    <span className="text-sm">{selectedJob.description || "No description provided"}</span>
+                  </div>
+                  <div className="col-span-2">
+                    <span className="block text-xs text-muted-foreground">Location</span>
+                    <span className="text-sm">{selectedJob.hostel}, {selectedJob.block}, {selectedJob.room}</span>
+                  </div>
+                  <div>
+                    <span className="block text-xs text-muted-foreground">Delivery Date</span>
+                    <span className="text-sm">{formatDate(selectedJob.deliveryDate)}</span>
+                  </div>
+                  <div>
+                    <span className="block text-xs text-muted-foreground">Delivery Time</span>
+                    <span className="text-sm">{formatTime(selectedJob.deliveryTime)}</span>
+                  </div>
+                </div>
+              </div>
+              {/* User Info */}
+              <div className="bg-gradient-to-r from-primary/10 to-background rounded-xl p-5 shadow-md border border-primary/10">
+                <h3 className="text-lg font-semibold mb-2 text-primary flex items-center gap-2">👤 User Information</h3>
+                <div className="flex items-center gap-4 mb-4">
+                  <Avatar className="w-14 h-14">
+                    <AvatarFallback className="bg-primary/20 text-primary text-2xl">
+                      {selectedJob.userId?.fullname?.charAt(0) || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <div className="font-bold text-lg text-foreground">{selectedJob.userId?.fullname || "Unknown User"}</div>
+                    {/* <div className="text-sm text-muted-foreground">{selectedJob.userId?.email || "No email"}</div> */}
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <span className="block text-xs text-muted-foreground">Gender</span>
+                    <span className="text-sm">{selectedJob.userId?.gender || "Not specified"}</span>
+                  </div>
+                  {/* <div>
+                    <span className="block text-xs text-muted-foreground">Phone</span>
+                    <span className="text-sm">{selectedJob.userId?.phone || "Not specified"}</span>
+                  </div> */}
+                  <div>
+                    <span className="block text-xs text-muted-foreground">University</span>
+                    <span className="text-sm">{selectedJob.userId?.university || "Elizade University"}</span>
+                  </div>
+                  {/* <div>
+                    <span className="block text-xs text-muted-foreground">Room</span>
+                    <span className="text-sm">{selectedJob.room || "Not specified"}</span>
+                  </div> */}
+                </div>
+              </div>
+            </div>
+          )}
+          <DialogFooter className="pt-4">
+            <DialogClose asChild>
+              <Button variant="outline" className="w-full">Close</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

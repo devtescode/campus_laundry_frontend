@@ -146,7 +146,7 @@ const Dashboard = () => {
     pendingJobs: 0,
     completedJobs: 0,
     totalSpent: 0,
-    averageRating: 0,
+    appliedJobs: 0,
   });
 
   const fetchPosterStats = async () => {
@@ -266,7 +266,7 @@ const Dashboard = () => {
     setOpenModal(true);
   };
 
-  
+
 
   const handleDeleteJob = async (jobId) => {
     const result = await Swal.fire({
@@ -388,128 +388,128 @@ const Dashboard = () => {
     setChatJob(job);
   };
   const ChatModal = ({ job, onClose }) => {
-  const user = JSON.parse(sessionStorage.getItem("laundryUser"));
+    const user = JSON.parse(sessionStorage.getItem("laundryUser"));
 
-  const [messages, setMessages] = useState([]);
-  const [text, setText] = useState("");
-  const [loadingMessages, setLoadingMessages] = useState(true);
-  const [sending, setSending] = useState(false);
+    const [messages, setMessages] = useState([]);
+    const [text, setText] = useState("");
+    const [loadingMessages, setLoadingMessages] = useState(true);
+    const [sending, setSending] = useState(false);
 
-  // ✅ KEEP YOUR EXISTING LOGIC
-  const senderId = user.id;
+    // ✅ KEEP YOUR EXISTING LOGIC
+    const senderId = user.id;
 
-  const isPoster =
-    senderId === String(job.userId?._id || job.userId);
+    const isPoster =
+      senderId === String(job.userId?._id || job.userId);
 
-  // ✅ GET RECEIVER NAME
-  const receiverName = isPoster
-    ? job?.applicantName ||
+    // ✅ GET RECEIVER NAME
+    const receiverName = isPoster
+      ? job?.applicantName ||
       job?.applicant?.fullname ||
       "Washer"
-    : job?.userId?.fullname ||
+      : job?.userId?.fullname ||
       "Poster";
 
-  // ✅ GET FIRST LETTER
-  const receiverInitial =
-    receiverName?.charAt(0)?.toUpperCase() || "U";
+    // ✅ GET FIRST LETTER
+    const receiverInitial =
+      receiverName?.charAt(0)?.toUpperCase() || "U";
 
-  useEffect(() => {
-    // Lock body scroll
-    document.body.style.overflow = "hidden";
+    useEffect(() => {
+      // Lock body scroll
+      document.body.style.overflow = "hidden";
 
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, []);
+      return () => {
+        document.body.style.overflow = "auto";
+      };
+    }, []);
 
-  // ✅ FETCH MESSAGES
-  useEffect(() => {
-    fetch(API_URLS.getmessages(job._id), {
-      headers: {
-        Authorization: `Bearer ${user.token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setMessages(Array.isArray(data) ? data : []);
-        setLoadingMessages(false);
+    // ✅ FETCH MESSAGES
+    useEffect(() => {
+      fetch(API_URLS.getmessages(job._id), {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
       })
-      .catch((err) => {
-        console.error(err);
-        setLoadingMessages(false);
-      });
-  }, [job._id]);
+        .then((res) => res.json())
+        .then((data) => {
+          setMessages(Array.isArray(data) ? data : []);
+          setLoadingMessages(false);
+        })
+        .catch((err) => {
+          console.error(err);
+          setLoadingMessages(false);
+        });
+    }, [job._id]);
 
-  // ✅ SEND MESSAGE
-  const sendMessage = async () => {
-    if (!text.trim()) return;
+    // ✅ SEND MESSAGE
+    const sendMessage = async () => {
+      if (!text.trim()) return;
 
-    const receiverId =
-      senderId === String(job.userId?._id || job.userId)
-        ? job.applicant
-        : String(job.userId?._id || job.userId);
+      const receiverId =
+        senderId === String(job.userId?._id || job.userId)
+          ? job.applicant
+          : String(job.userId?._id || job.userId);
 
-    if (!receiverId) {
-      alert("Cannot send message: receiver not defined yet!");
-      return;
-    }
-
-    const messageData = {
-      jobId: job._id,
-      senderId,
-      receiverId,
-      text,
-    };
-
-    try {
-      setSending(true);
-
-      const response = await fetch(
-        API_URLS.sendmessages,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(messageData),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to send message");
+      if (!receiverId) {
+        alert("Cannot send message: receiver not defined yet!");
+        return;
       }
 
-      // ✅ ADD MESSAGE IMMEDIATELY
-      setMessages((prev) => [
-        ...prev,
-        {
-          _id: Math.random().toString(36).substring(2),
-          text,
-          sender: { _id: senderId },
-          createdAt: new Date().toISOString(),
-        },
-      ]);
+      const messageData = {
+        jobId: job._id,
+        senderId,
+        receiverId,
+        text,
+      };
 
-      setText("");
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setSending(false);
-    }
-  };
+      try {
+        setSending(true);
 
-  return (
-    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm">
+        const response = await fetch(
+          API_URLS.sendmessages,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(messageData),
+          }
+        );
 
-      {/* OVERLAY */}
-      <div
-        onClick={onClose}
-        className="absolute inset-0"
-      />
+        if (!response.ok) {
+          throw new Error("Failed to send message");
+        }
 
-      {/* CHAT SHEET */}
-      <div
-        className="
+        // ✅ ADD MESSAGE IMMEDIATELY
+        setMessages((prev) => [
+          ...prev,
+          {
+            _id: Math.random().toString(36).substring(2),
+            text,
+            sender: { _id: senderId },
+            createdAt: new Date().toISOString(),
+          },
+        ]);
+
+        setText("");
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setSending(false);
+      }
+    };
+
+    return (
+      <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm">
+
+        {/* OVERLAY */}
+        <div
+          onClick={onClose}
+          className="absolute inset-0"
+        />
+
+        {/* CHAT SHEET */}
+        <div
+          className="
           absolute bottom-0 left-0 right-0
           w-full h-[85vh] sm:h-[80vh]
           bg-background
@@ -520,90 +520,89 @@ const Dashboard = () => {
           overflow-hidden
           animate-in slide-in-from-bottom duration-300
         "
-      >
+        >
 
-        {/* TOP BAR */}
-        <div className="flex justify-center py-2">
-          <div className="w-14 h-1.5 rounded-full bg-muted-foreground/30" />
-        </div>
+          {/* TOP BAR */}
+          <div className="flex justify-center py-2">
+            <div className="w-14 h-1.5 rounded-full bg-muted-foreground/30" />
+          </div>
 
-        {/* HEADER */}
-        <div className="px-4 pb-3 border-b border-border bg-background/95 backdrop-blur sticky top-0 z-10">
-          <div className="flex items-center justify-between">
+          {/* HEADER */}
+          <div className="px-4 pb-3 border-b border-border bg-background/95 backdrop-blur sticky top-0 z-10">
+            <div className="flex items-center justify-between">
 
-            {/* USER INFO */}
-            <div className="flex items-center gap-3">
+              {/* USER INFO */}
+              <div className="flex items-center gap-3">
 
-              {/* AVATAR */}
-              <div className="relative">
-                <div className="w-12 h-12 rounded-full bg-primary/15 flex items-center justify-center shadow-sm border border-primary/10">
-                  <span className="font-semibold text-primary text-base">
-                    {receiverInitial}
-                  </span>
+                {/* AVATAR */}
+                <div className="relative">
+                  <div className="w-12 h-12 rounded-full bg-primary/15 flex items-center justify-center shadow-sm border border-primary/10">
+                    <span className="font-semibold text-primary text-base">
+                      {receiverInitial}
+                    </span>
+                  </div>
+
+                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-background" />
                 </div>
 
-                <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-background" />
+                {/* NAME */}
+                <div>
+                  <h2 className="font-semibold text-[15px] text-foreground">
+                    {receiverName}
+                  </h2>
+
+                  <p className="text-xs text-green-500">
+                    Active now
+                  </p>
+                </div>
               </div>
 
-              {/* NAME */}
-              <div>
-                <h2 className="font-semibold text-[15px] text-foreground">
-                  {receiverName}
-                </h2>
-
-                <p className="text-xs text-green-500">
-                  Active now
-                </p>
-              </div>
-            </div>
-
-            {/* CLOSE BUTTON */}
-            <button
-              onClick={onClose}
-              className="
+              {/* CLOSE BUTTON */}
+              <button
+                onClick={onClose}
+                className="
                 w-10 h-10 rounded-full
                 flex items-center justify-center
                 hover:bg-red-500/10
                 text-muted-foreground hover:text-red-500
                 transition-all duration-200
               "
-            >
-              ✕
-            </button>
+              >
+                ✕
+              </button>
+            </div>
           </div>
-        </div>
 
-        {/* MESSAGES */}
-        <div
-          className="
+          {/* MESSAGES */}
+          <div
+            className="
             flex-1 overflow-y-auto
             px-3 py-4
             space-y-3
             bg-muted/20
           "
-        >
-          {loadingMessages ? (
-            <div className="h-full flex items-center justify-center">
-              <div className="flex flex-col items-center gap-2">
-                <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+          >
+            {loadingMessages ? (
+              <div className="h-full flex items-center justify-center">
+                <div className="flex flex-col items-center gap-2">
+                  <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
 
-                <p className="text-sm text-muted-foreground">
-                  Loading messages...
-                </p>
+                  <p className="text-sm text-muted-foreground">
+                    Loading messages...
+                  </p>
+                </div>
               </div>
-            </div>
-          ) : messages?.length > 0 ? (
-            messages.map((msg) => (
-              <div
-                key={msg._id}
-                className={`flex ${
-                  msg.sender?._id === user.id
-                    ? "justify-end"
-                    : "justify-start"
-                }`}
-              >
+            ) : messages?.length > 0 ? (
+              messages.map((msg) => (
                 <div
-                  className={`
+                  key={msg._id}
+                  className={`flex ${msg.sender?._id === user.id
+                      ? "justify-end"
+                      : "justify-start"
+                    }`}
+                >
+                  <div
+                    className={`
                     max-w-[50%]
                     px-4 py-3
                     rounded-3xl
@@ -611,64 +610,62 @@ const Dashboard = () => {
                     shadow-sm
                     break-words
                     animate-in fade-in zoom-in-95 duration-200
-                    ${
-                      msg.sender?._id === user.id
+                    ${msg.sender?._id === user.id
                         ? "bg-primary text-white rounded-br-md"
                         : "bg-background border border-border text-foreground rounded-bl-md"
-                    }
+                      }
                   `}
-                >
-                  <p className="leading-relaxed">
-                    {msg.text}
-                  </p>
+                  >
+                    <p className="leading-relaxed">
+                      {msg.text}
+                    </p>
 
-                  <div
-                    className={`
+                    <div
+                      className={`
                       text-[10px] mt-2 text-right
-                      ${
-                        msg.sender?._id === user.id
+                      ${msg.sender?._id === user.id
                           ? "text-white/70"
                           : "text-muted-foreground"
-                      }
+                        }
                     `}
-                  >
-                    {new Date(msg.createdAt).toLocaleTimeString([], {
-                      hour: "numeric",
-                      minute: "2-digit",
-                      hour12: true,
-                    })}
+                    >
+                      {new Date(msg.createdAt).toLocaleTimeString([], {
+                        hour: "numeric",
+                        minute: "2-digit",
+                        hour12: true,
+                      })}
+                    </div>
                   </div>
                 </div>
+              ))
+            ) : (
+              <div className="h-full flex flex-col items-center justify-center text-center px-6">
+
+                <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                  <span className="text-3xl">💬</span>
+                </div>
+
+                <h3 className="font-semibold text-foreground text-lg">
+                  No messages yet
+                </h3>
+
+                <p className="text-sm text-muted-foreground mt-1">
+                  Start chatting now
+                </p>
               </div>
-            ))
-          ) : (
-            <div className="h-full flex flex-col items-center justify-center text-center px-6">
+            )}
+          </div>
 
-              <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                <span className="text-3xl">💬</span>
-              </div>
+          {/* INPUT AREA */}
+          <div className="border-t border-border bg-background p-3">
+            <div className="flex items-end gap-2">
 
-              <h3 className="font-semibold text-foreground text-lg">
-                No messages yet
-              </h3>
-
-              <p className="text-sm text-muted-foreground mt-1">
-                Start chatting now
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* INPUT AREA */}
-        <div className="border-t border-border bg-background p-3">
-          <div className="flex items-end gap-2">
-
-            <textarea
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              rows={1}
-              placeholder="Type your message..."
-              className="
+              <textarea
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                rows={1}
+                placeholder="Type your message..."
+                className="
                 flex-1
                 resize-none
                 rounded-3xl
@@ -682,33 +679,33 @@ const Dashboard = () => {
                 max-h-[140px]
                 overflow-y-auto
               "
-            />
+              />
 
-            {/* SEND BUTTON */}
-            <Button
-              onClick={sendMessage}
-              disabled={sending}
-              className="
+              {/* SEND BUTTON */}
+              <Button
+                onClick={sendMessage}
+                disabled={sending}
+                className="
                 h-[55px]
                 min-w-[55px]
                 rounded-full
                 shadow-md
                 flex items-center justify-center
               "
-            >
-              {sending ? (
-                <div className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-              ) : (
-                "Send"
-              )}
-            </Button>
+              >
+                {sending ? (
+                  <div className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                ) : (
+                  "Send"
+                )}
+              </Button>
 
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  };
 
 
 
@@ -819,7 +816,7 @@ const Dashboard = () => {
                         <Star className="w-5 h-5 text-primary" />
                       </div>
                       <div>
-                        <p className="text-2xl font-bold text-foreground">{posterStats.averageRating}</p>
+                        <p className="text-2xl font-bold text-foreground">{posterStats.appliedJobs}</p>
                         <p className="text-xs text-muted-foreground">Applied</p>
                       </div>
                     </div>
@@ -935,8 +932,15 @@ const Dashboard = () => {
                                   </Button>
                                   {/* === "Applied" */}
                                   {job.status && (
-                                    <Button variant="outline" size="sm" className="flex-1 min-w-[100px]" onClick={() => openChat(job)}>
-                                      <MessageSquare className="w-3 h-3" /> Message
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="flex-1 min-w-[100px]"
+                                      onClick={() => openChat(job)}
+                                      disabled={job.status === "Pending"}
+                                    >
+                                      <MessageSquare className="w-3 h-3" />
+                                      Message
                                     </Button>
 
                                   )}
@@ -947,7 +951,7 @@ const Dashboard = () => {
                                     />
                                   )}
 
-                                  {job.status === "Applied" && (
+                                  {job.status === "Pending" && (
                                     <Button
                                       disabled={job.status !== "Pending"}
                                       variant=""
@@ -1226,8 +1230,8 @@ const Dashboard = () => {
                         <Star className="w-5 h-5 text-primary" />
                       </div>
                       <div>
-                        <p className="text-2xl font-bold text-foreground">{washerStats.averageRating}</p>
-                        <p className="text-xs text-muted-foreground">Rating</p>
+                        {/* <p className="text-2xl font-bold text-foreground">{washerStats.appliedJobs}</p> */}
+                        {/* <p className="text-xs text-muted-foreground">Rating</p> */}
                       </div>
                     </div>
                   </CardContent>
