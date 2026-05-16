@@ -441,7 +441,7 @@ const Browse = () => {
           )}
           <DialogFooter className="pt-4">
             <DialogClose asChild>
-              <Button variant="outline" className="w-full">Close</Button>
+              <Button variant="outline" className="">Close</Button>
             </DialogClose>
           </DialogFooter>
         </DialogContent>
