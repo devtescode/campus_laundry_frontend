@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, MapPin, Clock, Star, SlidersHorizontal } from "lucide-react";
+import { Search, MapPin, Clock, Star, SlidersHorizontal, Layers } from "lucide-react";
 import Loader from "./Loaderpage/Loader";
 import { API_URLS } from "../components/utils/apiConfig";
 import Swal from "sweetalert2";
@@ -263,21 +263,29 @@ const Browse = () => {
                     </span>
                   </div>
 
-                  {/* Description */}
-                  <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
-                    Description: {job.description || "No description"}
-                  </p>
-                  {/* <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
-                    Gender: {job.userId?.gender || "No Gender Specified"}
-                  </p> */}
+                 
+
+                  
+
+
+
+
 
                   {/* Location & Due */}
                   <div className="space-y-2 mb-4">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <MapPin className="w-4 h-4" />
-                      <span>Location: {job.hostel}, {job.block}, {job.room}</span>
+                      <Layers className="w-4 h-4 font-bold text-foreground" />
+                      <span className="font-bold text-foreground">
+                        Quantity: {job.quantity || "No Quantity"}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <MapPin className="w-4 h-4 font-bold text-foreground" />
+                      <span className="font-bold text-foreground">
+                        Location: {job.hostel}, {job.block}, {job.room}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm  font-bold text-foreground">
                       <Clock className="w-4 h-4" />
                       <span>Due Time: {formatDate(job.deliveryDate)} • {formatTime(job.deliveryTime)}</span>
                     </div>
