@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_URLS } from "../components/utils/apiConfig";
+import Swal from "sweetalert2";
 
 const ResetPassword = () => {
   const { token } = useParams();
