@@ -291,7 +291,6 @@ const Browse = () => {
                     </div>
                   </div>
 
-                  {/* User Info */}
                   <div className="flex items-center justify-between pt-4 border-t border-border">
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
@@ -330,7 +329,6 @@ const Browse = () => {
                       View Details
                     </Button>
 
-                    {/* Apply Outline in Red */}
                     <Button
                       variant="outline"
                       disabled={job.status === "Applied"}
