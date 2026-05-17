@@ -178,8 +178,8 @@ const Browse = () => {
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-4">
           {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+          <div className="text-center mb-4">
+            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-2">
               Browse Clinq <span className="text-gradient">Jobs</span>
             </h1>
             <p className="text-lg text-muted-foreground">
@@ -188,7 +188,7 @@ const Browse = () => {
           </div>
 
           {/* Search + Filters */}
-          <div className="bg-card border rounded-2xl p-6 mb-8">
+          <div className="bg-card border rounded-2xl p-6 mb-4">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="relative flex-1">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
