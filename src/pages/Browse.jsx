@@ -263,9 +263,9 @@ const Browse = () => {
                     </span>
                   </div>
 
-                 
 
-                  
+
+
 
 
 
@@ -439,9 +439,11 @@ const Browse = () => {
               </div>
             </div>
           )}
-          <DialogFooter className="pt-4">
+          <DialogFooter className="pt-4 flex flex-col sm:flex-row sm:justify-end gap-2">
             <DialogClose asChild>
-              <Button variant="outline" className="">Close</Button>
+              <Button variant="outline" className="w-fit">
+                Close
+              </Button>
             </DialogClose>
           </DialogFooter>
         </DialogContent>
